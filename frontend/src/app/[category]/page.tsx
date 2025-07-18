@@ -9,7 +9,7 @@ export default function CategoryPage() {
   return (
     <div>
       <h1>{category}</h1>
-      <p>This is the page for {category}.</p>
+      <p>Hello to the {category} page.</p>
     </div>
   );
 }
