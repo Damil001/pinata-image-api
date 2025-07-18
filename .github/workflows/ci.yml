@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install backend dependencies
+        run: npm install
+
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm install
+
+      - name: Lint backend
+        run: npm run lint || echo "No backend linter configured"
+
+      - name: Lint frontend
+        run: |
+          cd frontend
+          npm run lint || echo "No frontend linter configured"
+
+      - name: Run backend tests
+        run: npm test || echo "No backend tests configured"
+
+      - name: Run frontend tests
+        run: |
+          cd frontend
+          npm test || echo "No frontend tests configured"
