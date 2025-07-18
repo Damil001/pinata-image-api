@@ -1,4 +1,5 @@
 import MenuItem from "@/components/atoms/menu-item/menu-item";
+import Menu from "@/components/atoms/menu/menu";
 import { Anonymous_Pro, IBM_Plex_Mono } from "next/font/google";
 
 const anonymousPro = Anonymous_Pro({
@@ -26,6 +27,7 @@ const menuContent = [
 export default function Home() {
   return (
     <div className="p-4 max-w-screen-lg mx-auto pt-4">
+      <Menu />
       <h3
         className={anonymousPro.className}
         style={{
