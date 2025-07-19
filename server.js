@@ -4,6 +4,7 @@ const axios = require("axios");
 const FormData = require("form-data");
 const cors = require("cors");
 require("dotenv").config();
+const { addLike, getLikesForImage } = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -259,6 +260,31 @@ async function deleteImageHandler(req, res) {
     });
   }
 }
+
+// Like or dislike an image
+app.post('/api/like', async (req, res) => {
+  const { imageId, deviceId, action } = req.body;
+  if (!imageId || !deviceId || !action) {
+    return res.status(400).json({ error: "imageId, deviceId, and action are required" });
+  }
+  try {
+    await addLike(imageId, deviceId, action);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get like/dislike counts for an image
+app.get('/api/images/:imageId/likes', async (req, res) => {
+  const { imageId } = req.params;
+  try {
+    const result = await getLikesForImage(imageId);
+    res.json({ success: true, counts: result.rows });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // --- Route Registration ---
 

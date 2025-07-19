@@ -41,7 +41,7 @@ export default function Home() {
         ENTER THE
       </h3>
       <h1
-        className={anonymousPro.className}
+        className={`${anonymousPro.className}`}
         style={{
           fontSize: "4rem",
           fontWeight: "700",
@@ -77,7 +77,7 @@ export default function Home() {
         We Print Revolution and this, the Archive repository for important
         designs that have been banned around the world.
       </p>
-      <div className="mb-1.5rem" />
+      <div className="mb-10" />
       <div className="flex flex-col gap-4">
         {menuContent.map((item, index) => {
           return <MenuItem key={index} menuText={item} hrefLink={`/${item}`} />;
