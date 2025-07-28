@@ -7,7 +7,7 @@ require("dotenv").config();
 const { addLike, getLikesForImage } = require('./db');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors());
@@ -71,9 +71,14 @@ async function uploadImageHandler(req, res) {
         description: req.body.description || "Image uploaded via API",
         tags: Array.isArray(req.body.tags)
           ? req.body.tags.join(",")
-          : req.body.tags || "image",
+          : req.body.tags || "",
+        category: req.body.category || "",
+        location: req.body.location || "",
+        artist: req.body.artist || "",
+        visibility: req.body.visibility || "visible",
       },
     };
+    
     formData.append("pinataMetadata", JSON.stringify(metadata));
     const pinataOptions = { cidVersion: 1 };
     formData.append("pinataOptions", JSON.stringify(pinataOptions));
