@@ -14,6 +14,17 @@ type Image = {
   gatewayUrl: string;
   pinataUrl: string;
   downloads?: number; // Optional, for sorting by most downloaded
+  metadata?: {
+    name?: string;
+    keyvalues: {
+      tags?: string;
+      artist?: string;
+      category?: string;
+      location?: string;
+      visibility?: string;
+      description?: string;
+    };
+  };
 };
 
 const orbitron = Orbitron({
@@ -280,12 +291,10 @@ export default function CategoryPage() {
         );
         const data: { success: boolean; images: Image[] } = await res.json();
         if (data.success) {
-          // Filter images by tag or name matching the category
           const filtered = data.images.filter(
             (img: Image) =>
-              (img.tags && img.tags.includes(String(category))) ||
-              (img.name &&
-                img.name.toLowerCase().includes(String(category).toLowerCase()))
+              img.metadata?.keyvalues?.category?.toLowerCase() ===
+              String(category).toLowerCase()
           );
           setImages(filtered);
         } else {
@@ -306,12 +315,12 @@ export default function CategoryPage() {
         "https://pinata-image-api.onrender.com/api/images"
       );
       const data: { success: boolean; images: Image[] } = await res.json();
+      console.log(data);
       if (data.success) {
         const filtered = data.images.filter(
           (img: Image) =>
-            (img.tags && img.tags.includes(String(category))) ||
-            (img.name &&
-              img.name.toLowerCase().includes(String(category).toLowerCase()))
+            img.metadata?.keyvalues?.category?.toLowerCase() ===
+            String(category).toLowerCase()
         );
         setImages(filtered);
       }
@@ -387,7 +396,6 @@ export default function CategoryPage() {
           <option value="downloaded">Most Downloaded</option>
         </select>
       </div>
-      <p>Hello to the {category} page.</p>
 
       <div
         style={{
