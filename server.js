@@ -131,6 +131,7 @@ async function getAllImagesHandler(req, res) {
         : [],
       gatewayUrl: `https://gateway.pinata.cloud/ipfs/${item.ipfs_pin_hash}`,
       pinataUrl: `https://pinata.cloud/ipfs/${item.ipfs_pin_hash}`,
+      metadata: item.metadata,
     }));
     res.json({
       success: true,

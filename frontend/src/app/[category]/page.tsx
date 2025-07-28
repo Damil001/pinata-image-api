@@ -133,7 +133,9 @@ function closeModal(
   setVisibility: (visibility: string) => void,
   setTags: (tags: string[]) => void,
   setNewTag: (tag: string) => void,
-  setAgreedToTerms: (agreed: boolean) => void
+  setAgreedToTerms: (agreed: boolean) => void,
+  setDescription: (description: string) => void,
+  setImageName: (name: string) => void
 ) {
   setIsModalVisible(false);
   // Wait for animation to complete before hiding modal
@@ -149,7 +151,93 @@ function closeModal(
     setTags(["Barcelona", "Palestine"]);
     setNewTag("");
     setAgreedToTerms(false);
+    setDescription("");
+    setImageName("");
   }, 300);
+}
+
+// Upload function to handle API call
+async function uploadImage(
+  selectedFile: File,
+  imageName: string,
+  description: string,
+  tags: string[],
+  selectedCategory: string,
+  cityCountry: string,
+  artistName: string,
+  visibility: string,
+  setUploading: (uploading: boolean) => void,
+  setUploadError: (error: string | null) => void,
+  onSuccess: () => void,
+  setToast: (
+    toast: { message: string; type: "success" | "error" } | null
+  ) => void
+) {
+  if (!selectedFile) return;
+
+  setUploading(true);
+  setUploadError(null);
+
+  try {
+    const formData = new FormData();
+    formData.append("image", selectedFile); // Changed from 'file' to 'image'
+    formData.append("name", imageName || selectedFile.name);
+    formData.append("description", description);
+    formData.append("tags", tags.join(","));
+    formData.append("category", selectedCategory);
+    formData.append("location", cityCountry);
+    formData.append("artist", artistName);
+    formData.append("visibility", visibility === "hidden" ? "false" : "true");
+
+    console.log("Uploading with data:", {
+      name: imageName || selectedFile.name,
+      description,
+      tags: tags.join(","),
+      category: selectedCategory,
+      location: cityCountry,
+      artist: artistName,
+      visibility: visibility === "hidden" ? "false" : "true",
+      fileSize: selectedFile.size,
+      fileType: selectedFile.type,
+    });
+
+    const response = await fetch(
+      "https://pinata-image-api.onrender.com/api/upload",
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    console.log("Response status:", response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Server error response:", errorText);
+      throw new Error(`Server error: ${response.status} - ${errorText}`);
+    }
+
+    const result = await response.json();
+    console.log("Upload result:", result);
+
+    if (result.success) {
+      setToast({ message: "Image uploaded successfully!", type: "success" });
+      onSuccess();
+    } else {
+      throw new Error(result.message || "Upload failed");
+    }
+  } catch (error) {
+    console.error("Upload error:", error);
+    if (error instanceof Error) {
+      setUploadError(`Upload failed: ${error.message}`);
+      setToast({ message: `Upload failed: ${error.message}`, type: "error" });
+    } else {
+      setUploadError("Upload failed: Unknown error");
+      setToast({ message: "Upload failed: Unknown error", type: "error" });
+    }
+  } finally {
+    setUploading(false);
+  }
 }
 
 export default function CategoryPage() {
@@ -173,6 +261,14 @@ export default function CategoryPage() {
   const [isDragOver, setIsDragOver] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalAnimating, setIsModalAnimating] = useState(false);
+  const [description, setDescription] = useState("");
+  const [imageName, setImageName] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
   useEffect(() => {
     async function fetchImages() {
@@ -202,6 +298,37 @@ export default function CategoryPage() {
     }
     fetchImages();
   }, [category]);
+
+  // Function to refresh images list
+  const refreshImages = async () => {
+    try {
+      const res = await fetch(
+        "https://pinata-image-api.onrender.com/api/images"
+      );
+      const data: { success: boolean; images: Image[] } = await res.json();
+      if (data.success) {
+        const filtered = data.images.filter(
+          (img: Image) =>
+            (img.tags && img.tags.includes(String(category))) ||
+            (img.name &&
+              img.name.toLowerCase().includes(String(category).toLowerCase()))
+        );
+        setImages(filtered);
+      }
+    } catch (e) {
+      console.error("Failed to refresh images:", e);
+    }
+  };
+
+  // Toast notification effect
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => {
+        setToast(null);
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
 
   // Sort images based on filter
   const sortedImages = [...images].sort((a, b) => {
@@ -414,7 +541,9 @@ export default function CategoryPage() {
                   setVisibility,
                   setTags,
                   setNewTag,
-                  setAgreedToTerms
+                  setAgreedToTerms,
+                  setDescription,
+                  setImageName
                 )
               }
               style={{
@@ -564,6 +693,63 @@ export default function CategoryPage() {
             <div
               style={{ display: "flex", flexDirection: "column", gap: "20px" }}
             >
+              {/* Image Name Input */}
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    color: "#333",
+                    marginBottom: "4px",
+                    fontSize: "14px",
+                  }}
+                >
+                  Image Name (optional):
+                </label>
+                <input
+                  type="text"
+                  value={imageName}
+                  onChange={(e) => setImageName(e.target.value)}
+                  placeholder="Enter image name"
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    fontSize: "1rem",
+                    boxSizing: "border-box",
+                  }}
+                />
+              </div>
+
+              {/* Description Input */}
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    color: "#333",
+                    marginBottom: "4px",
+                    fontSize: "14px",
+                  }}
+                >
+                  Description:
+                </label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Enter image description"
+                  rows={3}
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    fontSize: "1rem",
+                    boxSizing: "border-box",
+                    resize: "vertical",
+                  }}
+                />
+              </div>
+
               {/* Category Dropdown */}
               <div>
                 <select
@@ -580,10 +766,16 @@ export default function CategoryPage() {
                   }}
                 >
                   <option value="">Select a Category</option>
-                  <option value="art">Art</option>
-                  <option value="photography">Photography</option>
-                  <option value="design">Design</option>
-                  <option value="nature">Nature</option>
+                  <option value="posters">Posters</option>
+                  <option value="stickers">Stickers</option>
+                  <option value="flyers">Flyers</option>
+                  <option value="banners">Banners</option>
+                  <option value="pamphlets">Pamphlets</option>
+                  <option value="tactics">Tactics</option>
+                  <option value="techniques">Techniques</option>
+                  <option value="allmedia">All Media</option>
+                  <option value="default">Default</option>
+                  <option value="tbd">TBD</option>
                 </select>
               </div>
 
@@ -769,24 +961,71 @@ export default function CategoryPage() {
                 </label>
               </div>
 
+              {/* Upload Error */}
+              {uploadError && (
+                <div
+                  style={{
+                    color: "#d32f2f",
+                    backgroundColor: "#ffebee",
+                    padding: "12px",
+                    borderRadius: "4px",
+                    fontSize: "14px",
+                  }}
+                >
+                  {uploadError}
+                </div>
+              )}
+
               {/* Upload Button */}
               <button
-                disabled={!agreedToTerms || !selectedCategory || !selectedFile}
-                onClick={() => {
-                  // Handle upload logic here
-                  console.log("Uploading file:", selectedFile);
-                  console.log("Category:", selectedCategory);
-                  console.log("City/Country:", cityCountry);
-                  console.log("Artist:", artistName);
-                  console.log("Visibility:", visibility);
-                  console.log("Tags:", tags);
-                  alert("Upload functionality would be implemented here");
+                disabled={
+                  !agreedToTerms ||
+                  !selectedCategory ||
+                  !selectedFile ||
+                  uploading
+                }
+                onClick={async () => {
+                  await uploadImage(
+                    selectedFile!,
+                    imageName,
+                    description,
+                    tags,
+                    selectedCategory,
+                    cityCountry,
+                    artistName,
+                    visibility,
+                    setUploading,
+                    setUploadError,
+                    async () => {
+                      closeModal(
+                        setShowUploadModal,
+                        setIsModalVisible,
+                        setIsModalAnimating,
+                        setSelectedFile,
+                        setSelectedCategory,
+                        setCityCountry,
+                        setArtistName,
+                        setVisibility,
+                        setTags,
+                        setNewTag,
+                        setAgreedToTerms,
+                        setDescription,
+                        setImageName
+                      );
+                      // Refresh the images list without page reload
+                      await refreshImages();
+                    },
+                    setToast
+                  );
                 }}
                 style={{
                   width: "100%",
                   padding: "12px",
                   backgroundColor:
-                    agreedToTerms && selectedCategory && selectedFile
+                    agreedToTerms &&
+                    selectedCategory &&
+                    selectedFile &&
+                    !uploading
                       ? "#666"
                       : "#ccc",
                   color: "#fff",
@@ -794,13 +1033,16 @@ export default function CategoryPage() {
                   borderRadius: "4px",
                   fontSize: "1rem",
                   cursor:
-                    agreedToTerms && selectedCategory && selectedFile
+                    agreedToTerms &&
+                    selectedCategory &&
+                    selectedFile &&
+                    !uploading
                       ? "pointer"
                       : "not-allowed",
                   fontWeight: "600",
                 }}
               >
-                Upload
+                {uploading ? "Uploading..." : "Upload"}
               </button>
             </div>
           </div>
