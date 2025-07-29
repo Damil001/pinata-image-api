@@ -4,7 +4,7 @@ const axios = require("axios");
 const FormData = require("form-data");
 const cors = require("cors");
 require("dotenv").config();
-const { addLike, getLikesForImage } = require('./db');
+const { addLike, getLikesForImage, addDownload, getDownloadsForImage } = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -287,6 +287,37 @@ app.get('/api/images/:imageId/likes', async (req, res) => {
   try {
     const result = await getLikesForImage(imageId);
     res.json({ success: true, counts: result.rows });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Record a download
+app.post('/api/download', async (req, res) => {
+  const { imageId, deviceId } = req.body;
+  if (!imageId || !deviceId) {
+    return res.status(400).json({ error: "imageId and deviceId are required" });
+  }
+  try {
+    await addDownload(imageId, deviceId);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get download counts for an image
+app.get('/api/images/:imageId/downloads', async (req, res) => {
+  const { imageId } = req.params;
+  try {
+    const result = await getDownloadsForImage(imageId);
+    res.json({ 
+      success: true, 
+      downloads: {
+        total: parseInt(result.rows[0]?.total_downloads || 0),
+        unique: parseInt(result.rows[0]?.unique_downloads || 0)
+      }
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

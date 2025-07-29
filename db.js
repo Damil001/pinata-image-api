@@ -26,4 +26,27 @@ async function getLikesForImage(imageId) {
   );
 }
 
-module.exports = { pool, addLike, getLikesForImage };
+async function addDownload(imageId, deviceId) {
+  return pool.query(
+    `INSERT INTO image_downloads (image_id, device_id, download_count)
+     VALUES ($1, $2, 1)
+     ON CONFLICT (image_id, device_id)
+     DO UPDATE SET download_count = image_downloads.download_count + 1,
+                   last_downloaded = CURRENT_TIMESTAMP
+     RETURNING download_count`,
+    [imageId, deviceId]
+  );
+}
+
+async function getDownloadsForImage(imageId) {
+  return pool.query(
+    `SELECT 
+       SUM(download_count) as total_downloads,
+       COUNT(DISTINCT device_id) as unique_downloads
+     FROM image_downloads
+     WHERE image_id = $1`,
+    [imageId]
+  );
+}
+
+module.exports = { pool, addLike, getLikesForImage, addDownload, getDownloadsForImage };
