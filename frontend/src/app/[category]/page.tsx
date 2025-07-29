@@ -13,7 +13,8 @@ type Image = {
   tags: string[];
   gatewayUrl: string;
   pinataUrl: string;
-  downloads?: number; // Optional, for sorting by most downloaded
+  totalDownloads?: number; // Updated to store total download count
+  uniqueDownloads?: number; // Optional, for unique downloads
   metadata?: {
     name?: string;
     keyvalues: {
@@ -32,19 +33,49 @@ const orbitron = Orbitron({
   weight: ["400", "700"],
 });
 
-// Helper function to programmatically download an image
-function downloadImage(url: string, filename: string) {
-  fetch(url)
-    .then((response) => response.blob())
-    .then((blob) => {
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      setTimeout(() => URL.revokeObjectURL(link.href), 200);
-    });
+// Helper function to programmatically download an image and record download in backend
+async function downloadImage(
+  image: Image,
+  deviceId: string,
+  refreshImages: () => Promise<void>
+) {
+  try {
+    // Call backend to record download
+    const response = await fetch(
+      "https://pinata-image-api.onrender.com/api/download",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          imageId: image.ipfsHash, // Use ipfsHash as imageId
+          deviceId: deviceId,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to record download: ${response.statusText}`);
+    }
+
+    // Download the file
+    const blobResponse = await fetch(image.gatewayUrl);
+    const blob = await blobResponse.blob();
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = image.name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => URL.revokeObjectURL(link.href), 200);
+
+    // Refresh images to update download counts
+    await refreshImages();
+  } catch (error) {
+    console.error("Download error:", error);
+    alert("Failed to download image or record download.");
+  }
 }
 
 // Helper function to add a new tag
@@ -72,7 +103,6 @@ function handleFileSelect(
   file: File,
   setSelectedFile: (file: File | null) => void
 ) {
-  // Check if file is an image
   if (file.type.startsWith("image/")) {
     setSelectedFile(file);
   } else {
@@ -127,7 +157,6 @@ function openModal(
 ) {
   setShowUploadModal(true);
   setIsModalAnimating(true);
-  // Small delay to ensure the modal is rendered before starting animation
   setTimeout(() => {
     setIsModalVisible(true);
   }, 10);
@@ -149,11 +178,9 @@ function closeModal(
   setImageName: (name: string) => void
 ) {
   setIsModalVisible(false);
-  // Wait for animation to complete before hiding modal
   setTimeout(() => {
     setShowUploadModal(false);
     setIsModalAnimating(false);
-    // Reset form
     setSelectedFile(null);
     setSelectedCategory("");
     setCityCountry("");
@@ -191,7 +218,7 @@ async function uploadImage(
 
   try {
     const formData = new FormData();
-    formData.append("image", selectedFile); // Changed from 'file' to 'image'
+    formData.append("image", selectedFile);
     formData.append("name", imageName || selectedFile.name);
     formData.append("description", description);
     formData.append("tags", tags.join(","));
@@ -199,18 +226,6 @@ async function uploadImage(
     formData.append("location", cityCountry);
     formData.append("artist", artistName);
     formData.append("visibility", visibility === "hidden" ? "false" : "true");
-
-    console.log("Uploading with data:", {
-      name: imageName || selectedFile.name,
-      description,
-      tags: tags.join(","),
-      category: selectedCategory,
-      location: cityCountry,
-      artist: artistName,
-      visibility: visibility === "hidden" ? "false" : "true",
-      fileSize: selectedFile.size,
-      fileType: selectedFile.type,
-    });
 
     const response = await fetch(
       "https://pinata-image-api.onrender.com/api/upload",
@@ -220,17 +235,12 @@ async function uploadImage(
       }
     );
 
-    console.log("Response status:", response.status);
-
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("Server error response:", errorText);
       throw new Error(`Server error: ${response.status} - ${errorText}`);
     }
 
     const result = await response.json();
-    console.log("Upload result:", result);
-
     if (result.success) {
       setToast({ message: "Image uploaded successfully!", type: "success" });
       onSuccess();
@@ -255,7 +265,6 @@ export default function CategoryPage() {
   const params = useParams();
   const { category } = params;
 
-  // You can use the category param to fetch data or render content
   const [images, setImages] = useState<Image[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -280,7 +289,18 @@ export default function CategoryPage() {
     message: string;
     type: "success" | "error";
   } | null>(null);
+  const [deviceId, setDeviceId] = useState<string>("");
+  // Get or generate deviceId from localStorage
+  useEffect(() => {
+    let id = localStorage.getItem("deviceId");
+    if (!id) {
+      id = Math.random().toString(36).substring(2) + Date.now().toString(36);
+      localStorage.setItem("deviceId", id);
+    }
+    setDeviceId(id);
+  }, []);
 
+  // Fetch images and their download counts
   useEffect(() => {
     async function fetchImages() {
       setLoading(true);
@@ -289,10 +309,36 @@ export default function CategoryPage() {
         const res = await fetch(
           "https://pinata-image-api.onrender.com/api/images"
         );
+        console.log(res);
         const data: { success: boolean; images: Image[] } = await res.json();
         if (data.success) {
-          const filtered = data.images.filter(
-            (img: Image) =>
+          // Fetch download counts for each image
+          const imagesWithDownloads = await Promise.all(
+            data.images.map(async (img) => {
+              try {
+                const downloadRes = await fetch(
+                  `https://pinata-image-api.onrender.com/api/images/${img.ipfsHash}/downloads`
+                );
+                const downloadData = await downloadRes.json();
+                if (downloadData.success) {
+                  return {
+                    ...img,
+                    totalDownloads: downloadData.downloads.total,
+                    uniqueDownloads: downloadData.downloads.unique,
+                  };
+                }
+                return { ...img, totalDownloads: 0, uniqueDownloads: 0 };
+              } catch (e) {
+                console.error(
+                  `Failed to fetch downloads for ${img.ipfsHash}:`,
+                  e
+                );
+                return { ...img, totalDownloads: 0, uniqueDownloads: 0 };
+              }
+            })
+          );
+          const filtered = imagesWithDownloads.filter(
+            (img) =>
               img.metadata?.keyvalues?.category?.toLowerCase() ===
               String(category).toLowerCase()
           );
@@ -315,10 +361,33 @@ export default function CategoryPage() {
         "https://pinata-image-api.onrender.com/api/images"
       );
       const data: { success: boolean; images: Image[] } = await res.json();
-      console.log(data);
       if (data.success) {
-        const filtered = data.images.filter(
-          (img: Image) =>
+        const imagesWithDownloads = await Promise.all(
+          data.images.map(async (img) => {
+            try {
+              const downloadRes = await fetch(
+                `https://pinata-image-api.onrender.com/api/images/${img.ipfsHash}/downloads`
+              );
+              const downloadData = await downloadRes.json();
+              if (downloadData.success) {
+                return {
+                  ...img,
+                  totalDownloads: downloadData.downloads.total,
+                  uniqueDownloads: downloadData.downloads.unique,
+                };
+              }
+              return { ...img, totalDownloads: 0, uniqueDownloads: 0 };
+            } catch (e) {
+              console.error(
+                `Failed to fetch downloads for ${img.ipfsHash}:`,
+                e
+              );
+              return { ...img, totalDownloads: 0, uniqueDownloads: 0 };
+            }
+          })
+        );
+        const filtered = imagesWithDownloads.filter(
+          (img) =>
             img.metadata?.keyvalues?.category?.toLowerCase() ===
             String(category).toLowerCase()
         );
@@ -344,8 +413,7 @@ export default function CategoryPage() {
     if (filter === "recent") {
       return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
     } else {
-      // Most Downloaded (fallback to 0 if undefined)
-      return (b.downloads || 0) - (a.downloads || 0);
+      return (b.totalDownloads || 0) - (a.totalDownloads || 0);
     }
   });
 
@@ -434,7 +502,7 @@ export default function CategoryPage() {
                 }}
               />
               <button
-                onClick={() => downloadImage(img.gatewayUrl, img.name)}
+                onClick={() => downloadImage(img, deviceId, refreshImages)}
                 className="download-btn"
                 style={{
                   position: "absolute",
@@ -456,6 +524,21 @@ export default function CategoryPage() {
               >
                 Download
               </button>
+              {/* Display download count */}
+              <div
+                style={{
+                  position: "absolute",
+                  top: 8,
+                  right: 8,
+                  background: "rgba(0,0,0,0.7)",
+                  color: "#fff",
+                  padding: "4px 8px",
+                  borderRadius: "4px",
+                  fontSize: "12px",
+                }}
+              >
+                Downloads: {img.totalDownloads || 0}
+              </div>
             </div>
           ))}
         </div>
@@ -1020,7 +1103,6 @@ export default function CategoryPage() {
                         setDescription,
                         setImageName
                       );
-                      // Refresh the images list without page reload
                       await refreshImages();
                     },
                     setToast
