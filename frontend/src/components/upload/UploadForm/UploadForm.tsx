@@ -26,68 +26,6 @@ const UploadForm: React.FC<UploadFormProps> = ({
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-      {/* Image Name Input */}
-      <div>
-        <label
-          style={{
-            display: "block",
-            color: "#333",
-            marginBottom: "4px",
-            fontSize: "14px",
-          }}
-        >
-          Image Name (optional):
-        </label>
-        <input
-          type="text"
-          value={formData.imageName}
-          onChange={handleInputChange("imageName")}
-          placeholder="Enter image name"
-          style={{
-            width: "100%",
-            padding: "12px",
-            border: "1px solid #ccc",
-            borderRadius: "4px",
-            fontSize: "1rem",
-            boxSizing: "border-box",
-            color: "#333",
-            backgroundColor: "#fff",
-          }}
-        />
-      </div>
-
-      {/* Description Input */}
-      <div>
-        <label
-          style={{
-            display: "block",
-            color: "#333",
-            marginBottom: "4px",
-            fontSize: "14px",
-          }}
-        >
-          Description:
-        </label>
-        <textarea
-          value={formData.description}
-          onChange={handleInputChange("description")}
-          placeholder="Enter image description"
-          rows={3}
-          style={{
-            width: "100%",
-            padding: "12px",
-            border: "1px solid #ccc",
-            borderRadius: "4px",
-            fontSize: "1rem",
-            boxSizing: "border-box",
-            resize: "vertical",
-            color: "#333",
-            backgroundColor: "#fff",
-          }}
-        />
-      </div>
-
-      {/* Category Dropdown */}
       <div>
         <select
           value={formData.selectedCategory}
