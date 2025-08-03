@@ -20,6 +20,7 @@ app.use(
     origin: [
       "http://localhost:3000",
       "https://pinata-image-geynx7pkd-damil001s-projects.vercel.app",
+      "https://pinata-image-api.vercel.app",
     ], // or add deployed frontend too
   })
 );
