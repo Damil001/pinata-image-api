@@ -23,17 +23,20 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     menuText: "Dashboard",
+    hrefLink: "/dashboard",
   },
 };
 
 export const About: Story = {
   args: {
     menuText: "About Us",
+    hrefLink: "/about",
   },
 };
 
 export const Contact: Story = {
   args: {
     menuText: "Contact",
+    hrefLink: "/contact",
   },
 };
