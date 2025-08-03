@@ -21,9 +21,19 @@ app.use(
       "http://localhost:3000",
       "https://pinata-image-geynx7pkd-damil001s-projects.vercel.app",
       "https://pinata-image-api.vercel.app",
-    ], // or add deployed frontend too
+      "https://pinata-image-git-main-damil001s-projects.vercel.app",
+      /\.vercel\.app$/, // Allow all Vercel deployment URLs
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+// Add CORS debugging middleware
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path} - Origin: ${req.headers.origin}`);
+  next();
+});
 
 app.use(express.json());
 
