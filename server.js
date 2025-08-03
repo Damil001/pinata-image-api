@@ -4,15 +4,25 @@ const axios = require("axios");
 const FormData = require("form-data");
 const cors = require("cors");
 require("dotenv").config();
-const { addLike, getLikesForImage, addDownload, getDownloadsForImage } = require('./db');
+const {
+  addLike,
+  getLikesForImage,
+  addDownload,
+  getDownloadsForImage,
+} = require("./db");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
-app.use(cors({
-  origin: ["http://localhost:3000"], // or add deployed frontend too
-}));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://pinata-image-geynx7pkd-damil001s-projects.vercel.app",
+    ], // or add deployed frontend too
+  })
+);
 
 app.use(express.json());
 
@@ -81,7 +91,7 @@ async function uploadImageHandler(req, res) {
         visibility: req.body.visibility || "visible",
       },
     };
-    
+
     formData.append("pinataMetadata", JSON.stringify(metadata));
     const pinataOptions = { cidVersion: 1 };
     formData.append("pinataOptions", JSON.stringify(pinataOptions));
@@ -130,7 +140,7 @@ async function getAllImagesHandler(req, res) {
       name: item.metadata?.name || "Untitled",
       description: item.metadata?.keyvalues?.description || "",
       tags: item.metadata?.keyvalues?.tags
-        ? item.metadata.keyvalues.tags.split(",").map(t => t.trim())
+        ? item.metadata.keyvalues.tags.split(",").map((t) => t.trim())
         : [],
       gatewayUrl: `https://gateway.pinata.cloud/ipfs/${item.ipfs_pin_hash}`,
       pinataUrl: `https://pinata.cloud/ipfs/${item.ipfs_pin_hash}`,
@@ -170,7 +180,9 @@ async function getImagesByTagHandler(req, res) {
     });
     const filtered = response.data.rows.filter((item) => {
       const tagsString = item.metadata?.keyvalues?.tags || "";
-      const tagsArray = tagsString.split(",").map(t => t.trim().toLowerCase());
+      const tagsArray = tagsString
+        .split(",")
+        .map((t) => t.trim().toLowerCase());
       return tagsArray.includes(tag.toLowerCase());
     });
     const start = (page - 1) * limit;
@@ -184,7 +196,7 @@ async function getImagesByTagHandler(req, res) {
       name: item.metadata?.name || "Untitled",
       description: item.metadata?.keyvalues?.description || "",
       tags: item.metadata?.keyvalues?.tags
-        ? item.metadata.keyvalues.tags.split(",").map(t => t.trim())
+        ? item.metadata.keyvalues.tags.split(",").map((t) => t.trim())
         : [],
       gatewayUrl: `https://gateway.pinata.cloud/ipfs/${item.ipfs_pin_hash}`,
       pinataUrl: `https://pinata.cloud/ipfs/${item.ipfs_pin_hash}`,
@@ -271,10 +283,12 @@ async function deleteImageHandler(req, res) {
 }
 
 // Like or dislike an image
-app.post('/api/like', async (req, res) => {
+app.post("/api/like", async (req, res) => {
   const { imageId, deviceId, action } = req.body;
   if (!imageId || !deviceId || !action) {
-    return res.status(400).json({ error: "imageId, deviceId, and action are required" });
+    return res
+      .status(400)
+      .json({ error: "imageId, deviceId, and action are required" });
   }
   try {
     await addLike(imageId, deviceId, action);
@@ -285,7 +299,7 @@ app.post('/api/like', async (req, res) => {
 });
 
 // Get like/dislike counts for an image
-app.get('/api/images/:imageId/likes', async (req, res) => {
+app.get("/api/images/:imageId/likes", async (req, res) => {
   const { imageId } = req.params;
   try {
     const result = await getLikesForImage(imageId);
@@ -296,7 +310,7 @@ app.get('/api/images/:imageId/likes', async (req, res) => {
 });
 
 // Record a download
-app.post('/api/download', async (req, res) => {
+app.post("/api/download", async (req, res) => {
   const { imageId, deviceId } = req.body;
   if (!imageId || !deviceId) {
     return res.status(400).json({ error: "imageId and deviceId are required" });
@@ -310,16 +324,16 @@ app.post('/api/download', async (req, res) => {
 });
 
 // Get download counts for an image
-app.get('/api/images/:imageId/downloads', async (req, res) => {
+app.get("/api/images/:imageId/downloads", async (req, res) => {
   const { imageId } = req.params;
   try {
     const result = await getDownloadsForImage(imageId);
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       downloads: {
         total: parseInt(result.rows[0]?.total_downloads || 0),
-        unique: parseInt(result.rows[0]?.unique_downloads || 0)
-      }
+        unique: parseInt(result.rows[0]?.unique_downloads || 0),
+      },
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
