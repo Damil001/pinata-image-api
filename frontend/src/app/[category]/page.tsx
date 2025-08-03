@@ -473,13 +473,12 @@ export default function CategoryPage() {
             style={{
               position: "absolute",
               left: "1.5rem",
-              color: "#888",
               fontSize: "1.2rem",
               pointerEvents: "none",
               zIndex: 1,
             }}
           >
-            🔍
+            <img src="./search-icon.svg" alt="Search" width={20} height={20} />
           </div>
           <input
             type="text"
@@ -489,7 +488,7 @@ export default function CategoryPage() {
             style={{
               width: "100%",
               padding: "12px 12px 12px 48px",
-              background: "#E5E5E5",
+              background: "rgba(235, 232, 226, 1)",
               color: "#333",
               border: "none",
               borderRadius: "24px",
