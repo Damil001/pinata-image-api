@@ -29,9 +29,8 @@ export default function Home() {
     <div className="p-4 max-w-screen-lg mx-auto pt-4">
       <Menu />
       <h3
-        className={anonymousPro.className}
+        className={`${anonymousPro.className} text-xl sm:text-2xl md:text-3xl lg:text-4xl`}
         style={{
-          fontSize: "2rem",
           fontWeight: "700",
           color: "#EBE8E2",
           textAlign: "right",
@@ -41,9 +40,8 @@ export default function Home() {
         ENTER THE
       </h3>
       <h1
-        className={`${anonymousPro.className}`}
+        className={`${anonymousPro.className} text-3xl sm:text-4xl md:text-5xl lg:text-6xl`}
         style={{
-          fontSize: "4rem",
           fontWeight: "700",
           color: "#EBE8E2",
           textAlign: "right",
@@ -54,13 +52,12 @@ export default function Home() {
         ARCHIVE
       </h1>
       <p
-        className={ibmPlexMono.className}
+        className={`${ibmPlexMono.className} text-xs sm:text-sm`}
         style={{
-          fontSize: "0.75rem",
           fontWeight: "400",
           color: "#EBE8E2",
           textAlign: "right",
-          lineHeight: "1",
+          lineHeight: "1.2",
           marginBottom: "0.25rem",
         }}
       >

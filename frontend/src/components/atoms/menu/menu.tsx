@@ -27,7 +27,7 @@ export default function Menu() {
 
   return (
     <div className="absolute top-0 left-0 w-full z-50">
-      <div className="fixed top-8 left-8 z-50">
+      <div className="fixed top-4 left-4 sm:top-8 sm:left-8 z-50">
         <div
           className="transition-transform duration-300 ease-in-out"
           style={{ display: "inline-block" }}
@@ -38,7 +38,7 @@ export default function Menu() {
             width={40}
             height={40}
             className={
-              `cursor-pointer transition-all duration-300 ease-in-out w-10 h-10` +
+              `cursor-pointer transition-all duration-300 ease-in-out w-8 h-8 sm:w-10 sm:h-10` +
               (isOpen ? " opacity-100 scale-110" : " opacity-80 scale-100")
             }
             onClick={() => setIsOpen((prev) => !prev)}
@@ -46,7 +46,7 @@ export default function Menu() {
         </div>
       </div>
       <div
-        className={`fixed top-0 right-0 h-full w-80 max-w-full bg-[#333639] pt-24 shadow-lg transition-transform duration-500 ease-in-out z-40 ${
+        className={`fixed top-0 right-0 h-full w-80 max-w-[90vw] sm:max-w-full bg-[#333639] pt-24 shadow-lg transition-transform duration-500 ease-in-out z-40 ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
         style={{ willChange: "transform" }}
@@ -54,9 +54,9 @@ export default function Menu() {
         {isOpen && (
           <>
             <MenuHeading name="ANONYMITY" />
-            <div className="pl-6 pr-6 mb-2 mt-0.5">
+            <div className="pl-4 pr-4 sm:pl-6 sm:pr-6 mb-2 mt-0.5">
               <p
-                className={`text-[#EBE8E2] text-xs ${ibmPlexMono.className} font-normal`}
+                className={`text-[#EBE8E2] text-xs sm:text-sm ${ibmPlexMono.className} font-normal leading-relaxed`}
               >
                 Transparency is one of our core values, so in the following you
                 can learn about how we built the Archive 1.0 and what that means
@@ -64,9 +64,9 @@ export default function Menu() {
               </p>
             </div>
             <MenuHeading name="SECURITY" />
-            <div className="pl-6 pr-6 mb-2 mt-0.5">
+            <div className="pl-4 pr-4 sm:pl-6 sm:pr-6 mb-2 mt-0.5">
               <p
-                className={`text-[#EBE8E2] text-xs ${ibmPlexMono.className} font-normal`}
+                className={`text-[#EBE8E2] text-xs sm:text-sm ${ibmPlexMono.className} font-normal leading-relaxed`}
               >
                 Lorem ipsum dolor sit amet consectetur. Aliquam convallis at
                 accumsan nulla viverra morbi rhoncus et. Egestas consectetur nec
@@ -74,9 +74,9 @@ export default function Menu() {
               </p>
             </div>
             <MenuHeading name="PARTICIPATE" />
-            <div className="pl-6 pr-6 bg-[#EBE8E2] mb-2 ">
+            <div className="pl-4 pr-4 sm:pl-6 sm:pr-6 bg-[#EBE8E2] mb-2">
               <p
-                className={`text-[#1F2123] text-xs ${ibmPlexMono.className} font-normal`}
+                className={`text-[#1F2123] text-xs sm:text-sm ${ibmPlexMono.className} font-normal leading-relaxed`}
               >
                 Lorem ipsum dolor sit amet consectetur. Aliquam convallis at
                 accumsan nulla viverra morbi rhoncus et. Egestas consectetur nec
