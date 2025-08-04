@@ -15,7 +15,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 const menuContent = [
   "POSTERS",
   "STICKERS",
-  "FLIERS",
+  "FLYERS",
   "BANNERS",
   "PAMPHLETS",
   "???",
