@@ -2,6 +2,7 @@
 import React from "react";
 import { UploadFormProps, CATEGORY_OPTIONS } from "../types/upload.types";
 import CountryCityInput from "../CountryCityInput";
+import Autocomplete from "react-google-autocomplete";
 
 const UploadForm: React.FC<UploadFormProps> = ({
   formData,
@@ -58,8 +59,14 @@ const UploadForm: React.FC<UploadFormProps> = ({
             fontSize: "14px",
           }}
         >
-          City, Country (optional): ℹ️
+          City, Country, Damil (optional): ℹ️
         </label>
+        {/* <Autocomplete
+          apiKey={"AIzaSyDsBGsKouTzO3_OJQHabcSZEk35InyYdFQ"}
+          onPlaceSelected={(place) => {
+            console.log(place);
+          }}
+        /> */}
         <CountryCityInput
           value={formData.cityCountry}
           onChange={(value) => onFormDataChange({ cityCountry: value })}

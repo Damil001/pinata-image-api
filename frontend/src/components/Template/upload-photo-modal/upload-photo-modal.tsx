@@ -17,6 +17,7 @@ import {
   DEFAULT_FORM_DATA,
   API_ENDPOINTS,
 } from "../../upload/types/upload.types";
+import Autocomplete from "react-google-autocomplete";
 import styles from "./upload-photo-modal.module.css";
 
 const orbitron = Orbitron({
@@ -1078,7 +1079,7 @@ const UploadPhotoModal = forwardRef<UploadPhotoModalRef, UploadPhotoModalProps>(
                   fontWeight: "500",
                 }}
               >
-                City, Country (optional):
+                City, Country (optional)
                 <span
                   style={{ marginLeft: "4px" }}
                   title="Location information"
