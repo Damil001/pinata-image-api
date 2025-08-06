@@ -106,21 +106,32 @@ export default function AllImagesPage() {
       style={{
         minHeight: "100vh",
         background: "rgba(31, 33, 35, 1)",
-        fontFamily: "Arial, sans-serif",
-        padding: "20px",
+        fontFamily: "var(--font-ibm-plex-mono), monospace",
       }}
     >
       {/* Search Interface */}
-      <SearchInterface
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        selectedTags={selectedTags}
-        availableTags={allTags}
-        onTagToggle={handleTagToggle}
-        onTagRemove={removeTag}
-        sortBy={sortBy}
-        onSortChange={setSortBy}
-      />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          width: "100%",
+          marginTop: "32px",
+          marginBottom: "32px",
+        }}
+      >
+        <div style={{ width: "80%", maxWidth: "400px" }}>
+          <SearchInterface
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            selectedTags={selectedTags}
+            availableTags={allTags}
+            onTagToggle={handleTagToggle}
+            onTagRemove={removeTag}
+            sortBy={sortBy}
+            onSortChange={setSortBy}
+          />
+        </div>
+      </div>
 
       {/* Main Content */}
       <div>
@@ -130,7 +141,6 @@ export default function AllImagesPage() {
               background: "rgba(220, 53, 69, 0.1)",
               border: "1px solid rgba(220, 53, 69, 0.3)",
               borderRadius: "8px",
-              padding: "16px",
               margin: "16px 0",
               color: "#ff6b6b",
               textAlign: "center",
@@ -154,7 +164,7 @@ export default function AllImagesPage() {
             <div
               style={{
                 textAlign: "center",
-                padding: "48px 16px",
+                padding: "16px",
                 color: "#888",
               }}
             >

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import DeviceIdInitializer from "@/components/DeviceIdInitializer";
 import { Toaster } from "react-hot-toast";
@@ -14,9 +15,18 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const ibmPlexMono = IBM_Plex_Mono({
+  variable: "--font-ibm-plex-mono",
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+});
+
 export const metadata: Metadata = {
-  title: "My Print",
+  title: "The Archive",
   description: "App to store every thing",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
@@ -30,7 +40,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${ibmPlexMono.variable} antialiased`}
       >
         <DeviceIdInitializer />
         {children}

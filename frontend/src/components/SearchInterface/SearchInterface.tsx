@@ -37,8 +37,6 @@ const SearchInterface: React.FC<SearchInterfaceProps> = ({
         borderRadius: "20px",
         padding: "24px",
         marginBottom: "32px",
-        maxWidth: "600px",
-        margin: "0 auto 32px auto",
       }}
     >
       {/* Search Bar */}
