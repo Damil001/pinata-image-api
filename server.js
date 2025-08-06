@@ -23,7 +23,7 @@ app.use(
       "https://pinata-image-api.vercel.app",
       "https://pinata-image-git-main-damil001s-projects.vercel.app",
       /\.vercel\.app$/,
-      "https://thearchive.weprintrevolution.com/", // Allow all Vercel deployment URLs
+      "https://thearchive.weprintrevolution.com", // Allow all Vercel deployment URLs
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
