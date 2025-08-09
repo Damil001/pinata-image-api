@@ -5,9 +5,15 @@ interface ImageCardProps {
   image: Image;
   index: number;
   onClick: () => void;
+  onDownload?: () => void;
 }
 
-const ImageCard: React.FC<ImageCardProps> = ({ image, index, onClick }) => {
+const ImageCard: React.FC<ImageCardProps> = ({
+  image,
+  index,
+  onClick,
+  onDownload,
+}) => {
   return (
     <div
       className="image-container"
@@ -88,6 +94,37 @@ const ImageCard: React.FC<ImageCardProps> = ({ image, index, onClick }) => {
           >
             ↓ {image.totalDownloads} downloads
           </div>
+        )}
+
+        {/* Download Button */}
+        {onDownload && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent card click event
+              onDownload();
+            }}
+            style={{
+              position: "absolute",
+              bottom: "8px",
+              right: "8px",
+              background: "rgba(0,0,0,0.7)",
+              color: "#EBE8E2",
+              border: "1px solid #444",
+              borderRadius: "4px",
+              padding: "4px 8px",
+              fontSize: "0.7rem",
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "rgba(235, 232, 226, 0.2)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(0,0,0,0.7)";
+            }}
+          >
+            ↓ Download
+          </button>
         )}
       </div>
     </div>

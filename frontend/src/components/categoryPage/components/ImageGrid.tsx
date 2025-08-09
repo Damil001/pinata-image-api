@@ -8,6 +8,7 @@ interface ImageGridProps {
   images: Image[];
   onImageClick: (image: Image) => void;
   onClearFilters: () => void;
+  onDownload?: (image: Image) => void;
 }
 
 const ImageGrid: React.FC<ImageGridProps> = ({
@@ -15,6 +16,7 @@ const ImageGrid: React.FC<ImageGridProps> = ({
   images,
   onImageClick,
   onClearFilters,
+  onDownload,
 }) => {
   if (loading) {
     return <LoadingSkeleton count={9} />;
