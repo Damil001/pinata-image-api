@@ -184,94 +184,7 @@ export default function CategoryPage() {
   }, [loadingMore, pagination.hasMore, loadMoreImages]);
 
   return (
-    <div
-      className={`page-container ${pageLoaded ? "page-loaded" : ""}`}
-      style={{
-        minHeight: "100vh",
-        background: "rgba(31, 33, 35, 1)",
-        fontFamily: "Arial, sans-serif",
-        transform: pageLoaded ? "translateY(0)" : "translateY(100vh)",
-        transition: "transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-        opacity: pageLoaded ? 1 : 0,
-      }}
-    >
-      {/* Header */}
-      <PageHeader
-        category={String(category)}
-        onBack={() => window.history.back()}
-      />
-
-      {/* Search and Filter Controls */}
-      <SearchAndFilter
-        sortBy={sortBy}
-        onSortChange={(value) =>
-          setSortBy(value as "recent" | "name" | "size" | "downloaded")
-        }
-        searchInput={searchInput}
-        onSearchInputChange={setSearchInput}
-        onSearchKeyPress={handleSearchKeyPress}
-        selectedTags={selectedTags}
-        filteredAvailableTags={filteredAvailableTags}
-        onAddTag={addTagChip}
-        onRemoveTag={removeTagChip}
-        onClearAllTags={() => setSelectedTags([])}
-      />
-
-      {/* Main Content */}
-      <div style={{ marginTop: 0 }}>
-        {error && (
-          <div
-            style={{
-              background: "rgba(220, 53, 69, 0.1)",
-              border: "1px solid rgba(220, 53, 69, 0.3)",
-              borderRadius: "8px",
-              padding: "16px",
-              margin: "16px 0",
-              color: "#ff6b6b",
-              textAlign: "center",
-            }}
-          >
-            <strong>Error:</strong> {error}
-          </div>
-        )}
-
-        {/* Image Grid */}
-        <ImageGrid
-          loading={loading}
-          images={filteredAndSortedImages}
-          onImageClick={handleImageClick}
-          onClearFilters={clearFilters}
-        />
-
-        {/* Empty State for No Images Found */}
-        {images.length === 0 && !loading && (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "48px 16px",
-              color: "#888",
-            }}
-          >
-            <div style={{ fontSize: "48px", marginBottom: "16px" }}>📷</div>
-            <h3 style={{ color: "#EBE8E2", marginBottom: "8px" }}>
-              No images found
-            </h3>
-            <p>No images found for this category yet.</p>
-          </div>
-        )}
-
-        {/* Loading and Pagination */}
-        <LoadingAndPagination
-          loading={loading}
-          loadingMore={loadingMore}
-          pagination={pagination}
-          imagesCount={filteredAndSortedImages.length}
-          category={String(category)}
-          onLoadMore={loadMoreImages}
-        />
-      </div>
-
-      {/* Floating Action Button */}
+    <>
       <button
         onClick={() => {
           setShowUploadModal(true);
@@ -318,102 +231,191 @@ export default function CategoryPage() {
         isVisible={modalAnimation.isVisible}
         isAnimating={modalAnimation.isAnimating}
       />
+      <div
+        className={`page-container ${pageLoaded ? "page-loaded" : ""}`}
+        style={{
+          minHeight: "100vh",
+          background: "rgba(31, 33, 35, 1)",
+          fontFamily: "Arial, sans-serif",
+          transform: pageLoaded ? "translateY(0)" : "translateY(100vh)",
+          transition: "transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+          opacity: pageLoaded ? 1 : 0,
+        }}
+      >
+        {/* Header */}
+        <PageHeader
+          category={String(category)}
+          onBack={() => window.history.back()}
+        />
 
-      {/* Image Preview Modal */}
-      <ImageModal
-        image={selectedImage}
-        isOpen={showImageModal}
-        onClose={() => setShowImageModal(false)}
-        onDownload={handleDownload}
-      />
-
-      {/* Enhanced CSS for hover effects and animations */}
-      <style jsx>{`
-        .page-container {
-          will-change: transform, opacity;
-        }
-
-        .page-container.page-loaded {
-          transform: translateY(0) !important;
-          opacity: 1 !important;
-        }
-
-        .image-container:hover .image-info {
-          opacity: 1 !important;
-        }
-
-        .image-container:hover {
-          transform: translateY(-2px) !important;
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3) !important;
-        }
-
-        .image-container:hover img {
-          transform: scale(1.02) !important;
-        }
-
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
+        {/* Search and Filter Controls */}
+        <SearchAndFilter
+          sortBy={sortBy}
+          onSortChange={(value) =>
+            setSortBy(value as "recent" | "name" | "size" | "downloaded")
           }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
+          searchInput={searchInput}
+          onSearchInputChange={setSearchInput}
+          onSearchKeyPress={handleSearchKeyPress}
+          selectedTags={selectedTags}
+          filteredAvailableTags={filteredAvailableTags}
+          onAddTag={addTagChip}
+          onRemoveTag={removeTagChip}
+          onClearAllTags={() => setSelectedTags([])}
+        />
 
-        @keyframes spin {
-          0% {
-            transform: rotate(0deg);
-          }
-          100% {
-            transform: rotate(360deg);
-          }
-        }
+        {/* Main Content */}
+        <div style={{ marginTop: 0 }}>
+          {error && (
+            <div
+              style={{
+                background: "rgba(220, 53, 69, 0.1)",
+                border: "1px solid rgba(220, 53, 69, 0.3)",
+                borderRadius: "8px",
+                padding: "16px",
+                margin: "16px 0",
+                color: "#ff6b6b",
+                textAlign: "center",
+              }}
+            >
+              <strong>Error:</strong> {error}
+            </div>
+          )}
 
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-          .image-container {
-            animation-delay: 0s !important;
-          }
-        }
+          {/* Image Grid */}
+          <ImageGrid
+            loading={loading}
+            images={filteredAndSortedImages}
+            onImageClick={handleImageClick}
+            onClearFilters={clearFilters}
+          />
 
-        @media (max-width: 768px) {
-          .image-container {
-            animation-delay: 0s !important;
+          {/* Empty State for No Images Found */}
+          {images.length === 0 && !loading && (
+            <div
+              style={{
+                textAlign: "center",
+                padding: "48px 16px",
+                color: "#888",
+              }}
+            >
+              <div style={{ fontSize: "48px", marginBottom: "16px" }}>📷</div>
+              <h3 style={{ color: "#EBE8E2", marginBottom: "8px" }}>
+                No images found
+              </h3>
+              <p>No images found for this category yet.</p>
+            </div>
+          )}
+
+          {/* Loading and Pagination */}
+          <LoadingAndPagination
+            loading={loading}
+            loadingMore={loadingMore}
+            pagination={pagination}
+            imagesCount={filteredAndSortedImages.length}
+            category={String(category)}
+            onLoadMore={loadMoreImages}
+          />
+        </div>
+
+        {/* Floating Action Button */}
+
+        {/* Image Preview Modal */}
+        <ImageModal
+          image={selectedImage}
+          isOpen={showImageModal}
+          onClose={() => setShowImageModal(false)}
+          onDownload={handleDownload}
+        />
+
+        {/* Enhanced CSS for hover effects and animations */}
+        <style jsx>{`
+          .page-container {
+            will-change: transform, opacity;
+          }
+
+          .page-container.page-loaded {
+            transform: translateY(0) !important;
+            opacity: 1 !important;
+          }
+
+          .image-container:hover .image-info {
+            opacity: 1 !important;
           }
 
           .image-container:hover {
-            transform: none !important;
-            box-shadow: none !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3) !important;
           }
 
           .image-container:hover img {
-            transform: none !important;
+            transform: scale(1.02) !important;
           }
 
-          div[style*="gridTemplateColumns"] {
-            grid-template-columns: repeat(2, 1fr) !important;
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
           }
-        }
 
-        @media (max-width: 480px) {
-          input[type="text"] {
-            font-size: 0.9rem !important;
-            padding: 10px 10px 10px 40px !important;
+          @keyframes spin {
+            0% {
+              transform: rotate(0deg);
+            }
+            100% {
+              transform: rotate(360deg);
+            }
           }
-        }
 
-        @media (min-width: 769px) {
-          div[style*="gridTemplateColumns"] {
-            grid-template-columns: repeat(3, 1fr) !important;
+          /* Responsive Design */
+          @media (max-width: 1024px) {
+            .image-container {
+              animation-delay: 0s !important;
+            }
           }
-        }
 
-        * {
-          box-sizing: border-box;
-        }
-      `}</style>
-    </div>
+          @media (max-width: 768px) {
+            .image-container {
+              animation-delay: 0s !important;
+            }
+
+            .image-container:hover {
+              transform: none !important;
+              box-shadow: none !important;
+            }
+
+            .image-container:hover img {
+              transform: none !important;
+            }
+
+            div[style*="gridTemplateColumns"] {
+              grid-template-columns: repeat(2, 1fr) !important;
+            }
+          }
+
+          @media (max-width: 480px) {
+            input[type="text"] {
+              font-size: 0.9rem !important;
+              padding: 10px 10px 10px 40px !important;
+            }
+          }
+
+          @media (min-width: 769px) {
+            div[style*="gridTemplateColumns"] {
+              grid-template-columns: repeat(3, 1fr) !important;
+            }
+          }
+
+          * {
+            box-sizing: border-box;
+          }
+        `}</style>
+      </div>
+    </>
   );
 }
