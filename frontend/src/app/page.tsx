@@ -1,7 +1,9 @@
+"use client";
 import MenuItem from "@/components/atoms/menu-item/menu-item";
 import Menu from "@/components/atoms/menu/menu";
 import Link from "next/link";
 import { Anonymous_Pro, IBM_Plex_Mono } from "next/font/google";
+import { useEffect, useRef } from "react";
 
 const anonymousPro = Anonymous_Pro({
   subsets: ["latin"],
@@ -26,6 +28,17 @@ const menuContent = [
 ];
 
 export default function Home() {
+  const buttonRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (buttonRef.current) {
+      // Trigger the animation by adding the class after component mounts
+      setTimeout(() => {
+        buttonRef.current?.classList.add("bounce-in-up");
+      }, 100);
+    }
+  }, []);
+
   return (
     <>
       <div className="p-4 max-w-screen-lg mx-auto pt-4">
@@ -89,7 +102,8 @@ export default function Home() {
       {/* Bottom right button */}
       <Link href="/all-images">
         <div
-          className="fixed bottom-4 right-4 cursor-pointer hover:opacity-80 transition-opacity"
+          ref={buttonRef}
+          className="fixed bottom-0 right-4 cursor-pointer hover:opacity-80 transition-opacity bounce-in-up"
           style={{
             zIndex: 1000,
           }}

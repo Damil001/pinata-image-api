@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import CustomDropdown, {
   type DropdownOption,
 } from "@/components/CustomDropdown";
@@ -11,6 +11,7 @@ interface SearchInterfaceProps {
   availableTags: string[];
   onTagToggle: (tag: string) => void;
   onTagRemove: (tag: string) => void;
+  onTagAdd: (tag: string) => void;
   sortBy: "recent" | "name" | "size" | "downloaded";
   onSortChange: (sortBy: "recent" | "name" | "size" | "downloaded") => void;
 }
@@ -22,13 +23,82 @@ const SearchInterface: React.FC<SearchInterfaceProps> = ({
   availableTags,
   onTagToggle,
   onTagRemove,
+  onTagAdd,
   sortBy,
   onSortChange,
 }) => {
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+
   const sortOptions: DropdownOption[] = [
     { value: "recent", label: "Most Recent", icon: "⌛" },
     { value: "downloaded", label: "Most Downloaded", icon: "🔻" },
   ];
+
+  // Filter suggestions based on search query
+  useEffect(() => {
+    if (searchQuery.trim() === "") {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    const filteredSuggestions = availableTags
+      .filter(
+        (tag) =>
+          tag.toLowerCase().includes(searchQuery.toLowerCase()) &&
+          !selectedTags.includes(tag)
+      )
+      .slice(0, 5); // Show only top 5 suggestions
+
+    setSuggestions(filteredSuggestions);
+    setShowSuggestions(filteredSuggestions.length > 0);
+  }, [searchQuery, availableTags, selectedTags]);
+
+  // Handle click outside to close suggestions
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        searchInputRef.current &&
+        !searchInputRef.current.contains(event.target as Node) &&
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(event.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Handle key down events
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && searchQuery.trim() !== "") {
+      e.preventDefault();
+      // Add the tag when Enter is pressed
+      onTagAdd(searchQuery.trim());
+      onSearchChange("");
+      setShowSuggestions(false);
+    } else if (e.key === "Escape") {
+      setShowSuggestions(false);
+    }
+  };
+
+  // Handle suggestion click
+  const handleSuggestionClick = (tag: string) => {
+    onTagAdd(tag);
+    onSearchChange("");
+    setShowSuggestions(false);
+    // Focus back to input
+    if (searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  };
 
   return (
     <div
@@ -37,9 +107,10 @@ const SearchInterface: React.FC<SearchInterfaceProps> = ({
         borderRadius: "20px",
         padding: "24px",
         marginBottom: "32px",
+        position: "relative",
       }}
     >
-      {/* Search Bar */}
+      {/* Search Bar with Suggestions */}
       <div
         style={{
           position: "relative",
@@ -47,10 +118,13 @@ const SearchInterface: React.FC<SearchInterfaceProps> = ({
         }}
       >
         <input
+          ref={searchInputRef}
           type="text"
-          placeholder="Search for anything"
+          placeholder="Search for tags..."
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onFocus={() => searchQuery.trim() !== "" && setShowSuggestions(true)}
           style={{
             width: "100%",
             padding: "16px 20px",
@@ -64,6 +138,49 @@ const SearchInterface: React.FC<SearchInterfaceProps> = ({
             boxShadow: "inset 0 2px 4px rgba(0,0,0,0.1)",
           }}
         />
+
+        {/* Suggestions Dropdown */}
+        {showSuggestions && suggestions.length > 0 && (
+          <div
+            ref={suggestionsRef}
+            style={{
+              position: "absolute",
+              top: "100%",
+              left: 0,
+              right: 0,
+              background: "white",
+              borderRadius: "8px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+              zIndex: 1000,
+              marginTop: "4px",
+              maxHeight: "200px",
+              overflowY: "auto",
+            }}
+          >
+            {suggestions.map((tag) => (
+              <div
+                key={tag}
+                onClick={() => handleSuggestionClick(tag)}
+                style={{
+                  padding: "12px 20px",
+                  cursor: "pointer",
+                  borderBottom: "1px solid #eee",
+                  color: "#333",
+                  fontSize: "1rem",
+                  transition: "background 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "#f5f5f5";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "white";
+                }}
+              >
+                {tag}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Selected Tags with X buttons */}

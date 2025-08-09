@@ -76,7 +76,7 @@ const ImageGrid: React.FC<ImageGridProps> = ({
           >
             <img
               src={img.gatewayUrl}
-              alt={img.name}
+              alt={img.metadata?.keyvalues?.altText || img.name}
               style={{
                 width: "100%",
                 height: "clamp(100px, 20vw, 130px)",

@@ -74,6 +74,13 @@ export default function AllImagesPage() {
     );
   };
 
+  // Add tag to selected tags
+  const handleTagAdd = (tag: string) => {
+    if (!selectedTags.includes(tag)) {
+      setSelectedTags((prev) => [...prev, tag]);
+    }
+  };
+
   // Remove tag from selected tags
   const removeTag = (tagToRemove: string) => {
     setSelectedTags((prev) => prev.filter((tag) => tag !== tagToRemove));
@@ -127,6 +134,7 @@ export default function AllImagesPage() {
             availableTags={allTags}
             onTagToggle={handleTagToggle}
             onTagRemove={removeTag}
+            onTagAdd={handleTagAdd}
             sortBy={sortBy}
             onSortChange={setSortBy}
           />

@@ -19,6 +19,7 @@ export interface Image {
       location?: string;
       visibility?: string;
       description?: string;
+      altText?: string;
     };
   };
 }
@@ -29,11 +30,10 @@ export interface UploadFormData {
   selectedCategory: string;
   cityCountry: string;
   artistName: string;
-  visibility: 'visible' | 'hidden';
+  visibility: "visible" | "hidden";
   tags: string[];
   agreedToTerms: boolean;
 }
-
 
 // Component Props Interfaces
 export interface FileUploadAreaProps {
@@ -61,7 +61,9 @@ export interface UploadModalProps {
   isOpen: boolean;
   onClose: () => void;
   onUploadSuccess: () => void;
-  setToast: (toast: { message: string; type: 'success' | 'error' } | null) => void;
+  setToast: (
+    toast: { message: string; type: "success" | "error" } | null
+  ) => void;
   isVisible: boolean;
   isAnimating: boolean;
 }
@@ -101,36 +103,36 @@ export interface UseModalAnimationReturn {
 
 // Category options for the dropdown
 export const CATEGORY_OPTIONS = [
-  { value: '', label: 'Select a Category' },
-  { value: 'posters', label: 'Posters' },
-  { value: 'stickers', label: 'Stickers' },
-  { value: 'flyers', label: 'Flyers' },
-  { value: 'banners', label: 'Banners' },
-  { value: 'pamphlets', label: 'Pamphlets' },
-  { value: 'tactics', label: 'Tactics' },
-  { value: 'techniques', label: 'Techniques' },
-  { value: 'allmedia', label: 'All Media' },
-  { value: 'default', label: 'Default' },
-  { value: 'tbd', label: 'TBD' },
+  { value: "", label: "Select a Category" },
+  { value: "posters", label: "Posters" },
+  { value: "stickers", label: "Stickers" },
+  { value: "flyers", label: "Flyers" },
+  { value: "banners", label: "Banners" },
+  { value: "pamphlets", label: "Pamphlets" },
+  { value: "tactics", label: "Tactics" },
+  { value: "techniques", label: "Techniques" },
+  { value: "allmedia", label: "All Media" },
+  { value: "default", label: "Default" },
+  { value: "tbd", label: "TBD" },
 ] as const;
 
-export type CategoryValue = typeof CATEGORY_OPTIONS[number]['value'];
+export type CategoryValue = (typeof CATEGORY_OPTIONS)[number]["value"];
 
 // Default form data
 export const DEFAULT_FORM_DATA: UploadFormData = {
-  imageName: '',
-  description: '',
-  selectedCategory: '',
-  cityCountry: '',
-  artistName: '',
-  visibility: 'visible',
-  tags: ['Barcelona', 'Palestine'],
+  imageName: "",
+  description: "",
+  selectedCategory: "",
+  cityCountry: "",
+  artistName: "",
+  visibility: "visible",
+  tags: ["Barcelona", "Palestine"],
   agreedToTerms: false,
 };
 
 // API endpoints
 export const API_ENDPOINTS = {
-  UPLOAD: 'https://pinata-image-api.onrender.com/api/upload',
-  IMAGES: 'https://pinata-image-api.onrender.com/api/images',
-  DOWNLOAD: 'https://pinata-image-api.onrender.com/api/download',
+  UPLOAD: "https://pinata-image-api.onrender.com/api/upload",
+  IMAGES: "https://pinata-image-api.onrender.com/api/images",
+  DOWNLOAD: "https://pinata-image-api.onrender.com/api/download",
 } as const;

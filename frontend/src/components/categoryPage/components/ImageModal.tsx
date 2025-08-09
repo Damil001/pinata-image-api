@@ -1,75 +1,26 @@
-"use client";
 import React from "react";
-import { Image } from "@/components/upload";
-
-// Helper function to get artist name based on visibility and availability
-function getDisplayArtist(metadata?: Image["metadata"]): string {
-  const { artist, visibility } = metadata?.keyvalues || {};
-  const isVisible = visibility === "true";
-  const hasArtist = artist?.trim();
-
-  return isVisible && hasArtist ? hasArtist : "Anonymous";
-}
-
-// Helper function to programmatically download an image and record download in backend
-async function downloadImage(
-  image: Image,
-  deviceId: string,
-  refreshImages: () => Promise<void>
-) {
-  try {
-    // Call backend to record download
-    const response = await fetch(
-      "https://pinata-image-api.onrender.com/api/download",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          imageId: image.ipfsHash, // Use ipfsHash as imageId
-          deviceId: deviceId,
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`Failed to record download: ${response.statusText}`);
-    }
-
-    // Download the file
-    const blobResponse = await fetch(image.gatewayUrl);
-    const blob = await blobResponse.blob();
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = image.name;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    setTimeout(() => URL.revokeObjectURL(link.href), 200);
-
-    // Refresh images to update download counts
-    await refreshImages();
-  } catch (error) {
-    console.error("Download error:", error);
-    alert("Failed to download image or record download.");
-  }
-}
+import { Image } from "../types";
 
 interface ImageModalProps {
   image: Image | null;
   isOpen: boolean;
   onClose: () => void;
-  deviceId: string;
-  refreshImages: () => Promise<void>;
+  onDownload: (image: Image) => void;
 }
+
+const getDisplayArtist = (metadata?: Image["metadata"]): string => {
+  const { artist, visibility } = metadata?.keyvalues || {};
+  const isVisible = visibility === "true";
+  const hasArtist = artist?.trim();
+
+  return isVisible && hasArtist ? hasArtist : "Anonymous";
+};
 
 const ImageModal: React.FC<ImageModalProps> = ({
   image,
   isOpen,
   onClose,
-  deviceId,
-  refreshImages,
+  onDownload,
 }) => {
   if (!isOpen || !image) return null;
 
@@ -83,7 +34,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
         bottom: 0,
         background: "rgba(0, 0, 0, 0.9)",
         display: "flex",
-        alignItems: "center",
+        alignItems: "start",
         justifyContent: "center",
         zIndex: 2000,
         padding: "20px",
@@ -97,7 +48,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
           height: "min(600px, 80vh)",
           background: "rgba(51, 54, 57, 1)",
           borderRadius: "0px",
-          overflow: "hidden",
+          overflow: "visible",
           display: "flex",
           flexDirection: "column",
         }}
@@ -139,22 +90,22 @@ const ImageModal: React.FC<ImageModalProps> = ({
         >
           <img
             src={image.gatewayUrl}
-            alt={image.metadata?.keyvalues?.altText || image.name}
+            alt={image.name}
             style={{
               maxWidth: "100%",
-              maxHeight: "100%",
+              maxHeight: "400px",
               objectFit: "contain",
               display: "block",
               margin: "0 auto",
             }}
           />
 
-          {/* Download Button - Red Triangle */}
+          {/* Download Button */}
           <button
-            onClick={() => downloadImage(image, deviceId, refreshImages)}
+            onClick={() => onDownload(image)}
             style={{
               position: "absolute",
-              bottom: "20px",
+              bottom: "120px",
               right: "20px",
               background: "transparent",
               border: "none",

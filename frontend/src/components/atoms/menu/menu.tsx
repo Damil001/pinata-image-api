@@ -26,7 +26,7 @@ export default function Menu() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="absolute top-0 left-0 w-full z-50">
+    <div className="absolute top-0 left-0 w-full z-5000">
       <div className="fixed top-4 left-4 sm:top-8 sm:left-8 z-50">
         <div
           className="transition-transform duration-300 ease-in-out"

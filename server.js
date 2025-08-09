@@ -4,6 +4,7 @@ const axios = require("axios");
 const FormData = require("form-data");
 const cors = require("cors");
 require("dotenv").config();
+const OpenAI = require("openai");
 const {
   addLike,
   getLikesForImage,
@@ -63,6 +64,11 @@ const PINATA_JWT = process.env.PINATA_JWT;
 const PINATA_PIN_FILE_URL = "https://api.pinata.cloud/pinning/pinFileToIPFS";
 const PINATA_PIN_LIST_URL = "https://api.pinata.cloud/data/pinList";
 
+// OpenAI configuration
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
 // Helper function to get Pinata headers
 const getPinataHeaders = () => {
   if (PINATA_JWT) {
@@ -77,6 +83,42 @@ const getPinataHeaders = () => {
   }
 };
 
+// Generate alt text for an image using OpenAI Vision API
+async function generateAltText(imageBuffer, filename) {
+  try {
+    // Convert image buffer to base64
+    const base64Image = imageBuffer.toString("base64");
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: "Generate a concise, descriptive alt text for this image. Focus on the main subject and key details. Keep it under 125 characters for accessibility.",
+            },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:image/jpeg;base64,${base64Image}`,
+              },
+            },
+          ],
+        },
+      ],
+      max_tokens: 100,
+    });
+
+    return response.choices[0].message.content.trim();
+  } catch (error) {
+    console.error("Alt text generation error:", error);
+    // Return a default alt text if generation fails
+    return `Image of ${filename || "uploaded content"}`;
+  }
+}
+
 // --- Route Handlers ---
 
 // Upload image to Pinata
@@ -85,6 +127,14 @@ async function uploadImageHandler(req, res) {
     if (!req.file) {
       return res.status(400).json({ error: "No image file provided" });
     }
+
+    // Generate alt text using OpenAI Vision API
+    const altText = await generateAltText(
+      req.file.buffer,
+      req.file.originalname
+    );
+    console.log(`Generated alt text: ${altText}`);
+
     const formData = new FormData();
     formData.append("file", req.file.buffer, {
       filename: req.file.originalname,
@@ -94,6 +144,7 @@ async function uploadImageHandler(req, res) {
       name: req.body.name || req.file.originalname,
       keyvalues: {
         description: req.body.description || "Image uploaded via API",
+        altText: altText, // Add the generated alt text
         tags: Array.isArray(req.body.tags)
           ? req.body.tags.join(",")
           : req.body.tags || "",
