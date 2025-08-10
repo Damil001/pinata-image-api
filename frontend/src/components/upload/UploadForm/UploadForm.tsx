@@ -59,7 +59,7 @@ const UploadForm: React.FC<UploadFormProps> = ({
             fontSize: "14px",
           }}
         >
-          City, Country, Damil (optional): ℹ️
+          City, Country (optional): ℹ️
         </label>
         {/* <Autocomplete
           apiKey={"AIzaSyDsBGsKouTzO3_OJQHabcSZEk35InyYdFQ"}
@@ -84,7 +84,7 @@ const UploadForm: React.FC<UploadFormProps> = ({
             fontSize: "14px",
           }}
         >
-          Artist Name/Alias (optional): ℹ️
+          Node Name (optional): ℹ️
         </label>
         <input
           type="text"

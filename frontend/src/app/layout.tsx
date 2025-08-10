@@ -22,7 +22,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "The Archive",
+  title: "the archive",
   description: "App to store every thing",
   icons: {
     icon: "/favicon.svg",

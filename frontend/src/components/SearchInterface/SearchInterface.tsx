@@ -51,7 +51,7 @@ const SearchInterface: React.FC<SearchInterfaceProps> = ({
           tag.toLowerCase().includes(searchQuery.toLowerCase()) &&
           !selectedTags.includes(tag)
       )
-      .slice(0, 5); // Show only top 5 suggestions
+      .slice(0, 8); // Show only top 8 suggestions
 
     setSuggestions(filteredSuggestions);
     setShowSuggestions(filteredSuggestions.length > 0);
@@ -80,10 +80,20 @@ const SearchInterface: React.FC<SearchInterfaceProps> = ({
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && searchQuery.trim() !== "") {
       e.preventDefault();
-      // Add the tag when Enter is pressed
-      onTagAdd(searchQuery.trim());
-      onSearchChange("");
-      setShowSuggestions(false);
+      // Check if the searched tag exists in available tags
+      const exactMatch = availableTags.find(
+        (tag) => tag.toLowerCase() === searchQuery.trim().toLowerCase()
+      );
+      if (exactMatch && !selectedTags.includes(exactMatch)) {
+        onTagAdd(exactMatch);
+        onSearchChange("");
+        setShowSuggestions(false);
+      } else if (suggestions.length > 0) {
+        // Add first suggestion if no exact match
+        onTagAdd(suggestions[0]);
+        onSearchChange("");
+        setShowSuggestions(false);
+      }
     } else if (e.key === "Escape") {
       setShowSuggestions(false);
     }
@@ -98,6 +108,11 @@ const SearchInterface: React.FC<SearchInterfaceProps> = ({
     if (searchInputRef.current) {
       searchInputRef.current.focus();
     }
+  };
+
+  // Clear all tags function
+  const handleClearAllTags = () => {
+    selectedTags.forEach((tag) => onTagRemove(tag));
   };
 
   return (
@@ -120,22 +135,19 @@ const SearchInterface: React.FC<SearchInterfaceProps> = ({
         <input
           ref={searchInputRef}
           type="text"
-          placeholder="Search for tags..."
+          placeholder="Search for anything"
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => searchQuery.trim() !== "" && setShowSuggestions(true)}
           style={{
             width: "100%",
-            padding: "16px 20px",
-            background: "rgba(235, 232, 226, 1)",
             color: "#666",
             border: "none",
-            borderRadius: "12px",
             fontSize: "1.1rem",
             outline: "none",
             fontWeight: "400",
-            boxShadow: "inset 0 2px 4px rgba(0,0,0,0.1)",
+            textAlign: "center",
           }}
         />
 
@@ -157,14 +169,15 @@ const SearchInterface: React.FC<SearchInterfaceProps> = ({
               overflowY: "auto",
             }}
           >
-            {suggestions.map((tag) => (
+            {suggestions.map((tag, index) => (
               <div
                 key={tag}
                 onClick={() => handleSuggestionClick(tag)}
                 style={{
                   padding: "12px 20px",
                   cursor: "pointer",
-                  borderBottom: "1px solid #eee",
+                  borderBottom:
+                    index < suggestions.length - 1 ? "1px solid #eee" : "none",
                   color: "#333",
                   fontSize: "1rem",
                   transition: "background 0.2s ease",
@@ -183,7 +196,7 @@ const SearchInterface: React.FC<SearchInterfaceProps> = ({
         )}
       </div>
 
-      {/* Selected Tags with X buttons */}
+      {/* Selected Tags Chips */}
       {selectedTags.length > 0 && (
         <div
           style={{
@@ -228,52 +241,37 @@ const SearchInterface: React.FC<SearchInterfaceProps> = ({
               {tag}
             </div>
           ))}
+
+          {/* Clear All Tags Button */}
+          {selectedTags.length > 1 && (
+            <button
+              onClick={handleClearAllTags}
+              style={{
+                background: "rgba(160, 160, 160, 1)",
+                border: "none",
+                borderRadius: "20px",
+                padding: "8px 16px",
+                fontSize: "0.8rem",
+                fontWeight: "500",
+                color: "#333",
+                cursor: "pointer",
+                textTransform: "uppercase",
+                transition: "background 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(140, 140, 140, 1)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(160, 160, 160, 1)";
+              }}
+            >
+              Clear All
+            </button>
+          )}
         </div>
       )}
 
-      {/* Available Tags for Selection */}
-      {availableTags.length > 0 && (
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "8px",
-            marginBottom: "20px",
-          }}
-        >
-          {availableTags
-            .filter((tag) => !selectedTags.includes(tag))
-            .slice(0, 10)
-            .map((tag) => (
-              <button
-                key={tag}
-                onClick={() => onTagToggle(tag)}
-                style={{
-                  background: "rgba(180, 180, 180, 1)",
-                  border: "none",
-                  borderRadius: "20px",
-                  padding: "8px 16px",
-                  fontSize: "0.9rem",
-                  fontWeight: "500",
-                  color: "#333",
-                  cursor: "pointer",
-                  textTransform: "uppercase",
-                  transition: "background 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(160, 160, 160, 1)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "rgba(180, 180, 180, 1)";
-                }}
-              >
-                {tag}
-              </button>
-            ))}
-        </div>
-      )}
-
-      {/* Sort Dropdown with Red Triangle */}
+      {/* Sort Dropdown */}
       <div
         style={{
           display: "flex",
@@ -281,15 +279,6 @@ const SearchInterface: React.FC<SearchInterfaceProps> = ({
           gap: "12px",
         }}
       >
-        <div
-          style={{
-            width: 0,
-            height: 0,
-            borderLeft: "8px solid transparent",
-            borderRight: "8px solid transparent",
-            borderTop: "12px solid rgba(255, 0, 0, 1)",
-          }}
-        />
         <div style={{ flex: 1 }}>
           <CustomDropdown
             id="sort-dropdown"

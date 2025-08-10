@@ -126,7 +126,7 @@ export const DEFAULT_FORM_DATA: UploadFormData = {
   cityCountry: "",
   artistName: "",
   visibility: "visible",
-  tags: ["Barcelona", "Palestine"],
+  tags: [],
   agreedToTerms: false,
 };
 

@@ -45,6 +45,18 @@ export const useAllImages = ({
     hasMore: true,
   });
 
+  // Helper function to remove duplicates based on ipfsHash
+  const removeDuplicates = (imageArray: Image[]): Image[] => {
+    const seen = new Set<string>();
+    return imageArray.filter((img) => {
+      if (seen.has(img.ipfsHash)) {
+        return false;
+      }
+      seen.add(img.ipfsHash);
+      return true;
+    });
+  };
+
   // Fetch images with download counts and pagination - NO CATEGORY FILTERING
   const fetchImages = async (page: number = 1, append: boolean = false) => {
     if (!append) {
@@ -108,13 +120,21 @@ export const useAllImages = ({
 
         if (append) {
           setImages((prev) => {
-            const newImages = [...prev, ...allImages];
-            console.log(`Total images after append: ${newImages.length}`);
-            return newImages;
+            // Combine existing images with new images and remove duplicates
+            const combined = [...prev, ...allImages];
+            const uniqueImages = removeDuplicates(combined);
+            console.log(
+              `Total images after append (before dedup): ${combined.length}, after dedup: ${uniqueImages.length}`
+            );
+            return uniqueImages;
           });
         } else {
-          setImages(allImages);
-          console.log(`Set initial images: ${allImages.length}`);
+          // For initial load, still remove duplicates in case API returns duplicates
+          const uniqueImages = removeDuplicates(allImages);
+          setImages(uniqueImages);
+          console.log(
+            `Set initial images (before dedup): ${allImages.length}, after dedup: ${uniqueImages.length}`
+          );
         }
 
         // Update pagination state
@@ -136,6 +156,7 @@ export const useAllImages = ({
       }
     } catch (e) {
       setError("Failed to fetch images");
+      console.error("Fetch error:", e);
     }
 
     if (!append) {
@@ -152,6 +173,12 @@ export const useAllImages = ({
 
   // Function to refresh images list with download counts
   const refreshImages = async () => {
+    // Reset pagination when refreshing
+    setPagination((prev) => ({
+      ...prev,
+      page: 1,
+      hasMore: true,
+    }));
     await fetchImages(1, false);
   };
 

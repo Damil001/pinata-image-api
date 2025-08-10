@@ -77,13 +77,10 @@ const ImageModal: React.FC<ImageModalProps> = ({
     <div
       style={{
         position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
+        inset: 0,
         background: "rgba(0, 0, 0, 0.9)",
         display: "flex",
-        alignItems: "center",
+        alignItems: "start",
         justifyContent: "center",
         zIndex: 2000,
         padding: "20px",
@@ -92,49 +89,42 @@ const ImageModal: React.FC<ImageModalProps> = ({
     >
       <div
         style={{
-          position: "relative",
           width: "min(500px, 90vw)",
-          height: "min(600px, 80vh)",
           background: "rgba(51, 54, 57, 1)",
-          borderRadius: "0px",
-          overflow: "hidden",
           display: "flex",
           flexDirection: "column",
+          borderRadius: "0px",
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          onClick={onClose}
-          style={{
-            position: "absolute",
-            top: "12px",
-            right: "16px",
-            background: "transparent",
-            border: "none",
-            color: "#fff",
-            fontSize: "18px",
-            cursor: "pointer",
-            zIndex: 2001,
-            width: "20px",
-            height: "20px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          ✕
-        </button>
-
-        {/* Image Container */}
+        {/* Close Button */}
         <div
           style={{
-            flex: 1,
             display: "flex",
-            alignItems: "center",
+            justifyContent: "flex-end",
+            padding: "8px 12px",
+          }}
+        >
+          <button
+            onClick={onClose}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#fff",
+              fontSize: "18px",
+              cursor: "pointer",
+            }}
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Image */}
+        <div
+          style={{
+            display: "flex",
             justifyContent: "center",
-            position: "relative",
-            width: "80%",
-            margin: "0 auto",
+            padding: "10px 20px",
           }}
         >
           <img
@@ -142,38 +132,10 @@ const ImageModal: React.FC<ImageModalProps> = ({
             alt={image.metadata?.keyvalues?.altText || image.name}
             style={{
               maxWidth: "100%",
-              maxHeight: "100%",
+              maxHeight: "400px",
               objectFit: "contain",
-              display: "block",
-              margin: "0 auto",
             }}
           />
-
-          {/* Download Button - Red Triangle */}
-          <button
-            onClick={() => downloadImage(image, deviceId, refreshImages)}
-            style={{
-              position: "absolute",
-              bottom: "20px",
-              right: "20px",
-              background: "transparent",
-              border: "none",
-              cursor: "pointer",
-              zIndex: 2001,
-              padding: "0",
-            }}
-            title="Download Image"
-          >
-            <div
-              style={{
-                width: 0,
-                height: 0,
-                borderLeft: "12px solid transparent",
-                borderRight: "12px solid transparent",
-                borderTop: "16px solid rgba(255, 0, 0, 1)",
-              }}
-            />
-          </button>
         </div>
 
         {/* Bottom Info Section */}
@@ -184,33 +146,56 @@ const ImageModal: React.FC<ImageModalProps> = ({
             color: "#fff",
           }}
         >
-          {/* Tags */}
-          <div style={{ marginBottom: "16px" }}>
-            {(image.tags || image.metadata?.keyvalues?.tags) && (
-              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                {(
-                  image.tags ||
-                  image.metadata?.keyvalues?.tags?.split(",") ||
-                  []
-                )
-                  .slice(0, 2)
-                  .map((tag, index) => (
-                    <span
-                      key={index}
-                      style={{
-                        background: "#555",
-                        color: "#fff",
-                        padding: "6px 16px",
-                        borderRadius: "20px",
-                        fontSize: "0.9rem",
-                        fontWeight: "400",
-                      }}
-                    >
-                      {typeof tag === "string" ? tag.trim() : tag}
-                    </span>
-                  ))}
-              </div>
-            )}
+          {/* Tags + Download Row */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "16px",
+            }}
+          >
+            {/* Tags */}
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+              {(image.tags || image.metadata?.keyvalues?.tags?.split(",") || [])
+                .slice(0, 2)
+                .map((tag, index) => (
+                  <span
+                    key={index}
+                    style={{
+                      background: "#555",
+                      color: "#fff",
+                      padding: "6px 16px",
+                      borderRadius: "20px",
+                      fontSize: "0.9rem",
+                      fontWeight: "400",
+                    }}
+                  >
+                    {typeof tag === "string" ? tag.trim() : tag}
+                  </span>
+                ))}
+            </div>
+
+            {/* Download Button */}
+            <button
+              onClick={() => downloadImage(image, deviceId, refreshImages)}
+              style={{
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+              }}
+              title="Download Image"
+            >
+              <div
+                style={{
+                  width: 0,
+                  height: 0,
+                  borderLeft: "12px solid transparent",
+                  borderRight: "12px solid transparent",
+                  borderTop: "16px solid rgba(255, 0, 0, 1)",
+                }}
+              />
+            </button>
           </div>
 
           {/* Origin and Artist */}

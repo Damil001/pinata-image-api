@@ -13,6 +13,18 @@ export const useImageData = (category: string) => {
     hasMore: true,
   });
 
+  // Helper function to remove duplicates based on ipfsHash
+  const removeDuplicates = (imageArray: Image[]): Image[] => {
+    const seen = new Set<string>();
+    return imageArray.filter((img) => {
+      if (seen.has(img.ipfsHash)) {
+        return false;
+      }
+      seen.add(img.ipfsHash);
+      return true;
+    });
+  };
+
   // Fetch images with download counts and pagination
   const fetchImages = async (page: number = 1, append: boolean = false) => {
     if (!append) {
@@ -31,6 +43,8 @@ export const useImageData = (category: string) => {
         images: Image[];
         pagination: { page: number; limit: number; total: number };
       } = await res.json();
+
+      console.log(`Category ${category} - Fetching page ${page}:`, data);
 
       if (data.success) {
         // Fetch download counts for each image
@@ -54,21 +68,43 @@ export const useImageData = (category: string) => {
               }
               return { ...img, totalDownloads: 0, uniqueDownloads: 0 };
             } catch (e) {
+              console.error(
+                `Failed to fetch downloads for ${img.ipfsHash}:`,
+                e
+              );
               return { ...img, totalDownloads: 0, uniqueDownloads: 0 };
             }
           })
         );
 
+        // Filter by category
         const filtered = imagesWithDownloads.filter(
           (img) =>
             img.metadata?.keyvalues?.category?.toLowerCase() ===
             String(category).toLowerCase()
         );
 
+        console.log(
+          `Category ${category} - Filtered ${filtered.length} images from ${imagesWithDownloads.length} total`
+        );
+
         if (append) {
-          setImages((prev) => [...prev, ...filtered]);
+          setImages((prev) => {
+            // Combine existing images with new filtered images and remove duplicates
+            const combined = [...prev, ...filtered];
+            const uniqueImages = removeDuplicates(combined);
+            console.log(
+              `Category ${category} - Total images after append (before dedup): ${combined.length}, after dedup: ${uniqueImages.length}`
+            );
+            return uniqueImages;
+          });
         } else {
-          setImages(filtered);
+          // For initial load, still remove duplicates in case API returns duplicates
+          const uniqueImages = removeDuplicates(filtered);
+          setImages(uniqueImages);
+          console.log(
+            `Category ${category} - Set initial images (before dedup): ${filtered.length}, after dedup: ${uniqueImages.length}`
+          );
         }
 
         const hasMorePages =
@@ -82,11 +118,20 @@ export const useImageData = (category: string) => {
           hasMore:
             hasMorePages && (hasMatchingImages || data.pagination.page <= 3),
         });
+
+        console.log(
+          `Category ${category} - Pagination updated: page=${
+            data.pagination.page
+          }, hasMore=${
+            hasMorePages && (hasMatchingImages || data.pagination.page <= 3)
+          }`
+        );
       } else {
         setError("Failed to fetch images");
       }
     } catch (e) {
       setError("Failed to fetch images");
+      console.error(`Category ${category} - Fetch error:`, e);
     }
 
     if (!append) {
@@ -98,18 +143,34 @@ export const useImageData = (category: string) => {
 
   // Initial fetch
   useEffect(() => {
+    // Reset images and pagination when category changes
+    setImages([]);
+    setPagination((prev) => ({
+      ...prev,
+      page: 1,
+      hasMore: true,
+    }));
     fetchImages(1, false);
   }, [category]);
 
   // Load more images
   const loadMoreImages = async () => {
     if (!loadingMore && pagination.hasMore) {
+      console.log(
+        `Category ${category} - Loading more images, current page: ${pagination.page}, hasMore: ${pagination.hasMore}`
+      );
       await fetchImages(pagination.page + 1, true);
     }
   };
 
   // Refresh images list
   const refreshImages = async () => {
+    // Reset pagination when refreshing
+    setPagination((prev) => ({
+      ...prev,
+      page: 1,
+      hasMore: true,
+    }));
     await fetchImages(1, false);
   };
 

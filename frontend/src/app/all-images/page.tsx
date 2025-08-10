@@ -19,6 +19,7 @@ export default function AllImagesPage() {
   const [showImageModal, setShowImageModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [deviceId, setDeviceId] = useState<string>("");
+  const [pageLoaded, setPageLoaded] = useState(false);
 
   const modalAnimation = useModalAnimation();
 
@@ -39,6 +40,14 @@ export default function AllImagesPage() {
     fileTypeFilter,
     sortBy,
   });
+
+  // Page animation effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPageLoaded(true);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Get or generate deviceId from localStorage
   useEffect(() => {
@@ -109,195 +118,7 @@ export default function AllImagesPage() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "rgba(31, 33, 35, 1)",
-        fontFamily: "var(--font-ibm-plex-mono), monospace",
-      }}
-    >
-      {/* Search Interface */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          width: "100%",
-          marginTop: "32px",
-          marginBottom: "32px",
-        }}
-      >
-        <div style={{ width: "80%", maxWidth: "400px" }}>
-          <SearchInterface
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            selectedTags={selectedTags}
-            availableTags={allTags}
-            onTagToggle={handleTagToggle}
-            onTagRemove={removeTag}
-            onTagAdd={handleTagAdd}
-            sortBy={sortBy}
-            onSortChange={setSortBy}
-          />
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div>
-        {error && (
-          <div
-            style={{
-              background: "rgba(220, 53, 69, 0.1)",
-              border: "1px solid rgba(220, 53, 69, 0.3)",
-              borderRadius: "8px",
-              margin: "16px 0",
-              color: "#ff6b6b",
-              textAlign: "center",
-            }}
-          >
-            <strong>Error:</strong> {error}
-          </div>
-        )}
-
-        {/* Image Grid */}
-        <ImageGrid
-          images={filteredAndSortedImages}
-          loading={loading}
-          onImageClick={handleImageClick}
-        />
-
-        {/* No Results Messages */}
-        {filteredAndSortedImages.length === 0 &&
-          images.length > 0 &&
-          !loading && (
-            <div
-              style={{
-                textAlign: "center",
-                padding: "16px",
-                color: "#888",
-              }}
-            >
-              <div style={{ fontSize: "48px", marginBottom: "16px" }}>🔍</div>
-              <h3 style={{ color: "#EBE8E2", marginBottom: "8px" }}>
-                No matches found
-              </h3>
-              <p>Try adjusting your search or filter criteria.</p>
-              <button
-                onClick={clearFilters}
-                style={{
-                  marginTop: "16px",
-                  padding: "8px 16px",
-                  background: "rgba(235, 232, 226, 0.1)",
-                  color: "#EBE8E2",
-                  border: "1px solid #444",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(235, 232, 226, 0.2)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "rgba(235, 232, 226, 0.1)";
-                }}
-              >
-                Clear All Filters
-              </button>
-            </div>
-          )}
-
-        {images.length === 0 && !loading && (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "48px 16px",
-              color: "#888",
-            }}
-          >
-            <div style={{ fontSize: "48px", marginBottom: "16px" }}>📷</div>
-            <h3 style={{ color: "#EBE8E2", marginBottom: "8px" }}>
-              No images found
-            </h3>
-            <p>No images available yet.</p>
-          </div>
-        )}
-
-        {/* Load More Button - Fallback for manual loading */}
-        {!loading && pagination.hasMore && (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              padding: "32px 16px",
-            }}
-          >
-            <button
-              onClick={loadMoreImages}
-              disabled={loadingMore}
-              style={{
-                padding: "12px 24px",
-                background: loadingMore ? "#666" : "#EBE8E2",
-                color: loadingMore ? "#ccc" : "#222",
-                border: "none",
-                borderRadius: "6px",
-                cursor: loadingMore ? "not-allowed" : "pointer",
-                fontSize: "1rem",
-                fontWeight: "500",
-                transition: "all 0.2s ease",
-              }}
-            >
-              {loadingMore ? "Loading..." : "Load More"}
-            </button>
-          </div>
-        )}
-
-        {/* Loading indicator for infinite scroll */}
-        {loadingMore && (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              padding: "16px",
-              color: "#888",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-              }}
-            >
-              <div
-                style={{
-                  width: "20px",
-                  height: "20px",
-                  border: "2px solid #444",
-                  borderTop: "2px solid #EBE8E2",
-                  borderRadius: "50%",
-                  animation: "spin 1s linear infinite",
-                }}
-              />
-              Loading more images...
-            </div>
-          </div>
-        )}
-
-        {/* Pagination info */}
-        {!loading && images.length > 0 && (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "16px",
-              color: "#888",
-              fontSize: "0.9rem",
-            }}
-          >
-            Showing {images.length} images
-            {!pagination.hasMore && " • All pages loaded"}
-          </div>
-        )}
-      </div>
-
+    <>
       {/* Floating Action Button */}
       <button
         onClick={() => {
@@ -322,6 +143,8 @@ export default function AllImagesPage() {
           boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
           cursor: "pointer",
           zIndex: 1000,
+          opacity: pageLoaded ? 1 : 0,
+          transition: "opacity 0.5s ease 1s",
         }}
         aria-label="Add Image"
       >
@@ -344,26 +167,300 @@ export default function AllImagesPage() {
         isAnimating={modalAnimation.isAnimating}
       />
 
-      {/* Image Preview Modal */}
-      <ImageModal
-        image={selectedImage}
-        isOpen={showImageModal}
-        onClose={() => setShowImageModal(false)}
-        deviceId={deviceId}
-        refreshImages={refreshImages}
-      />
+      <div
+        className={`page-container ${pageLoaded ? "page-loaded" : ""}`}
+        style={{
+          minHeight: "100vh",
+          background: "rgba(31, 33, 35, 1)",
+          fontFamily: "var(--font-ibm-plex-mono), monospace",
+          transform: pageLoaded ? "translateY(0)" : "translateY(100vh)",
+          transition: "transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+          opacity: pageLoaded ? 1 : 0,
+        }}
+      >
+        {/* Search Interface */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            width: "100%",
+            marginTop: "32px",
+            marginBottom: "32px",
+          }}
+        >
+          <div style={{ width: "80%", maxWidth: "400px" }}>
+            <SearchInterface
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              selectedTags={selectedTags}
+              availableTags={allTags}
+              onTagToggle={handleTagToggle}
+              onTagRemove={removeTag}
+              onTagAdd={handleTagAdd}
+              sortBy={sortBy}
+              onSortChange={setSortBy}
+            />
+          </div>
+        </div>
 
-      {/* CSS for animations */}
-      <style jsx>{`
-        @keyframes spin {
-          0% {
-            transform: rotate(0deg);
+        {/* Main Content */}
+        <div style={{ marginTop: 0 }}>
+          {error && (
+            <div
+              style={{
+                background: "rgba(220, 53, 69, 0.1)",
+                border: "1px solid rgba(220, 53, 69, 0.3)",
+                borderRadius: "8px",
+                padding: "16px",
+                margin: "16px 0",
+                color: "#ff6b6b",
+                textAlign: "center",
+              }}
+            >
+              <strong>Error:</strong> {error}
+            </div>
+          )}
+
+          {/* Image Grid */}
+          <ImageGrid
+            images={filteredAndSortedImages}
+            loading={loading}
+            onImageClick={handleImageClick}
+          />
+
+          {/* No Results Messages */}
+          {filteredAndSortedImages.length === 0 &&
+            images.length > 0 &&
+            !loading && (
+              <div
+                style={{
+                  textAlign: "center",
+                  padding: "16px",
+                  color: "#888",
+                }}
+              >
+                <div style={{ fontSize: "48px", marginBottom: "16px" }}>🔍</div>
+                <h3 style={{ color: "#EBE8E2", marginBottom: "8px" }}>
+                  No matches found
+                </h3>
+                <p>Try adjusting your search or filter criteria.</p>
+                <button
+                  onClick={clearFilters}
+                  style={{
+                    marginTop: "16px",
+                    padding: "8px 16px",
+                    background: "rgba(235, 232, 226, 0.1)",
+                    color: "#EBE8E2",
+                    border: "1px solid #444",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background =
+                      "rgba(235, 232, 226, 0.2)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background =
+                      "rgba(235, 232, 226, 0.1)";
+                  }}
+                >
+                  Clear All Filters
+                </button>
+              </div>
+            )}
+
+          {/* Empty State for No Images Found */}
+          {images.length === 0 && !loading && (
+            <div
+              style={{
+                textAlign: "center",
+                padding: "48px 16px",
+                color: "#888",
+              }}
+            >
+              <div style={{ fontSize: "48px", marginBottom: "16px" }}>📷</div>
+              <h3 style={{ color: "#EBE8E2", marginBottom: "8px" }}>
+                No images found
+              </h3>
+              <p>No images available yet.</p>
+            </div>
+          )}
+
+          {/* Load More Button - Fallback for manual loading */}
+          {!loading && pagination.hasMore && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                padding: "32px 16px",
+              }}
+            >
+              <button
+                onClick={loadMoreImages}
+                disabled={loadingMore}
+                style={{
+                  padding: "12px 24px",
+                  background: loadingMore ? "#666" : "#EBE8E2",
+                  color: loadingMore ? "#ccc" : "#222",
+                  border: "none",
+                  borderRadius: "6px",
+                  cursor: loadingMore ? "not-allowed" : "pointer",
+                  fontSize: "1rem",
+                  fontWeight: "500",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                {loadingMore ? "Loading..." : "Load More"}
+              </button>
+            </div>
+          )}
+
+          {/* Loading indicator for infinite scroll */}
+          {loadingMore && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                padding: "16px",
+                color: "#888",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
+              >
+                <div
+                  style={{
+                    width: "20px",
+                    height: "20px",
+                    border: "2px solid #444",
+                    borderTop: "2px solid #EBE8E2",
+                    borderRadius: "50%",
+                    animation: "spin 1s linear infinite",
+                  }}
+                />
+                Loading more images...
+              </div>
+            </div>
+          )}
+
+          {/* Pagination info */}
+          {!loading && images.length > 0 && (
+            <div
+              style={{
+                textAlign: "center",
+                padding: "16px",
+                color: "#888",
+                fontSize: "0.9rem",
+              }}
+            >
+              Showing {images.length} images
+              {!pagination.hasMore && " • All pages loaded"}
+            </div>
+          )}
+        </div>
+
+        {/* Image Preview Modal */}
+        <ImageModal
+          image={selectedImage}
+          isOpen={showImageModal}
+          onClose={() => setShowImageModal(false)}
+          deviceId={deviceId}
+          refreshImages={refreshImages}
+        />
+
+        {/* Enhanced CSS for hover effects and animations */}
+        <style jsx>{`
+          .page-container {
+            will-change: transform, opacity;
           }
-          100% {
-            transform: rotate(360deg);
+
+          .page-container.page-loaded {
+            transform: translateY(0) !important;
+            opacity: 1 !important;
           }
-        }
-      `}</style>
-    </div>
+
+          .image-container:hover .image-info {
+            opacity: 1 !important;
+          }
+
+          .image-container:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3) !important;
+          }
+
+          .image-container:hover img {
+            transform: scale(1.02) !important;
+          }
+
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+
+          @keyframes spin {
+            0% {
+              transform: rotate(0deg);
+            }
+            100% {
+              transform: rotate(360deg);
+            }
+          }
+
+          /* Responsive Design */
+          @media (max-width: 1024px) {
+            .image-container {
+              animation-delay: 0s !important;
+            }
+          }
+
+          @media (max-width: 768px) {
+            .image-container {
+              animation-delay: 0s !important;
+            }
+
+            .image-container:hover {
+              transform: none !important;
+              box-shadow: none !important;
+            }
+
+            .image-container:hover img {
+              transform: none !important;
+            }
+
+            div[style*="gridTemplateColumns"] {
+              grid-template-columns: repeat(2, 1fr) !important;
+            }
+          }
+
+          @media (max-width: 480px) {
+            input[type="text"] {
+              font-size: 0.9rem !important;
+              padding: 10px 10px 10px 40px !important;
+            }
+          }
+
+          @media (min-width: 769px) {
+            div[style*="gridTemplateColumns"] {
+              grid-template-columns: repeat(3, 1fr) !important;
+            }
+          }
+
+          * {
+            box-sizing: border-box;
+          }
+        `}</style>
+      </div>
+    </>
   );
 }

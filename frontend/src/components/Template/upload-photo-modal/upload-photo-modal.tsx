@@ -1118,7 +1118,7 @@ const UploadPhotoModal = forwardRef<UploadPhotoModalRef, UploadPhotoModalProps>(
                   fontWeight: "500",
                 }}
               >
-                Artist Name/Alias (optional):
+                Node Name (optional):
                 <span style={{ marginLeft: "4px" }} title="Artist information">
                   ℹ️
                 </span>
