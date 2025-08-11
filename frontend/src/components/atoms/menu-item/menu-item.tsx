@@ -1,6 +1,6 @@
 "use client";
 import { Orbitron } from "next/font/google";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, use } from "react";
 
 const orbitron = Orbitron({
   subsets: ["latin"],
@@ -18,7 +18,17 @@ const MenuItem = ({ menuText, hrefLink }: MenuItemProps) => {
   >("idle");
   const itemRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    setAnimationState("idle");
+    const reset = () => setAnimationState("idle");
+
+    // Reset when the component first mounts
+    reset();
+
+    // Reset when coming back from bfcache
+    window.addEventListener("pageshow", reset);
+
+    return () => {
+      window.removeEventListener("pageshow", reset);
+    };
   }, []);
 
   // Helper functions to determine animation classes and transforms
@@ -29,7 +39,6 @@ const MenuItem = ({ menuText, hrefLink }: MenuItemProps) => {
       case "other":
         return "animate-slide-right";
       case "idle":
-        return "";
       default:
         return "";
     }
@@ -42,7 +51,6 @@ const MenuItem = ({ menuText, hrefLink }: MenuItemProps) => {
       case "other":
         return "translateX(0%)";
       case "idle":
-        return "translateX(-100%)";
       default:
         return "translateX(-100%)";
     }
@@ -121,7 +129,6 @@ const MenuItem = ({ menuText, hrefLink }: MenuItemProps) => {
 
   return (
     <>
-      {/* CSS Animations - Add this to your component or global styles */}
       <style jsx>{`
         @keyframes slideInLeft {
           0% {
