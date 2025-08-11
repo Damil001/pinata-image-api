@@ -42,7 +42,7 @@ const MenuItem = ({ menuText, hrefLink }: MenuItemProps) => {
       case "other":
         return "translateX(0%)";
       case "idle":
-        return "";
+        return "translateX(-100%)";
       default:
         return "translateX(-100%)";
     }
