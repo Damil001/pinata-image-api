@@ -2,13 +2,31 @@
 import React, { useRef, useEffect, useState } from "react";
 import { UploadFormProps, CATEGORY_OPTIONS } from "../types/upload.types";
 
+// Define types for Mapbox API responses
+interface MapboxFeature {
+  id: string;
+  text: string;
+  place_name: string;
+  properties: Record<string, unknown>;
+  geometry: {
+    type: string;
+    coordinates: [number, number];
+  };
+}
+
+interface MapboxResponse {
+  features: MapboxFeature[];
+  type: string;
+  query: string[];
+}
+
 const UploadForm: React.FC<UploadFormProps> = ({
   formData,
   onFormDataChange,
   uploadError,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [suggestions, setSuggestions] = useState<MapboxFeature[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const suggestionsRef = useRef<HTMLDivElement>(null);
@@ -16,11 +34,14 @@ const UploadForm: React.FC<UploadFormProps> = ({
   // Replace with your Mapbox access token
   const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_KEY;
 
-  const debounce = (func: Function, delay: number) => {
+  const debounce = <T extends unknown[]>(
+    func: (...args: T) => void,
+    delay: number
+  ) => {
     let timeoutId: NodeJS.Timeout;
-    return (...args: any[]) => {
+    return (...args: T) => {
       clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => func.apply(null, args), delay);
+      timeoutId = setTimeout(() => func(...args), delay);
     };
   };
 
@@ -40,7 +61,7 @@ const UploadForm: React.FC<UploadFormProps> = ({
       );
 
       if (response.ok) {
-        const data = await response.json();
+        const data: MapboxResponse = await response.json();
         setSuggestions(data.features || []);
         setShowSuggestions(true);
       } else {
@@ -74,7 +95,7 @@ const UploadForm: React.FC<UploadFormProps> = ({
       }
     };
 
-  const handleSuggestionClick = (suggestion: any) => {
+  const handleSuggestionClick = (suggestion: MapboxFeature) => {
     onFormDataChange({ cityCountry: suggestion.place_name });
     setSuggestions([]);
     setShowSuggestions(false);
