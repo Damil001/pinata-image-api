@@ -1,6 +1,7 @@
 "use client";
 import { Orbitron } from "next/font/google";
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useRouter } from "next/navigation";
 
 const orbitron = Orbitron({
   subsets: ["latin"],
@@ -17,6 +18,12 @@ const MenuItem = ({ menuText, hrefLink }: MenuItemProps) => {
     "idle" | "clicked" | "other"
   >("idle");
   const itemRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+
+  // Reset animation state when component mounts/remounts
+  useEffect(() => {
+    setAnimationState("idle");
+  }, []);
 
   // Helper functions to determine animation classes and transforms
   const getMaskAnimationClass = (): string => {
@@ -57,16 +64,26 @@ const MenuItem = ({ menuText, hrefLink }: MenuItemProps) => {
       }
     };
 
+    // Reset all menu items when page becomes visible (user navigates back)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        setAnimationState("idle");
+      }
+    };
+
     document.addEventListener(
       "menuItemClicked",
       handleMenuItemClick as EventListener
     );
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
       document.removeEventListener(
         "menuItemClicked",
         handleMenuItemClick as EventListener
       );
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [menuText]);
 
@@ -98,25 +115,26 @@ const MenuItem = ({ menuText, hrefLink }: MenuItemProps) => {
       });
       document.dispatchEvent(event);
 
-      // Navigate after animation completes
+      // Navigate after animation completes using Next.js router
       setTimeout(() => {
-        window.location.href = hrefLink;
-      }, 800); // Increased timeout to ensure animation completes
+        router.push(hrefLink);
+      }, 800);
     },
-    [menuText, hrefLink]
+    [menuText, hrefLink, router]
   );
 
-  // Reset animation state - but don't reset during active navigation
+  // Reset animation state
   const resetAnimation = useCallback(() => {
-    // Don't reset if we're in clicked or other state (navigation in progress)
-    if (animationState === "idle") {
-      setAnimationState("idle");
+    if (animationState !== "idle") {
+      setTimeout(() => {
+        setAnimationState("idle");
+      }, 100);
     }
   }, [animationState]);
 
   return (
     <>
-      {/* CSS Animations - Add this to your component or global styles */}
+      {/* CSS Animations */}
       <style jsx>{`
         @keyframes slideInLeft {
           0% {
@@ -144,13 +162,10 @@ const MenuItem = ({ menuText, hrefLink }: MenuItemProps) => {
           animation: slideInRight 0.7s ease-in-out forwards;
         }
 
-        /* Ensure masks stay visible after animation completes */
-        .animate-slide-left {
-          animation-fill-mode: forwards;
-        }
-
-        .animate-slide-right {
-          animation-fill-mode: forwards;
+        /* Reset animation styles for idle state */
+        .mask-idle {
+          transform: translateX(-100%) !important;
+          animation: none !important;
         }
       `}</style>
 
@@ -172,7 +187,9 @@ const MenuItem = ({ menuText, hrefLink }: MenuItemProps) => {
 
         {/* Mask overlay */}
         <div
-          className={`absolute top-0 left-0 w-full h-full bg-[#1f2123] z-20 ${getMaskAnimationClass()}`}
+          className={`absolute top-0 left-0 w-full h-full bg-[#1f2123] z-20 ${
+            animationState === "idle" ? "mask-idle" : getMaskAnimationClass()
+          }`}
           style={{
             transform: getMaskTransform(),
           }}

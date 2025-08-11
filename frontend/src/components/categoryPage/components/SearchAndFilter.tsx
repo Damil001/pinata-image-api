@@ -39,7 +39,6 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
         display: "flex",
         flexDirection: "column",
         gap: "16px",
-        marginBottom: "32px",
       }}
     >
       {/* Sort Dropdown */}
@@ -76,7 +75,6 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
             position: "relative",
             display: "flex",
             alignItems: "center",
-            marginBottom: "16px",
           }}
         >
           <div
@@ -123,7 +121,6 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
               position: "relative",
               background: "rgba(235, 232, 226, 0.95)",
               borderRadius: "12px",
-              marginBottom: "16px",
               maxHeight: "200px",
               overflowY: "auto",
               border: "1px solid rgba(235, 232, 226, 0.3)",
@@ -167,7 +164,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
                 display: "flex",
                 flexWrap: "wrap",
                 gap: "8px",
-                marginBottom: "16px",
+                marginTop: "16px",
               }}
             >
               {selectedTags.map((tag) => (
@@ -217,34 +214,6 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
                   </button>
                 </div>
               ))}
-            </div>
-
-            {/* Clear All Tags Button */}
-            <div style={{ marginBottom: "16px" }}>
-              <button
-                onClick={onClearAllTags}
-                style={{
-                  padding: "6px 12px",
-                  background: "transparent",
-                  color: "rgba(235, 232, 226, 0.7)",
-                  border: "1px solid rgba(235, 232, 226, 0.3)",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  fontSize: "0.85rem",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor =
-                    "rgba(235, 232, 226, 0.1)";
-                  e.currentTarget.style.color = "rgba(235, 232, 226, 1)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                  e.currentTarget.style.color = "rgba(235, 232, 226, 0.7)";
-                }}
-              >
-                Clear all tags
-              </button>
             </div>
           </>
         )}

@@ -295,7 +295,7 @@ export default function CategoryPage() {
             <div
               style={{
                 textAlign: "center",
-                padding: "48px 16px",
+                padding: "0px 16px",
                 color: "#888",
               }}
             >
