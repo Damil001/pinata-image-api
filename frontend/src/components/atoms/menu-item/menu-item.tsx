@@ -29,6 +29,7 @@ const MenuItem = ({ menuText, hrefLink }: MenuItemProps) => {
       case "other":
         return "animate-slide-right";
       case "idle":
+        return "";
       default:
         return "";
     }
@@ -41,6 +42,7 @@ const MenuItem = ({ menuText, hrefLink }: MenuItemProps) => {
       case "other":
         return "translateX(0%)";
       case "idle":
+        return "";
       default:
         return "translateX(-100%)";
     }
