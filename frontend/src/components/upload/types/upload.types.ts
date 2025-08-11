@@ -111,9 +111,6 @@ export const CATEGORY_OPTIONS = [
   { value: "pamphlets", label: "Pamphlets" },
   { value: "tactics", label: "Tactics" },
   { value: "techniques", label: "Techniques" },
-  { value: "allmedia", label: "All Media" },
-  { value: "default", label: "Default" },
-  { value: "tbd", label: "TBD" },
 ] as const;
 
 export type CategoryValue = (typeof CATEGORY_OPTIONS)[number]["value"];

@@ -1,14 +1,64 @@
 "use client";
-import React from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { UploadFormProps, CATEGORY_OPTIONS } from "../types/upload.types";
-import CountryCityInput from "../CountryCityInput";
-import Autocomplete from "react-google-autocomplete";
 
 const UploadForm: React.FC<UploadFormProps> = ({
   formData,
   onFormDataChange,
   uploadError,
 }) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+
+  // Replace with your Mapbox access token
+  const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_KEY;
+
+  const debounce = (func: Function, delay: number) => {
+    let timeoutId: NodeJS.Timeout;
+    return (...args: any[]) => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => func.apply(null, args), delay);
+    };
+  };
+
+  const searchPlaces = async (query: string) => {
+    if (!query || query.length < 2) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+          query
+        )}.json?access_token=${MAPBOX_ACCESS_TOKEN}&types=place,locality,postcode&limit=5`
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setSuggestions(data.features || []);
+        setShowSuggestions(true);
+      } else {
+        console.error("Failed to fetch suggestions");
+        setSuggestions([]);
+        setShowSuggestions(false);
+      }
+    } catch (error) {
+      console.error("Error fetching suggestions:", error);
+      setSuggestions([]);
+      setShowSuggestions(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const debouncedSearch = debounce(searchPlaces, 300);
+
   const handleInputChange =
     (field: keyof typeof formData) =>
     (
@@ -16,14 +66,44 @@ const UploadForm: React.FC<UploadFormProps> = ({
         HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
       >
     ) => {
-      onFormDataChange({ [field]: e.target.value });
+      const value = e.target.value;
+      onFormDataChange({ [field]: value });
+
+      if (field === "cityCountry") {
+        debouncedSearch(value);
+      }
     };
+
+  const handleSuggestionClick = (suggestion: any) => {
+    onFormDataChange({ cityCountry: suggestion.place_name });
+    setSuggestions([]);
+    setShowSuggestions(false);
+  };
 
   const handleCheckboxChange =
     (field: keyof typeof formData) =>
     (e: React.ChangeEvent<HTMLInputElement>) => {
       onFormDataChange({ [field]: e.target.checked });
     };
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(event.target as Node) &&
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
@@ -49,8 +129,8 @@ const UploadForm: React.FC<UploadFormProps> = ({
         </select>
       </div>
 
-      {/* City, Country Input */}
-      <div>
+      {/* City, Country Input with Mapbox Autocomplete */}
+      <div style={{ position: "relative" }}>
         <label
           style={{
             display: "block",
@@ -61,17 +141,90 @@ const UploadForm: React.FC<UploadFormProps> = ({
         >
           City, Country (optional): ℹ️
         </label>
-        {/* <Autocomplete
-          apiKey={"AIzaSyDsBGsKouTzO3_OJQHabcSZEk35InyYdFQ"}
-          onPlaceSelected={(place) => {
-            console.log(place);
-          }}
-        /> */}
-        <CountryCityInput
+        <input
+          ref={inputRef}
+          type="text"
           value={formData.cityCountry}
-          onChange={(value) => onFormDataChange({ cityCountry: value })}
+          onChange={handleInputChange("cityCountry")}
           placeholder="Type city or country name"
+          style={{
+            width: "100%",
+            padding: "12px",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+            fontSize: "1rem",
+            boxSizing: "border-box",
+            color: "#333",
+            backgroundColor: "#fff",
+          }}
         />
+
+        {/* Loading indicator */}
+        {isLoading && (
+          <div
+            style={{
+              position: "absolute",
+              right: "12px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              fontSize: "12px",
+              color: "#666",
+            }}
+          >
+            Loading...
+          </div>
+        )}
+
+        {/* Suggestions dropdown */}
+        {showSuggestions && suggestions.length > 0 && (
+          <div
+            ref={suggestionsRef}
+            style={{
+              position: "absolute",
+              top: "100%",
+              left: "0",
+              right: "0",
+              backgroundColor: "#fff",
+              border: "1px solid #ccc",
+              borderTop: "none",
+              borderRadius: "0 0 4px 4px",
+              maxHeight: "200px",
+              overflowY: "auto",
+              zIndex: 1000,
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            }}
+          >
+            {suggestions.map((suggestion, index) => (
+              <div
+                key={`${suggestion.id}-${index}`}
+                onClick={() => handleSuggestionClick(suggestion)}
+                style={{
+                  padding: "12px",
+                  cursor: "pointer",
+                  borderBottom:
+                    index < suggestions.length - 1 ? "1px solid #eee" : "none",
+                  backgroundColor: "#fff",
+                  transition: "background-color 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "#f5f5f5";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "#fff";
+                }}
+              >
+                <div style={{ fontWeight: "500", color: "#333" }}>
+                  {suggestion.text}
+                </div>
+                <div
+                  style={{ fontSize: "12px", color: "#666", marginTop: "2px" }}
+                >
+                  {suggestion.place_name}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Artist Name Input */}
