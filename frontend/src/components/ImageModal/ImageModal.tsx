@@ -216,7 +216,17 @@ const ImageModal: React.FC<ImageModalProps> = ({
               color: "#ccc",
             }}
           >
-            <span style={{ color: "#fff", fontWeight: "500" }}>ARTIST:</span>{" "}
+            <span style={{ color: "#fff", fontWeight: "500" }}>Adapted:</span>{" "}
+            feature under construction
+          </div>
+          <div
+            style={{
+              fontSize: "0.9rem",
+              marginBottom: "16px",
+              color: "#ccc",
+            }}
+          >
+            <span style={{ color: "#fff", fontWeight: "500" }}>NODE:</span>{" "}
             {getDisplayArtist(image.metadata)}
           </div>
 

@@ -128,6 +128,49 @@ const UploadForm: React.FC<UploadFormProps> = ({
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+      <style jsx>{`
+        .tooltip {
+          position: relative;
+          display: inline-block;
+          cursor: help;
+        }
+
+        .tooltip .tooltiptext {
+          visibility: hidden;
+          width: 300px;
+          background-color: #333;
+          color: #fff;
+          text-align: left;
+          border-radius: 6px;
+          padding: 8px 12px;
+          position: absolute;
+          z-index: 1001;
+          bottom: 125%;
+          left: 50%;
+          margin-left: -150px;
+          opacity: 0;
+          transition: opacity 0.3s;
+          font-size: 12px;
+          line-height: 1.4;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .tooltip .tooltiptext::after {
+          content: "";
+          position: absolute;
+          top: 100%;
+          left: 50%;
+          margin-left: -5px;
+          border-width: 5px;
+          border-style: solid;
+          border-color: #333 transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+          visibility: visible;
+          opacity: 1;
+        }
+      `}</style>
       <div>
         <select
           value={formData.selectedCategory}
@@ -160,7 +203,15 @@ const UploadForm: React.FC<UploadFormProps> = ({
             fontSize: "14px",
           }}
         >
-          City, Country (optional): ℹ️
+          City, Country (optional):{" "}
+          <span className="tooltip">
+            ℹ️
+            <span className="tooltiptext">
+              We will introduce a feature that lets you adapt the languages of
+              files. This is for you to see both the origin of eg a poster, as
+              well as in which places its been adapted.
+            </span>
+          </span>
         </label>
         <input
           ref={inputRef}
@@ -258,7 +309,24 @@ const UploadForm: React.FC<UploadFormProps> = ({
             fontSize: "14px",
           }}
         >
-          Node Name (optional): ℹ️
+          Node Name (optional):{" "}
+          <span className="tooltip">
+            ℹ️
+            <span className="tooltiptext">
+              What? Nodes are what keeps the archive alive, you and your fellow
+              contributors, explorers, wanderers, and If you’d like your chosen
+              name connected to your upload, you can choose between two options:
+              Visible: your chosen name is visible for others, meaning if
+              someone likes your art, they’d have the chance to find your work
+              elsewhere. Hidden: your alias is hidden and only visible
+              internally. What for? We’ll be curating a selection of the most
+              downloaded 🔻 contributions to the archive on a quarterly basis.
+              We’ll print them as part of WPR pillar 4 (to be revealed) and want
+              to give a share of the earnings to those who‘s contribution has
+              been selected. *if you prefer, just type in a secure email address
+              like proton mail for us to contact you.
+            </span>
+          </span>
         </label>
         <input
           type="text"
@@ -331,7 +399,8 @@ const UploadForm: React.FC<UploadFormProps> = ({
             onChange={handleCheckboxChange("agreedToTerms")}
             style={{ marginRight: "8px" }}
           />
-          I agree to the Terms and Conditions
+          By uploading this file, I confirm that it is open for collective
+          downloading, printing, and distribution.
         </label>
       </div>
 

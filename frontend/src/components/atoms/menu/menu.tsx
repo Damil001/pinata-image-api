@@ -33,7 +33,7 @@ export default function Menu() {
           style={{ display: "inline-block" }}
         >
           <Image
-            src={isOpen ? "/about-button-open.svg" : "/about-button.svg"}
+            src={isOpen ? "/about-button.svg" : "/about-button.svg"}
             alt="About Button"
             width={40}
             height={40}
