@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   title: "the archive",
   description: "App to store every thing",
   icons: {
-    icon: "/favicon.svg",
+    icon: "/favicon_V2.svg",
   },
 };
 
