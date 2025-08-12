@@ -154,16 +154,6 @@ const ImageModal: React.FC<ImageModalProps> = ({
             {image.metadata?.keyvalues?.location || "Unknown"}
           </div>
           <div
-            style={{
-              fontSize: "0.9rem",
-              marginBottom: "16px",
-              color: "#ccc",
-            }}
-          >
-            <span style={{ color: "#fff", fontWeight: "500" }}>Adapted:</span>{" "}
-            Feature under construction
-          </div>
-          <div
             style={{ fontSize: "0.9rem", marginBottom: "16px", color: "#ccc" }}
           >
             <span style={{ color: "#fff", fontWeight: "500" }}>NODE:</span>{" "}

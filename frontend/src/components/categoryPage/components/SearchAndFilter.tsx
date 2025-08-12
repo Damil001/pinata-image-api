@@ -64,7 +64,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
       {/* Search Section */}
       <div
         style={{
-          marginBottom: "32px",
+          marginBottom: "16px",
           paddingLeft: "1rem",
           paddingRight: "1rem",
         }}

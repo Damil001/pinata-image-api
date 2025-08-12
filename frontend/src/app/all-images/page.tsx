@@ -185,7 +185,7 @@ export default function AllImagesPage() {
             justifyContent: "center",
             width: "100%",
             marginTop: "32px",
-            marginBottom: "32px",
+            marginBottom: "16px",
           }}
         >
           <div style={{ width: "80%", maxWidth: "400px" }}>

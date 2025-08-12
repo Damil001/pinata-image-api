@@ -121,7 +121,6 @@ const SearchInterface: React.FC<SearchInterfaceProps> = ({
         background: "rgba(235, 232, 226, 1)",
         borderRadius: "20px",
         padding: "24px",
-        marginBottom: "32px",
         position: "relative",
       }}
     >

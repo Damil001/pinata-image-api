@@ -176,7 +176,7 @@ const MenuItem = ({ menuText, hrefLink }: MenuItemProps) => {
           <a
             href={hrefLink}
             onClick={handleClick}
-            className="m-0 no-underline text-[#EBE8E2] hover:text-[#FFD700] transition-colors duration-200 break-words block"
+            className="m-0 no-underline text-[#EBE8E2] transition-colors duration-200 break-words block"
           >
             {menuText}
           </a>
