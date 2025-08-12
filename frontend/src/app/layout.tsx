@@ -25,7 +25,14 @@ export const metadata: Metadata = {
   title: "the archive",
   description: "App to store every thing",
   icons: {
-    icon: "/favicon_V2.svg",
+    icon: [{ url: "/favicon_V2.svg", sizes: "16x16", type: "image/png" }],
+    shortcut: "/favicon.ico",
+    other: [
+      {
+        rel: "apple-touch-icon",
+        url: "/favicon-apple.png",
+      },
+    ],
   },
 };
 
