@@ -24,16 +24,6 @@ const ibmPlexMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: "the archive",
   description: "App to store every thing",
-  icons: {
-    icon: [{ url: "/favicon_V2.svg", sizes: "16x16", type: "image/png" }],
-    shortcut: "/favicon_V2.svg",
-    other: [
-      {
-        rel: "apple-touch-icon",
-        url: "/favicon-apple.png",
-      },
-    ],
-  },
 };
 
 export default function RootLayout({
