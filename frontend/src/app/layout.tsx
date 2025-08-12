@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   description: "App to store every thing",
   icons: {
     icon: [{ url: "/favicon_V2.svg", sizes: "16x16", type: "image/png" }],
-    shortcut: "/favicon.ico",
+    shortcut: "/favicon_V2.svg",
     other: [
       {
         rel: "apple-touch-icon",
