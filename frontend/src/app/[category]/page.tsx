@@ -185,36 +185,38 @@ export default function CategoryPage() {
 
   return (
     <>
-      <button
-        onClick={() => {
-          setShowUploadModal(true);
-          modalAnimation.openModal();
-        }}
-        style={{
-          position: "fixed",
-          left: "50%",
-          bottom: 32,
-          transform: "translateX(-50%)",
-          background: "#EBE8E2",
-          color: "#222",
-          border: "none",
-          borderRadius: "50%",
-          width: 56,
-          height: 56,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: 32,
-          boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
-          cursor: "pointer",
-          zIndex: 1000,
-          opacity: pageLoaded ? 1 : 0,
-          transition: "opacity 0.5s ease 1s",
-        }}
-        aria-label="Add Image"
-      >
-        +
-      </button>
+      {!showImageModal && !showUploadModal && (
+        <button
+          onClick={() => {
+            setShowUploadModal(true);
+            modalAnimation.openModal();
+          }}
+          style={{
+            position: "fixed",
+            left: "50%",
+            bottom: 32,
+            transform: "translateX(-50%)",
+            background: "#EBE8E2",
+            color: "#222",
+            border: "none",
+            borderRadius: "50%",
+            width: 56,
+            height: 56,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 32,
+            boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
+            cursor: "pointer",
+            zIndex: 1000,
+            opacity: pageLoaded ? 1 : 0,
+            transition: "opacity 0.5s ease 1s",
+          }}
+          aria-label="Add Image"
+        >
+          +
+        </button>
+      )}
 
       {/* Upload Modal */}
       <UploadModal

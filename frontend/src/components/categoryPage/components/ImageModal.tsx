@@ -29,11 +29,12 @@ const ImageModal: React.FC<ImageModalProps> = ({
         position: "fixed",
         inset: 0,
         background: "rgba(0, 0, 0, 0.9)",
-        display: "flex",
-        alignItems: "start",
-        justifyContent: "center",
         zIndex: 2000,
         padding: "20px",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "flex-start", // Top aligned
+        paddingTop: "60px", // Add some top spacing
       }}
       onClick={onClose}
     >
@@ -44,6 +45,8 @@ const ImageModal: React.FC<ImageModalProps> = ({
           display: "flex",
           flexDirection: "column",
           borderRadius: "0px",
+          maxHeight: "calc(100vh - 120px)", // Prevent overflow
+          overflow: "hidden",
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -53,6 +56,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
             display: "flex",
             justifyContent: "flex-end",
             padding: "8px 12px",
+            flexShrink: 0, // Don't shrink
           }}
         >
           <button
@@ -75,15 +79,19 @@ const ImageModal: React.FC<ImageModalProps> = ({
             display: "flex",
             justifyContent: "center",
             padding: "10px 20px",
+            flex: 1, // Take up remaining space
+            minHeight: 0, // Allow shrinking
+            alignItems: "center",
           }}
         >
           <img
             src={image.gatewayUrl}
             alt={image.name}
             style={{
-              maxWidth: "100%",
-              maxHeight: "400px",
-              objectFit: "contain",
+              width: "100%", // Take full width of container
+              maxWidth: "400px", // Maximum width constraint
+              height: "100%", // Take full height of container
+              objectFit: "cover", // Cover the container
             }}
           />
         </div>
@@ -94,6 +102,8 @@ const ImageModal: React.FC<ImageModalProps> = ({
             background: "#2a2a2a",
             padding: "20px",
             color: "#fff",
+            flexShrink: 0, // Don't shrink
+            overflow: "auto", // Allow scrolling if content is too long
           }}
         >
           <div
