@@ -109,7 +109,7 @@ export default function Home() {
           }}
         >
           <img
-            src="/button-label.svg"
+            src="/sign-banner.svg"
             alt="View All Images"
             width={157}
             height={116}
