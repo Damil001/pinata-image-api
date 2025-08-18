@@ -76,18 +76,10 @@ export default function Home() {
             marginBottom: "0.25rem",
           }}
         >
-          Here is Caro&apos;s super-simple, yet super-inspiring words that
-          encapsulate the purpose and ethos of{" "}
-          <span
-            style={{
-              fontWeight: "600",
-            }}
-          >
-            {" "}
-            We Print Revolution
-          </span>{" "}
-          We Print Revolution and this, the Archive repository for important
-          designs that have been banned around the world.
+          welcome. this tool isn‘t about preservation, it’s about preparation.
+          some archives collect dust. not us, we collect resistance. this is
+          your playground, now choose your path: explore the archive&apos;s
+          categories, or follow the protest sign.
         </p>
         <div className="mb-10" />
         <div className="flex flex-col gap-4">
