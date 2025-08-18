@@ -76,13 +76,13 @@ export default function Home() {
             marginBottom: "0.25rem",
           }}
         >
-          Welcome. This tool isn‘t about preservation, it’s about preparation.
-          Some archives collect dust. Not us, we collect resistance. This is
-          your playground, now choose your path: Explore the archive's
-          categories, or follow the protest sign. some archives collect dust.
-          not us, we collect resistance. this is your playground, now choose
-          your path: explore the archive&apos;s categories, or follow the
-          protest sign.
+          Welcome. This tool isn&apos;t about preservation, it&apos;s about
+          preparation. Some archives collect dust. Not us, we collect
+          resistance. This is your playground, now choose your path: Explore the
+          archive&apos;s categories, or follow the protest sign. some archives
+          collect dust. not us, we collect resistance. this is your playground,
+          now choose your path: explore the archive&apos;s categories, or follow
+          the protest sign.
         </p>
         <div className="mb-10" />
         <div className="flex flex-col gap-4">
