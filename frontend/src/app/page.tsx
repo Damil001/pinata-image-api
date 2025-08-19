@@ -105,7 +105,7 @@ export default function Home() {
             alt="View All Images"
             width={157}
             height={116}
-            className="w-20 h-auto sm:w-24 md:w-28 lg:w-32"
+            className="w-24 h-auto sm:w-44 md:w-38 lg:w-42"
           />
         </div>
       </Link>
