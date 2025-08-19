@@ -51,40 +51,72 @@ export default function Menu() {
         </div>
       </div>
       <div
-        className={`fixed top-0 right-0 h-full w-[90vw] bg-[#333639] pt-10 shadow-lg transition-transform duration-500 ease-in-out z-40 overflow-y-auto ${
+        className={`fixed top-0 right-0 h-full w-[90vw] bg-[#333639] pt-6 shadow-lg transition-transform duration-500 ease-in-out z-40 overflow-y-auto ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
         style={{ willChange: "transform" }}
       >
         {isOpen && (
           <div className="pb-8">
-            <div className="pl-4 pr-4 sm:pl-6 sm:pr-6 mb-2 mt-0.5">
-              <p
-                className={`text-[#EBE8E2] text-xs sm:text-sm ${ibmPlexMono.className} font-normal leading-relaxed`}
+            <div className="pl-4 pr-4 sm:pl-6 sm:pr-6 mb-4">
+              <div
+                className={`text-[#EBE8E2] text-xs sm:text-sm ${ibmPlexMono.className} font-normal leading-relaxed space-y-4`}
               >
-                Why decentralized? Because repression and surveillance are
-                growing fast, and we need safe tools that cannot be censored, or
-                shut down. Our first practical version of the archive (our MVP)
-                is a stepping stone toward full decentralization. Because
-                Transparency is one of our core values, here you can learn about
-                how we built the archive, and what that means for you until we
-                transition to Holochain. We&apos;re building this to last and
-                withstand pressure before it escalates. Currently, we&apos;re
-                using a peer-to-peer network to store & distribute the resources
-                while the interface itself is still centralized, meaning we
-                haven&apos;t eliminated all potentially traceable steps yet,
-                which comes with our Holochain version. What&apos;s already
-                decentralized: ✅ File storage & distribution via IPFS
-                What&apos;s partly decentralized: ☑ Pinning ensures
-                accessibility. Right now, we pin the archive&apos;s files
-                through the service Pinata. The long-term vision? Collective
-                hosting. Mutual care. Shared resilience. What&apos;s not yet
-                decentralized: ✖ Metadata (tags, search & upload interface) &
-                Hosting on Render
-              </p>
+                <p>
+                  Why decentralized? Because repression and surveillance are
+                  growing fast, and we need safe tools that cannot be censored,
+                  or shut down. Our first practical version of the archive (our
+                  MVP) is a stepping stone toward full decentralization.
+                </p>
+
+                <p>
+                  Because Transparency is one of our core values, here you can
+                  learn about how we built the archive, and what that means for
+                  you until we transition to Holochain.
+                </p>
+
+                <p>
+                  We&apos;re building this to last and withstand pressure before
+                  it escalates. Currently, we&apos;re using a peer-to-peer
+                  network to store & distribute the resources while the
+                  interface itself is still centralized, meaning we haven&apos;t
+                  eliminated all potentially traceable steps yet, which comes
+                  with our Holochain version.
+                </p>
+
+                <div>
+                  <p className="font-semibold">
+                    What&apos;s already decentralized:
+                  </p>
+                  <p>✅ File storage & distribution via IPFS</p>
+                </div>
+
+                <div>
+                  <p className="font-semibold">
+                    What&apos;s partly decentralized:
+                  </p>
+                  <p>
+                    ☑ Pinning ensures accessibility. Right now, we pin the
+                    archive&apos;s files through the service Pinata. The
+                    long-term vision? Collective hosting. Mutual care. Shared
+                    resilience.
+                  </p>
+                </div>
+
+                <div>
+                  <p className="font-semibold">
+                    What&apos;s not yet decentralized:
+                  </p>
+                  <p>
+                    ✖ Metadata (tags, search & upload interface) & Hosting on
+                    Render
+                  </p>
+                </div>
+              </div>
             </div>
+
             <MenuHeading name="Shared, Not Owned" />
-            <div className="pl-4 pr-4 sm:pl-6 sm:pr-6 mb-2 mt-0.5">
+            <div className="pl-4 pr-4 sm:pl-6 sm:pr-6 mb-4 mt-2">
               <p
                 className={`text-[#EBE8E2] text-xs sm:text-sm ${ibmPlexMono.className} font-normal leading-relaxed`}
               >
@@ -95,70 +127,117 @@ export default function Menu() {
                 construction.
               </p>
             </div>
+
             <MenuHeading name="Anonymity & Safety" />
-            <div className="pl-4 pr-4 sm:pl-6 sm:pr-6 mb-2">
-              <p
-                className={`text-[#EBE8E2] text-xs sm:text-sm ${ibmPlexMono.className} font-normal leading-relaxed`}
+            <div className="pl-4 pr-4 sm:pl-6 sm:pr-6 mb-4 mt-2">
+              <div
+                className={`text-[#EBE8E2] text-xs sm:text-sm ${ibmPlexMono.className} font-normal leading-relaxed space-y-2`}
               >
-                Pinning IPFS gateways and Render-hosted tools can see requests
-                coming from your IP. If you want maximum anonymity, here&apos;s
-                how: If you want to make sure that your identity is fully hidden
-                before we transition to Holochain, you can use a VPN or
-                privacy-respecting browsers like Brave or Tor, and check out our
-                Tactics Guide on how to remove metadata from files before
-                uploading.
-              </p>
+                <p>
+                  Pinning IPFS gateways and Render-hosted tools can see requests
+                  coming from your IP. If you want maximum anonymity,
+                  here&apos;s how:
+                </p>
+                <p>
+                  If you want to make sure that your identity is fully hidden
+                  before we transition to Holochain, you can use a VPN or
+                  privacy-respecting browsers like Brave or Tor, and check out
+                  our{" "}
+                  <span className="font-semibold">
+                    Tactics Guide on how to remove metadata from files before
+                    uploading.
+                  </span>
+                </p>
+              </div>
             </div>
+
             <MenuHeading name="The Future with Holochain" />
-            <div className="pl-4 pr-4 sm:pl-6 sm:pr-6 mb-2">
-              <p
-                className={`text-[#EBE8E2] text-xs sm:text-sm ${ibmPlexMono.className} font-normal leading-relaxed`}
+            <div className="pl-4 pr-4 sm:pl-6 sm:pr-6 mb-4 mt-2">
+              <div
+                className={`text-[#EBE8E2] text-xs sm:text-sm ${ibmPlexMono.className} font-normal leading-relaxed space-y-2`}
               >
-                With Holochain files and metadata are fully peer-to-peer,
-                eliminating central servers that could log activity—anonymity
-                then is built into the network. There are no central servers to
-                log activity, no gateway IPs to track, and no single point of
-                failure. If WPR disappeared tomorrow, the archive would continue
-                running on all participating devices. This creates a
-                self-sustaining, decentralized archive built on shared
-                stewardship, safety, and anonymity.
-              </p>
+                <p>
+                  With Holochain files and metadata are fully peer-to-peer,
+                  eliminating central servers that could log activity—anonymity
+                  then is built into the network. There are no central servers
+                  to log activity, no gateway IPs to track, and no single point
+                  of failure.
+                </p>
+                <p className="font-semibold">
+                  If WPR disappeared tomorrow, the archive would continue
+                  running on all participating devices.
+                </p>
+                <p>
+                  This creates a self-sustaining, decentralized archive built on
+                  shared stewardship, safety, and anonymity.
+                </p>
+              </div>
             </div>
+
             <MenuHeading name="Open Contribution/ Principles" />
-            <div className="pl-4 pr-4 sm:pl-6 sm:pr-6 mb-2">
-              <p
-                className={`text-[#EBE8E2] text-xs sm:text-sm ${ibmPlexMono.className} font-normal leading-relaxed`}
+            <div className="pl-4 pr-4 sm:pl-6 sm:pr-6 mb-4 mt-2">
+              <div
+                className={`text-[#EBE8E2] text-xs sm:text-sm ${ibmPlexMono.className} font-normal leading-relaxed space-y-2`}
               >
-                This isn&apos;t a curated archive, but it is built on baseline
-                values. If you align with core liberatory values,
-                anti-capitalist, anti-colonial, anti-imperial, anti-Zionist,
-                anti-fascist, anti-racist, this space is for you. Give what you
-                can, take what you need. This is a commons, so we&apos;re
-                centering the collective struggle. We reserve the right to
-                remove files that go against the baseline ethics of collective
-                liberation—because none of us is free until all of us are free.
-                Disclaimer: Resources are open to download, print and
-                distribution, not for profit. We Print Revolution is not
-                responsible for how the archive&apos;s resources are used.
-              </p>
+                <p>
+                  This isn&apos;t a curated archive, but it is built on baseline
+                  values.
+                </p>
+                <p>
+                  If you align with core liberatory values, anti-capitalist,
+                  anti-colonial, anti-imperial, anti-Zionist, anti-fascist,
+                  anti-racist, this space is for you.
+                </p>
+                <p className="font-semibold">
+                  Give what you can, take what you need.
+                </p>
+                <p>
+                  This is a commons, so we&apos;re centering the collective
+                  struggle.
+                </p>
+                <p>
+                  We reserve the right to remove files that go against the
+                  baseline ethics of collective liberation—because none of us is
+                  free until all of us are free.
+                </p>
+                <p>
+                  Disclaimer: Resources are open to download, print and
+                  distribution, not for profit. We Print Revolution is not
+                  responsible for how the archive&apos;s resources are used.
+                </p>
+              </div>
             </div>
+
             <MenuHeading name="What brings the archive to life? Nodes." />
-            <div className="pl-4 pr-4 sm:pl-6 sm:pr-6 mb-2">
-              <p
-                className={`text-[#EBE8E2] text-xs sm:text-sm ${ibmPlexMono.className} font-normal leading-relaxed`}
+            <div className="pl-4 pr-4 sm:pl-6 sm:pr-6 mb-4 mt-2">
+              <div
+                className={`text-[#EBE8E2] text-xs sm:text-sm ${ibmPlexMono.className} font-normal leading-relaxed space-y-2`}
               >
-                Nodes are essential points of connection, they bring the archive
-                to life as a living, breathing tool for ideas, designs, tactics
-                and techniques. Anyone who uses the archive—who explores,
-                downloads, or contributes by uploading, is a node in our
-                decentralized web of resistance. By contributing what you can,
-                sharing what you know, and spreading resources, you help build a
-                resilient, and self-sustaining tool beyond any single person or
-                organization—because liberation is collective. Now let your
-                imagination run wild… For the love of life and the love of
-                humanity ❤️ We Print Revolution Building infrastructure for
-                resistance
-              </p>
+                <p>
+                  Nodes are essential points of connection, they bring the
+                  archive to life as a living, breathing tool for ideas,
+                  designs, tactics and techniques.
+                </p>
+                <p>
+                  Anyone who uses the archive—who explores, downloads, or
+                  contributes by uploading, is a node in our decentralized web
+                  of resistance.
+                </p>
+                <p>
+                  By contributing what you can, sharing what you know, and
+                  spreading resources, you help build a resilient, and
+                  self-sustaining tool beyond any single person or
+                  organization—because liberation is collective.
+                </p>
+                <p className="mt-4">
+                  Now let your imagination run wild… For the love of life and
+                  the love of humanity ♥️
+                </p>
+                <p className="mt-4 font-bold">We Print Revolution</p>
+                <p className="mt-1 italic">
+                  Building infrastructure for resistance
+                </p>
+              </div>
             </div>
           </div>
         )}
