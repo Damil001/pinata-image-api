@@ -23,7 +23,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   title: "the archive",
-  description: "App to store every thing",
+  description: "Your playground, a seed",
 };
 
 export default function RootLayout({
