@@ -15,6 +15,7 @@ export interface Image {
       category?: string;
       location?: string;
       tags?: string;
+      altText?: string;
     };
   };
 }

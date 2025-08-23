@@ -31,7 +31,7 @@ const ImageCard: React.FC<ImageCardProps> = ({
     >
       <img
         src={image.gatewayUrl}
-        alt={image.name}
+        alt={image.metadata?.keyvalues?.altText || image.name}
         style={{
           width: "100%",
           height: "clamp(100px, 20vw, 130px)",

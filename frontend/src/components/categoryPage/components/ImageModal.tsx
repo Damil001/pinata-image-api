@@ -22,7 +22,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
   onDownload,
 }) => {
   if (!isOpen || !image) return null;
-
+  console.log("ImageModal rendered with image:", image);
   return (
     <div
       style={{
@@ -86,12 +86,12 @@ const ImageModal: React.FC<ImageModalProps> = ({
         >
           <img
             src={image.gatewayUrl}
-            alt={image.name}
+            alt={image.metadata?.keyvalues?.altText || image.name}
             style={{
               width: "100%", // Take full width of container
               maxWidth: "400px", // Maximum width constraint
-              height: "100%", // Take full height of container
-              objectFit: "cover", // Cover the container
+              height: "400px", // Take full height of container
+              objectFit: "contain", // Cover the container
             }}
           />
         </div>

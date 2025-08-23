@@ -18,6 +18,7 @@ const ImageGrid: React.FC<ImageGridProps> = ({
   onClearFilters,
   onDownload,
 }) => {
+  console.log(images);
   if (loading) {
     return <LoadingSkeleton count={9} />;
   }
