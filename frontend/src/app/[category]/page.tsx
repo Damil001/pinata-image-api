@@ -182,7 +182,7 @@ export default function CategoryPage() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [loadingMore, pagination.hasMore, loadMoreImages]);
-
+  console.log(images);
   return (
     <>
       {!showImageModal && !showUploadModal && (
