@@ -136,17 +136,10 @@ export default function Menu() {
                 <p>
                   Pinning IPFS gateways and Render-hosted tools can see requests
                   coming from your IP. If you want maximum anonymity,
-                  here&apos;s how:
-                </p>
-                <p>
-                  If you want to make sure that your identity is fully hidden
-                  before we transition to Holochain, you can use a VPN or
-                  privacy-respecting browsers like Brave or Tor, and check out
-                  our{" "}
-                  <span className="font-semibold">
-                    Tactics Guide on how to remove metadata from files before
-                    uploading.
-                  </span>
+                  here&apos;s how: If you want to make sure that your identity
+                  is hidden before we transition to Holochain, you can use a VPN
+                  or privacy-respecting browsers like Brave or Tor. Check out
+                  our Tactics Guide on how to use a VPN.
                 </p>
               </div>
             </div>
