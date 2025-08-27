@@ -30,7 +30,7 @@ const ImageCard: React.FC<ImageCardProps> = ({
       onClick={onClick}
     >
       <img
-        src={image.gatewayUrl}
+        src={`https://copper-delicate-louse-351.mypinata.cloud/ipfs/${image.ipfsHash}`}
         alt={image.metadata?.keyvalues?.altText || image.name}
         style={{
           width: "100%",
