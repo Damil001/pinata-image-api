@@ -3,7 +3,8 @@ import MenuItem from "@/components/atoms/menu-item/menu-item";
 import Menu from "@/components/atoms/menu/menu";
 import Link from "next/link";
 import { Anonymous_Pro, IBM_Plex_Mono } from "next/font/google";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import FAQModal from "@/components/FAQModal";
 
 const anonymousPro = Anonymous_Pro({
   subsets: ["latin"],
@@ -29,6 +30,7 @@ const menuContent = [
 
 export default function Home() {
   const buttonRef = useRef<HTMLDivElement>(null);
+  const [isFAQModalOpen, setIsFAQModalOpen] = useState(false);
 
   useEffect(() => {
     if (buttonRef.current) {
@@ -72,7 +74,7 @@ export default function Home() {
             style={{
               fontWeight: "400",
               color: "#EBE8E2",
-              marginBottom: "0.25rem",
+              marginBottom: "0.15rem",
               maxWidth: "100%",
             }}
           >
@@ -83,9 +85,22 @@ export default function Home() {
           </p>
         </header>
         <nav role="navigation" aria-label="Archive categories">
-          <div className="mb-10" />
+          <div className="mb-5" />
           <div className="flex flex-col gap-4">
             {menuContent.map((item, index) => {
+              // Handle FAQ clicks to open modal instead of navigation
+              if (item === "FAQ") {
+                return (
+                  <div
+                    key={index}
+                    className="cursor-pointer"
+                    onClick={() => setIsFAQModalOpen(true)}
+                  >
+                    <MenuItem menuText={item} hrefLink="#" />
+                  </div>
+                );
+              }
+
               // Map "ALL RESOURCES" to the all-images route
               const hrefLink =
                 item === "ALL RESOURCES" ? "/all-images" : `/${item}`;
@@ -96,6 +111,12 @@ export default function Home() {
           </div>
         </nav>
       </main>
+
+      {/* FAQ Modal */}
+      <FAQModal
+        isOpen={isFAQModalOpen}
+        onClose={() => setIsFAQModalOpen(false)}
+      />
     </>
   );
 }

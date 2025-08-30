@@ -88,7 +88,7 @@ const MenuItem = ({ menuText, hrefLink }: MenuItemProps) => {
       console.log(`MenuItem clicked: ${menuText}, href: ${hrefLink}`);
 
       // Don't navigate for placeholder items
-      if (menuText === "???" || menuText === "TBD") {
+      if (menuText === "???" || menuText === "TBD" || menuText === "FAQ") {
         e.preventDefault();
         return;
       }
