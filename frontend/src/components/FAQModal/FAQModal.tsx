@@ -80,39 +80,56 @@ const FAQModal: React.FC<FAQModalProps> = ({ isOpen, onClose }) => {
             </button>
           </div>
 
-          <div className="pl-4 pr-4 sm:pl-6 sm:pr-6 mb-4">
+          <h1
+            className={`text-[#ffffff] text-3xl font-bold ${anonymousPro.className} mb-6 text-center`}
+          >
+            FAQ
+          </h1>
+
+          <MenuHeading name="What is the archive?" />
+          <div className="pl-4 pr-4 sm:pl-6 sm:pr-6 mb-4 mt-2">
             <div
-              className={`text-[#EBE8E2] text-xs sm:text-sm ${ibmPlexMono.className} font-normal leading-relaxed space-y-4`}
+              className={`text-[#EBE8E2] text-xs sm:text-sm ${ibmPlexMono.className} font-normal leading-relaxed space-y-2`}
             >
-              <h1
-                className={`text-[#ffffff] text-3xl font-bold ${anonymousPro.className} mb-6 text-center`}
-              >
-                FAQ
-              </h1>
+              <p>
+                The archive says: we will persevere—even in secret, even in
+                silence, even in exile.
+              </p>
+              <p>
+                Think of the archive as a mycelium network where resources get
+                distributed freely beneath the surface. The archive is a
+                decentralized space to share and get access to resources related
+                to printing resistance—but think beyond printing.
+              </p>
+            </div>
+          </div>
 
-              <div>
-                <p className="font-semibold text-lg">What is the archive?</p>
-                <p>
-                  The archive says: we will persevere—even in secret, even in
-                  silence, even in exile.
-                </p>
-                <p>
-                  Think of the archive as a mycelium network where resources get
-                  distributed freely beneath the surface. The archive is a
-                  decentralized space to share and get access to resources
-                  related to printing resistance—but think beyond printing.
-                </p>
-              </div>
-
-              <div>
-                <p className="font-semibold text-lg">
-                  What is We Print Revolution?
-                </p>
-                <p>
-                  Follow us on Threads and Instagram. More info will be added
-                  here soon.
-                </p>
-              </div>
+          <MenuHeading name="What is We Print Revolution?" />
+          <div className="pl-4 pr-4 sm:pl-6 sm:pr-6 mb-4 mt-2">
+            <div
+              className={`text-[#EBE8E2] text-xs sm:text-sm ${ibmPlexMono.className} font-normal leading-relaxed space-y-2`}
+            >
+              <p>
+                Follow us on{" "}
+                <a
+                  href="https://www.threads.com/@weprintrevolution"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className=" underline"
+                >
+                  Threads
+                </a>{" "}
+                and{" "}
+                <a
+                  href="https://www.instagram.com/weprintrevolution"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className=" underline"
+                >
+                  Instagram
+                </a>
+                . More info will be added here soon.
+              </p>
             </div>
           </div>
 
@@ -270,14 +287,22 @@ const FAQModal: React.FC<FAQModalProps> = ({ isOpen, onClose }) => {
             <p
               className={`text-[#EBE8E2] text-xs sm:text-sm ${ibmPlexMono.className} font-normal leading-relaxed`}
             >
-              Questions, requests, or something else? Send us a DM on Instagram,
-              or an email to weprintrevolution@proton.me
+              Questions, requests, or something else? Send us a DM on{" "}
+              <a
+                href="https://www.instagram.com/weprintrevolution"
+                target="_blank"
+                rel="noopener noreferrer"
+                className=" underline"
+              >
+                Instagram
+              </a>
+              , or an email to weprintrevolution@proton.me
             </p>
           </div>
 
           <div className="pl-4 pr-4 sm:pl-6 sm:pr-6 mb-4 mt-2">
             <div
-              className={`text-[#EBE8E2] text-xs sm:text-sm ${ibmPlexMono.className} font-normal leading-relaxed space-y-2 text-center`}
+              className={`text-[#EBE8E2] text-xs sm:text-sm ${ibmPlexMono.className} font-normal leading-relaxed space-y-2`}
             >
               <p className="mt-4 italic">
                 Now let your imagination run wild… For the love of life and the
