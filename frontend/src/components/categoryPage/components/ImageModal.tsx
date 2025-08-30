@@ -1,5 +1,6 @@
 import React from "react";
 import { Image } from "../types";
+import ImageWithFallback from "@/components/atoms/ImageWithFallback";
 
 interface ImageModalProps {
   image: Image | null;
@@ -25,6 +26,10 @@ const ImageModal: React.FC<ImageModalProps> = ({
   console.log("ImageModal rendered with image:", image);
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+      aria-describedby="modal-description"
       style={{
         position: "fixed",
         inset: 0,
@@ -60,6 +65,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
           }}
         >
           <button
+            aria-label="Close image modal"
             onClick={onClose}
             style={{
               background: "transparent",
@@ -73,6 +79,23 @@ const ImageModal: React.FC<ImageModalProps> = ({
           </button>
         </div>
 
+        {/* Modal Title - Hidden but accessible to screen readers */}
+        <h2 id="modal-title" className="sr-only">
+          {image.name} - Image Details
+        </h2>
+
+        {/* Modal Description - Hidden but accessible to screen readers */}
+        <div id="modal-description" className="sr-only">
+          {image.metadata?.keyvalues?.altText || image.name}
+          {image.metadata?.keyvalues?.artist &&
+            ` by ${image.metadata.keyvalues.artist}`}
+          {image.metadata?.keyvalues?.location &&
+            ` from ${image.metadata.keyvalues.location}`}
+          {image.tags &&
+            image.tags.length > 0 &&
+            ` - Tags: ${image.tags.join(", ")}`}
+        </div>
+
         {/* Image */}
         <div
           style={{
@@ -84,8 +107,8 @@ const ImageModal: React.FC<ImageModalProps> = ({
             alignItems: "center",
           }}
         >
-          <img
-            src={`https://copper-delicate-louse-351.mypinata.cloud/ipfs/${image.ipfsHash}`}
+          <ImageWithFallback
+            hash={image.ipfsHash}
             alt={image.metadata?.keyvalues?.altText || image.name}
             style={{
               width: "100%", // Take full width of container

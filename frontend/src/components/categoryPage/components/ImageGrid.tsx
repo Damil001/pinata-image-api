@@ -64,6 +64,10 @@ const ImageGrid: React.FC<ImageGridProps> = ({
 
   return (
     <div
+      role="grid"
+      aria-label={`${images.length} images in grid layout`}
+      aria-rowcount={Math.ceil(images.length / 3)}
+      aria-colcount={3}
       style={{
         display: "grid",
         gridTemplateColumns: "repeat(3, 1fr)",
@@ -76,6 +80,8 @@ const ImageGrid: React.FC<ImageGridProps> = ({
           image={img}
           index={index}
           onClick={() => onImageClick(img)}
+          aria-rowindex={Math.floor(index / 3) + 1}
+          aria-colindex={(index % 3) + 1}
         />
       ))}
     </div>

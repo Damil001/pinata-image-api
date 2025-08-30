@@ -1,0 +1,662 @@
+Questions
+Binary Search Steps Counter
+1 point possible (graded, results hidden)
+
+How many iterations of binary search are required to find 734 in [15, 131, 147, 148, 186, 214, 225, 231, 276, 295, 432, 531, 608, 684, 685, 734, 837, 849]?
+
+6W
+7
+5
+3
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+Travelkitties
+1 point possible (graded, results hidden)
+Travelkitties is a travel aggregator which allow users to book recreational trips using their app from all arround the world. You've been given a task to find out top 1 travel desitination (city) to help business team in making data driven decisions.
+Note: Travel desitination is arriving city of trip.
+
+
+user
+uid	name	age
+1	Joe Williams	59
+2	John Smith	58
+3	Andy Smith	22
+4	Andy Williams	23
+5	John Johnson	54
+city
+cid	lat	lng	city	country_code
+1	34.95303	-120.43572	Austin	US
+2	42.16808	-88.42814	Los Angeles	US
+3	39.96097	-75.60804	Seattle	US
+4	34.09668	-117.71978	New York	US
+5	46.09273	-88.64235	Dallas	US
+trips
+tid	uid	origin_id	destination_id
+1	3	3	2
+2	2	1	2
+3	2	1	2
+4	4	5	2
+5	1	1	3
+6	5	4	4
+7	2	4	5
+With given tables what would be output of following SQL query:
+
+
+SELECT
+  city_name
+FROM (
+  SELECT
+        city AS city_name,
+                    count(t.destination_id) AS trips
+  FROM city AS c
+  INNER JOIN trips AS t
+  ON c.cid = t.destination_id
+  GROUP BY city, t.destination_id
+) AS ranked_trips
+ORDER BY trips DESC
+LIMIT 1;
+
+
+You can select only one option.
+
+Seattle
+Los Angeles
+Dallas
+New York
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+Balancing Parantheses
+1 point possible (graded, results hidden)
+A stack can be used to check whether the parentheses in an expression are balanced or not, by pushing an opening parenthesis to the stack and popping it whenever a closing parenthesis is encountered. What is the maximum possbile number of elements on the stack at any one time when evaluating: () ( ( () () ) () () ( () () () ) )?
+
+
+3
+4
+2
+5
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+Find me If you can
+1 point possible (graded, results hidden)
+Find the missing operators:
+
+25 ? 23 ? 14 ? 9 = -124
+Operators allowed:  +  -  *
+Answer format: a+b-c*d
+
+
+25-23-14*9
+25+23-14*9
+25-23+14*9
+23+25-14*9
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+Imaginary String Printer
+1 point possible (graded, results hidden)
+
+          function void imaginaryString()
+            {
+                arr_1 = ['L', 'O', 'E', 'S', 'W', 'N', 'D', 'J', 'F', 'X', 'P']
+                arr_2 = ['Z', 'B', 'U', 'N', 'I', 'F', 'W', 'V', 'M', 'L', 'C']
+      
+                arr_3 = get_common_values (arr_1, arr_2)
+                arr_3 = sort_ascending (arr_3)
+      
+                a = [3, 2, 1, 0]
+                i = 0
+      			
+                while (i < length(arr_3))
+                {
+                	print arr_3[ a[i] ]
+                	i = i + 1
+                }
+      			
+            }
+     
+What will the imaginaryString() function print?
+ZBUNIFWVMLC
+Raise Index Error
+WNLF
+LOESWNDJFXP
+WFLN
+3210
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+Age Selection
+1 point possible (graded, results hidden)
+Table: A
+id	name	age
+35	Zara	54
+62	Abdullah	35
+84	Fatima	50
+60	Faran	28
+150	Shahryar	38
+Table: B
+id	name	age
+21	Abdullah	43
+68	Fatima	55
+105	Zia	39
+128	Mahnoor	27
+90	Ayesha	56
+How many rows does the result of the following SQL query contains?
+
+SELECT A.id
+FROM A
+WHERE A.age <> ALL (SELECT B.age FROM B WHERE B. name in ['Mahnoor', 'Shahryar', 'Abdullah'])
+
+
+5
+7
+4
+6
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+LinkedList
+1 point possible (graded, results hidden)
+
+     function foo(start) {
+         if (start == NULL)
+      	     return
+      
+      	 print(start.value)
+      
+      	 if (start.next != NULL)
+      		 foo(start.next.next);
+      	
+      	 print(start.value);
+     }
+      
+What will be the output of the the following function if start pointing to first node of following linked list?
+[14, 84, 76, 26, 50, 45]
+
+14, 26, 45, 84, 76
+14, 26, 50, 84, 76, 45
+14, 45, 76, 26, 84
+14, 76, 50, 50, 76, 14
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+Custom Series
+1 point possible (graded, results hidden)
+Assume we have a custom Series such that
+
+First number is: 1
+
+Second number is: 2
+
+Every successing number is calculated as: Fn = 2 x Fn−2 + 2 x Fn−1 e.g.
+
+Third number is: F3 = 2 x F1 + 2 x F2 = 2 x 1 + 2 x 2 = 6
+
+What is 5th number in the series
+44
+16
+120
+6
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+Bank Loan
+1 point possible (graded, results hidden)
+As per agreement with a bank, a businessman had to refund a loan in some equal installments without interest. After paying '36' installments he found that '78.26' percent (approximately) of his loan was refunded. How many installments were there in the agreement?
+
+
+44
+46
+42
+48
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+People In a Row
+1 point possible (graded, results hidden)
+In a cinema ticket line, A has 7 people ahead of it, while B has 18 people behind it. After they swap the positions, A has 24 people ahead. How many people are there in the line including A and B.
+
+
+44
+43
+46
+45
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+Bubble Sort Integration
+1 point possible (graded, results hidden)
+What will be the condition of following array after 1 iteration(s) of Bubble Sort while sorting in ascending order
+
+[5, 15, 5, 41, 24, 36, 12, 26, 45]
+
+
+[24, 26, 15, 36, 5, 5, 12, 41, 45]
+[24, 36, 41, 12, 5, 26, 15, 5, 45]
+[5, 5, 15, 24, 36, 12, 26, 41, 45]
+[26, 36, 15, 5, 24, 41, 5, 12, 45]
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+XOR And XNOR
+1 point possible (graded, results hidden)
+Let A : "10101010" , B=?, If { A (Ex-nor) B } is a resultant string of HALF ZEROES AND HALF ONES [ 00001111 ] then:
+
+
+B is 10100101
+B is 01111010
+B is 01011010
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+Inheritance Code Snippet
+1 point possible (graded, results hidden)
+What will be the output of this code snippet? (__init__ is constructor of class)
+
+
+class A:
+    def __init__(self):
+        self.calc_i(330)
+        
+    def calc_i(self, i):
+        self.i = 13 * i;
+
+class B(A):
+    def __init__(self):
+        super().__init__()
+        print("i from B is", self.i)
+        
+    def calc_i(self, i):
+        self.i = 53 * i;
+
+b = B()
+  
+
+You can select only one option.
+
+22804
+18339
+17490
+10645
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+Novel Arrangement
+1 point possible (graded, results hidden)
+Anaya has three Urdu novels (F, B, C) and Four English novels (A, D, G, E). She wants to arrange her novels in a way that following conditions must be met:
+
+- No english novel can be placed immediate after another english novel.
+
+- C must be placed earlier than G.
+
+- D and G must be separated from each other by at least one novel.
+
+- D must be placed immediately before or after F.
+
+- F must be placed immediately after A, but not if B is placed earlier than A.
+
+Choose the best sequence of novels:
+E, B, A, C, D, F, G
+G, F, D, C, E, B, A
+A, C, E, B, D, F, G
+B, C, D, E, G, F, A
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+Round and Round
+1 point possible (graded, results hidden)
+We have come upon a 'longRunning' method in our code. In order to check its lengthy execution time, we are calculating its iterations against different inputs.
+
+Can you figure out the number of iterations it will take to execute the following input:
+
+[5, 8, 8, 10, 15, 16]
+
+      
+function longRunningFunction(array) {
+  for ( i = 0; i < length(array); i++ ) {
+    idx = i
+    for ( j = i + 1; j < length(array); j++ ) {
+      if ( array[idx] > array[j] ) {
+        idx = j
+      }
+    }
+    swap( array[i], array[idx] )
+  }
+}
+
+
+16
+13
+18
+21
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+Set Theory
+1 point possible (graded, results hidden)
+If
+
+A = {1, 5, 8, 9, {2, 3}, {1}}
+
+B = {9, {3}, 4, 5, 6}
+
+C = {1, 2, 3, 4, 5, 9, {1}}
+
+D = {10, 4, {3}, 6, 7}
+
+Then the set ((C - B) U A) ∩ B is:
+
+
+{1, 3, 4, 5, {3}, 7, 8, 6, 10}
+{5}
+{}
+{9, 5}
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+Mode, Mean, Median
+1 point possible (graded, results hidden)
+M = [67, 78, 52, 78, 'N']
+
+What is the value of N if the mode, mean and median of the list M are equal to each other? Express your answer to the nearest whole number.
+
+Note:
+The mode of a set of data values is the value that appears most often.
+The mean is the average of the numbers: a calculated "central" value of a set of numbers.
+Median is the middle number in a sorted list of numbers.
+
+116
+115
+118
+117
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+Truth Harmony
+1 point possible (graded, results hidden)
+Braden speaks truth in 49% of cases and Fred in 42% of cases. In what percentage of cases are they likely to contradict each other, talking about the same incident.
+
+
+52.84
+51.84
+50.84
+49.84
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+Valid Binary Search Tree
+1 point possible (graded, results hidden)
+Suppose that we have numbers between 1 and 100 in a binary search tree and we want to search for the number 15. Which of the following sequences could not be the sequence of nodes examined ?
+
+
+[97, 27, 12, 24, 16, 14, 15]
+[12, 39, 27, 20, 16, 14, 15]
+[65, 8, 54, 37, 6, 15]
+[81, 68, 11, 56, 38, 14, 29, 24, 18, 17, 16, 15]
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+Propositional Logic
+1 point possible (graded, results hidden)
+We found 3 children discussing something about cows, fish and cats but it was hard to tell if what they were speaking was True(T) or False(F). Can you apply some sort of Propositional Logic to deduce if what they are saying is True(T) or False(F)
+
+Child-1: Cat cannot Fly and Cat can Fly.
+
+Child-2: Fish can do programming or Cat cannot Fly.
+
+Child-3: Cat cannot Fly and Cat can Fly, if and only if, Fish can do programming or Cat cannot Fly.
+
+
+Child-1: T, Child-2: F, Child-3: T
+Child-1: F, Child-2: T, Child-3: T
+Child-1: T, Child-2: T, Child-3: T
+Child-1: F, Child-2: F, Child-3: T
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+Employee Salaries
+1 point possible (graded, results hidden)
+Table: employee_age
+emp_id	age
+102	27
+103	37
+101	24
+100	22
+Table: employee_salary
+emp_id	salary
+101	35000
+106	50000
+105	49000
+104	75000
+With given tables what would be output of following SQL query:
+
+
+SELECT 
+    MIN(eSal.salary)
+FROM 
+    employee_age as eAge INNER JOIN employee_salary as eSal
+ON 
+    eAge.emp_id = eSal.emp_id
+
+    WHERE eAge.age > 22
+GROUP BY eAge.emp_id
+    HAVING MIN(eSal.salary) > 35000
+  
+
+49000
+35000
+50000
+None
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+Identical Stacks
+1 point possible (graded, results hidden)
+Each row below are the stacks of water bottles with their respective heights(n)
+
+1. | 3 | 1 | 5 | 4 | 5 | 4 | 4 |
+2. | 1 | 3 | 3 | 2 | 3 | 1 | 5 | 4 |
+3. | 4 | 1 | 4 | 5 | 2 |
+The rightmost element shows the top of the stack. Adding up the heights of the bottles on a stack will give you the overall height of the stack. You can pop the bottles from each stack any number of times to change the height of the stack.
+Determine the maximum height of each stack where all of the three stacks are equal in terms of height.
+
+
+9
+5
+3
+14
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+System Safe State
+1 point possible (graded, results hidden)
+A system has 23 magnetic tape drives and 5 processes : P1, P2, P3, P4, P5. The allocation of resources and the need for resources by the processes are described in the table. Which of the following is possible safe state of the system?
+
+Hint: A system is in a safe state if there is a sequence in which all the processes can be executed without getting into a deadlock.
+
+processes	Need	Allocated
+P1	14	2
+P2	15	1
+P3	19	2
+P4	23	1
+P5	14	5
+
+
+
+[1, 2, 5, 3, 4]
+[4, 2, 5, 3, 1]
+[3, 2, 4, 1, 5]
+[2, 4, 3, 1, 5]
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+Inheritance
+1 point possible (graded, results hidden)
+What should be the result of running the following pseudocode snippet?
+
+      
+class Class1:
+    function function_1(self):
+         print("a")
+
+    function function_2(self):
+         print("b")
+
+
+class Class2:
+    function function_1(self):
+         print("c")
+
+    function function_3(self):
+         print("d")
+
+
+class Class3:
+    function function_2(self):
+         print("e")
+
+    function function_3(self):
+         print("f")
+
+
+class ClassA(Class3, Class1):
+    function function_3(self):
+         print("h")
+
+
+class ClassB(Class2):
+    function function_2(self):
+         print("i")
+
+    function function_3(self):
+         print("j")
+
+
+class ClassC(Class1):
+    function function_2(self):
+         print("k")
+
+    function function_3(self):
+         print("l")
+      
+      
+ClassB().function_2()
+ClassB().function_2()
+ClassB().function_2()
+    
+
+lki
+iii
+hf1
+iii
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+Stacks and Queues
+1 point possible (graded, results hidden)
+There are two storage systems present, one is a stack and the other queue. The content of the stack is [13, 6] and the content of the queue is [22, 23, 17, 21, 26, 29, 15, 27, 28, 19] (the first item in both represent the first item stored). The number on each item represent the ID of item.
+
+We have to balance these storage systems (move items between storages so that there are equal number of items in both). Keeping in mind the functionalities of stacks and queues, we have to balance them!
+
+    
+STACK STORAGE: oldest  [13, 6]  newest
+
+    
+QUEUE STORAGE: oldest  [22, 23, 17, 21, 26, 29, 15, 27, 28, 19]  newest
+
+  
+
+What is the newest item in stack storage after balancing the storages?
+You can select only one option.
+
+13
+21
+19
+6
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+Average Waiting Time
+1 point possible (graded, results hidden)
+Given the following processes with their arrival and burst time given below, calculate the average waiting time using the First Come First Serve approach.
+
+Arrival time: Time when the process is ready for its execution on the CPU.
+Burst time: Time required by the process to complete its execution on the CPU.
+Waiting time: Time spent by the process waiting for the CPU after its arrival.
+
+Process	Arrival Time	Burst Time
+P1	3.0	13.0
+P2	5.0	13.0
+P3	6.0	9.0
+P4	16.0	19.0
+
+
+
+12.75
+12.93
+10.75
+11.75
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+Algorithm
+1 point possible (graded, results hidden)
+What is the output of the following code?
+
+
+func min_jumps(arr[], start, end)
+{
+    if(start == end)
+        return 0;
+
+    int min = INT_MAX;  // Max value of int
+
+    for(idx = 1; arr[start] >= idx AND end >= start + idx; idx++)
+    {
+        int jumps = min_jumps(arr, start + idx, end) + 1;
+        if(min > jumps)
+            min = jumps;
+    }
+    return min;
+}
+
+main()
+{
+    arr[] = [1, 1, 1, 4, 1, 1, 1, 1, 4, 1],
+    ans = min_jumps(arr, 0, lenOfArr);
+    print ans;
+}
+
+
+10
+11
+6
+9
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+FIFO Page Fault
+1 point possible (graded, results hidden)
+Currently employed page replacement policy is FIFO and the capacity of storing 3 page frames at any instance of time. The page reference string is YYCDDXYAAYDYADX. Can you tell the count of the page faults?
+
+
+9
+8
+10
+11
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+Hash Clash
+1 point possible (graded, results hidden)
+An array is used here to represent a Hash Table. Array index starts from 0 and ends at size_of_array - 1
+Which slot would the number 49 hash to, in the following Hash Table?
+
+
+47	46	--	--	--	49	--	41	--	50	--
+size_of_table = 11
+
+The hash function is :
+
+hash(number):number % size_of_table
+
+For collision resolution use the following rehash function:
+
+new_hash_value:rehash(old_hash_value)
+rehash(position):(position+1) % size_of_table
+
+
+5
+7
+6
+1
+unanswered
+SubmitSome problems have options such as save, reset, hints, or show answer. These options follow the Submit button.
+Process Scheduling
+1 point possible (graded, results hidden)
+
+
+
+
+
+
+
+C, A
+A, C
+B, A
+A
+submitted

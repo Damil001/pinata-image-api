@@ -170,7 +170,7 @@ async function uploadImageHandler(req, res) {
       ipfsHash: response.data.IpfsHash,
       pinSize: response.data.PinSize,
       timestamp: response.data.Timestamp,
-      gatewayUrl: `https://gateway.pinata.cloud/ipfs/${response.data.IpfsHash}`,
+      gatewayUrl: `https://copper-delicate-louse-351.mypinata.cloud/ipfs/${response.data.IpfsHash}`,
       metadata: metadata,
     };
     res.json(result);
@@ -206,7 +206,7 @@ async function getAllImagesHandler(req, res) {
       tags: item.metadata?.keyvalues?.tags
         ? item.metadata.keyvalues.tags.split(",").map((t) => t.trim())
         : [],
-      gatewayUrl: `https://gateway.pinata.cloud/ipfs/${item.ipfs_pin_hash}`,
+      gatewayUrl: `https://copper-delicate-louse-351.mypinata.cloud/ipfs/${item.ipfs_pin_hash}`,
       pinataUrl: `https://pinata.cloud/ipfs/${item.ipfs_pin_hash}`,
       metadata: item.metadata,
     }));
@@ -262,7 +262,7 @@ async function getImagesByTagHandler(req, res) {
       tags: item.metadata?.keyvalues?.tags
         ? item.metadata.keyvalues.tags.split(",").map((t) => t.trim())
         : [],
-      gatewayUrl: `https://gateway.pinata.cloud/ipfs/${item.ipfs_pin_hash}`,
+      gatewayUrl: `https://copper-delicate-louse-351.mypinata.cloud/ipfs/${item.ipfs_pin_hash}`,
       pinataUrl: `https://pinata.cloud/ipfs/${item.ipfs_pin_hash}`,
     }));
     res.json({
@@ -311,7 +311,7 @@ async function getImageByHashHandler(req, res) {
         name: image.metadata?.name || "Untitled",
         description: image.metadata?.description || "",
         tags: image.metadata?.tags || [],
-        gatewayUrl: `https://gateway.pinata.cloud/ipfs/${image.ipfs_pin_hash}`,
+        gatewayUrl: `https://copper-delicate-louse-351.mypinata.cloud/ipfs/${image.ipfs_pin_hash}`,
         pinataUrl: `https://pinata.cloud/ipfs/${image.ipfs_pin_hash}`,
       },
     };

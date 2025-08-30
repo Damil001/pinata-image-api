@@ -90,6 +90,8 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
           </div>
           <input
             type="text"
+            id="search-input"
+            aria-label="Search images by tags"
             placeholder="Search tags..."
             value={searchInput}
             onChange={(e) => onSearchInputChange(e.target.value)}
@@ -117,6 +119,9 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
         {/* Tag Suggestions */}
         {searchInput && filteredAvailableTags.length > 0 && (
           <div
+            role="listbox"
+            aria-label="Available tags"
+            aria-expanded={filteredAvailableTags.length > 0}
             style={{
               position: "relative",
               background: "rgba(235, 232, 226, 0.95)",
@@ -130,7 +135,16 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
             {filteredAvailableTags.slice(0, 8).map((tag, index) => (
               <div
                 key={tag}
+                role="option"
+                aria-selected={false}
+                tabIndex={0}
                 onClick={() => onAddTag(tag)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onAddTag(tag);
+                  }
+                }}
                 style={{
                   padding: "12px 16px",
                   cursor: "pointer",
@@ -160,6 +174,8 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
         {selectedTags.length > 0 && (
           <>
             <div
+              role="group"
+              aria-label="Selected tags"
               style={{
                 display: "flex",
                 flexWrap: "wrap",
