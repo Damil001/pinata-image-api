@@ -23,7 +23,7 @@ const menuContent = [
   "TACTICS",
   "TECHNIQUES",
   "BANNERS",
-  "All Resources",
+  "ALL RESOURCES",
   "FAQ",
 ];
 
@@ -86,9 +86,9 @@ export default function Home() {
           <div className="mb-10" />
           <div className="flex flex-col gap-4">
             {menuContent.map((item, index) => {
-              // Map "All Resources" to the all-images route
+              // Map "ALL RESOURCES" to the all-images route
               const hrefLink =
-                item === "All Resources" ? "/all-images" : `/${item}`;
+                item === "ALL RESOURCES" ? "/all-images" : `/${item}`;
               return (
                 <MenuItem key={index} menuText={item} hrefLink={hrefLink} />
               );

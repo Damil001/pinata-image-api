@@ -123,18 +123,4 @@ button:focus,
 }
 
 /* Responsive text sizing for better flow */
-@media (max-width: 768px) {
-  .intro-text {
-    line-height: 1.5;
-    word-spacing: 0.03em;
-    letter-spacing: 0.015em;
-  }
-}
 
-@media (max-width: 480px) {
-  .intro-text {
-    line-height: 1.6;
-    word-spacing: 0.04em;
-    letter-spacing: 0.02em;
-  }
-}
