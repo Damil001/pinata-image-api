@@ -112,7 +112,7 @@ button:focus,
 /* Typography improvements for better text flow */
 .intro-text {
   text-align: right;
-  line-height: 1.4;
+  line-height: 1.2;
   word-spacing: 0.02em;
   letter-spacing: 0.01em;
   hyphens: auto;
