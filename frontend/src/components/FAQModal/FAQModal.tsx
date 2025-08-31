@@ -18,7 +18,7 @@ const MenuHeading = ({ name }: MenuHeadingProps) => {
   return (
     <div className="bg-[#444] pl-4 pt-2 pb-2 pr-4">
       <h1
-        className={`text-[#ffffff] text-2xl font-bold ${anonymousPro.className}`}
+        className={`text-[#ffffff] text-lg sm:text-xl md:text-2xl font-bold ${anonymousPro.className} whitespace-nowrap overflow-hidden text-ellipsis`}
       >
         {name}
       </h1>
