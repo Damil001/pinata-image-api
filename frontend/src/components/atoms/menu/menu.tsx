@@ -63,25 +63,11 @@ export default function Menu() {
                 className={`text-[#EBE8E2] text-xs sm:text-sm ${ibmPlexMono.className} font-normal leading-relaxed space-y-4`}
               >
                 <p>
-                  Why decentralized? Because repression and surveillance are
-                  growing fast, and we need safe tools that cannot be censored,
-                  or shut down. Our first practical version of the archive (our
-                  MVP) is a stepping stone toward full decentralization.
-                </p>
-
-                <p>
-                  Because Transparency is one of our core values, here you can
-                  learn about how we built the archive, and what that means for
-                  you until we transition to Holochain.
-                </p>
-
-                <p>
-                  We&apos;re building this to last and withstand pressure before
-                  it escalates. Currently, we&apos;re using a peer-to-peer
-                  network to store & distribute the resources while the
-                  interface itself is still centralized, meaning we haven&apos;t
-                  eliminated all potentially traceable steps yet, which comes
-                  with our Holochain version.
+                  Currently, we&apos;re using a peer-to-peer network to store &
+                  distribute the resources while the interface itself is still
+                  centralized, meaning we haven&apos;t eliminated all
+                  potentially traceable steps yet, which comes with our
+                  Holochain version.
                 </p>
 
                 <div>
@@ -143,30 +129,6 @@ export default function Menu() {
                 </p>
               </div>
             </div>
-
-            <MenuHeading name="The Future with Holochain" />
-            <div className="pl-4 pr-4 sm:pl-6 sm:pr-6 mb-4 mt-2">
-              <div
-                className={`text-[#EBE8E2] text-xs sm:text-sm ${ibmPlexMono.className} font-normal leading-relaxed space-y-2`}
-              >
-                <p>
-                  With Holochain files and metadata are fully peer-to-peer,
-                  eliminating central servers that could log activity—anonymity
-                  then is built into the network. There are no central servers
-                  to log activity, no gateway IPs to track, and no single point
-                  of failure.
-                </p>
-                <p className="font-semibold">
-                  If WPR disappeared tomorrow, the archive would continue
-                  running on all participating devices.
-                </p>
-                <p>
-                  This creates a self-sustaining, decentralized archive built on
-                  shared stewardship, safety, and anonymity.
-                </p>
-              </div>
-            </div>
-
             <MenuHeading name="Open Contribution/ Principles" />
             <div className="pl-4 pr-4 sm:pl-6 sm:pr-6 mb-4 mt-2">
               <div
@@ -175,11 +137,6 @@ export default function Menu() {
                 <p>
                   This isn&apos;t a curated archive, but it is built on baseline
                   values.
-                </p>
-                <p>
-                  If you align with core liberatory values, anti-capitalist,
-                  anti-colonial, anti-imperial, anti-Zionist, anti-fascist,
-                  anti-racist, this space is for you.
                 </p>
                 <p className="font-semibold">
                   Give what you can, take what you need.

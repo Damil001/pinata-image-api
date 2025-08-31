@@ -99,7 +99,7 @@ const FAQModal: React.FC<FAQModalProps> = ({ isOpen, onClose }) => {
                 Think of the archive as a mycelium network where resources get
                 distributed freely beneath the surface. The archive is a
                 decentralized space to share and get access to resources related
-                to printing resistance—but think beyond printing.
+                to printing resistance—for tactics, think beyond printing.
               </p>
             </div>
           </div>
@@ -143,8 +143,8 @@ const FAQModal: React.FC<FAQModalProps> = ({ isOpen, onClose }) => {
                 <p>
                   Our vision is a self-governing archive where the community
                   itself ensures the archive stays alive and operates according
-                  to shared principles. Right now, we maintain the archive, and
-                  self-governance comes with our transition to Holochain.
+                  to shared principles. With our MVP, we maintain the archive
+                  while we&apos;re moving toward community self-governance.
                 </p>
               </div>
 
@@ -152,10 +152,10 @@ const FAQModal: React.FC<FAQModalProps> = ({ isOpen, onClose }) => {
                 <p className="font-semibold">Anonymity & Safety:</p>
                 <p>
                   Pinning IPFS gateways and Render-hosted tools can see requests
-                  coming from your IP. If you want maximum anonymity before we
-                  transition to Holochain, you can use a VPN or
-                  privacy-respecting browsers like Brave or Tor, and check out
-                  our Tactics Guide Pre-Holochain Anonymity: A Guide to VPN.
+                  coming from your IP. If you want maximum anonymity now, you
+                  can use a VPN or browsers like Tor, and check out our Tactics
+                  Guide <strong>Pre-Holochain Anonymity: A Guide to VPN</strong>
+                  .
                 </p>
               </div>
 
@@ -165,9 +165,9 @@ const FAQModal: React.FC<FAQModalProps> = ({ isOpen, onClose }) => {
                   This isn&apos;t a curated archive, but it is built on baseline
                   values. If you align with core liberatory values
                   anti-capitalist, anti-imperial, anti-Zionist, anti-fascist,
-                  this space is for you. Give what you can, take what you need.
-                  This is a commons, so we&apos;re centering the collective
-                  struggle.
+                  this space is for you.{" "}
+                  <strong>Give what you can, take what you need.</strong> This
+                  is a commons, so we&apos;re centering the collective struggle.
                 </p>
                 <p>
                   We reserve the right to remove files that go against the
@@ -192,13 +192,14 @@ const FAQModal: React.FC<FAQModalProps> = ({ isOpen, onClose }) => {
               which stands for Interplanetary File System. IPFS is a system for
               storing and sharing files across many computers instead of one
               central server. Each file has a unique code, so it can be found
-              and accessed anywhere on the network. This makes files resilient,
-              permanent, and hard to censor, and lets people share content
-              directly without relying on a single company or server.
+              and accessed anywhere on the network. This makes files{" "}
+              <strong>resilient, permanent, and hard to censor</strong>, and
+              lets people share content directly without relying on a single
+              company or server.
             </p>
           </div>
 
-          <MenuHeading name="How is the archive built?" />
+          <MenuHeading name="How is the first version of the archive built?" />
           <div className="pl-4 pr-4 sm:pl-6 sm:pr-6 mb-4 mt-2">
             <div
               className={`text-[#EBE8E2] text-xs sm:text-sm ${ibmPlexMono.className} font-normal leading-relaxed space-y-2`}
