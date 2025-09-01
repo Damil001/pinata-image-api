@@ -7,6 +7,7 @@ const FileUploadArea: React.FC<FileUploadAreaProps> = ({
   onFileSelect,
   isDragOver,
   onDragStateChange,
+  acceptedFileTypes = "image",
 }) => {
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -37,17 +38,39 @@ const FileUploadArea: React.FC<FileUploadAreaProps> = ({
   };
 
   const handleFileSelect = (file: File) => {
-    if (file.type.startsWith("image/")) {
+    const isImage = file.type.startsWith("image/");
+    const isPDF = file.type === "application/pdf";
+
+    if (acceptedFileTypes === "image" && isImage) {
+      onFileSelect(file);
+    } else if (acceptedFileTypes === "pdf" && isPDF) {
+      onFileSelect(file);
+    } else if (acceptedFileTypes === "both" && (isImage || isPDF)) {
       onFileSelect(file);
     } else {
-      alert("Please select an image file");
+      const allowedTypes =
+        acceptedFileTypes === "image"
+          ? "image files"
+          : acceptedFileTypes === "pdf"
+          ? "PDF files"
+          : "image or PDF files";
+      alert(`Please select ${allowedTypes}`);
     }
   };
 
   const handleClick = () => {
     const input = document.createElement("input");
     input.type = "file";
-    input.accept = "image/*";
+
+    // Set accept attribute based on file types
+    if (acceptedFileTypes === "image") {
+      input.accept = "image/*";
+    } else if (acceptedFileTypes === "pdf") {
+      input.accept = ".pdf,application/pdf";
+    } else {
+      input.accept = "image/*,.pdf,application/pdf";
+    }
+
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
@@ -88,16 +111,40 @@ const FileUploadArea: React.FC<FileUploadAreaProps> = ({
             gap: "16px",
           }}
         >
-          <img
-            src={URL.createObjectURL(selectedFile)}
-            alt="Selected file preview"
-            style={{
-              maxWidth: "200px",
-              maxHeight: "200px",
-              objectFit: "cover",
-              borderRadius: "8px",
-            }}
-          />
+          {selectedFile.type.startsWith("image/") ? (
+            <img
+              src={URL.createObjectURL(selectedFile)}
+              alt="Selected file preview"
+              style={{
+                maxWidth: "200px",
+                maxHeight: "200px",
+                objectFit: "cover",
+                borderRadius: "8px",
+              }}
+            />
+          ) : (
+            <div
+              style={{
+                width: "200px",
+                height: "200px",
+                backgroundColor: "#f5f5f5",
+                border: "2px solid #ddd",
+                borderRadius: "8px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
+              }}
+            >
+              <div style={{ fontSize: "48px", color: "#666" }}>📄</div>
+              <div
+                style={{ fontSize: "14px", color: "#666", textAlign: "center" }}
+              >
+                PDF Document
+              </div>
+            </div>
+          )}
           <div style={{ textAlign: "center" }}>
             <p
               style={{
@@ -143,7 +190,10 @@ const FileUploadArea: React.FC<FileUploadAreaProps> = ({
             Click to upload or drag and drop
           </p>
           <p style={{ color: "#999", margin: 0, fontSize: "14px" }}>
-            Supports: JPG, PNG, GIF, WebP
+            {acceptedFileTypes === "image" && "Supports: JPG, PNG, GIF, WebP"}
+            {acceptedFileTypes === "pdf" && "Supports: PDF files"}
+            {acceptedFileTypes === "both" &&
+              "Supports: JPG, PNG, GIF, WebP, PDF"}
           </p>
         </>
       )}

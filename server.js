@@ -56,6 +56,22 @@ const upload = multer({
   },
 });
 
+// Configure multer for PDF uploads
+const uploadPDF = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50MB limit for PDFs
+  },
+  fileFilter: (req, file, cb) => {
+    // Check if file is a PDF
+    if (file.mimetype === "application/pdf") {
+      cb(null, true);
+    } else {
+      cb(new Error("Only PDF files are allowed!"), false);
+    }
+  },
+});
+
 // Pinata configuration
 const PINATA_API_KEY = process.env.PINATA_API_KEY;
 const PINATA_SECRET_API_KEY = process.env.PINATA_SECRET_API_KEY;
@@ -179,6 +195,91 @@ async function uploadImageHandler(req, res) {
     res.status(500).json({
       error: "Failed to upload image",
       details: error.response?.data?.error || error.message,
+    });
+  }
+}
+
+// Upload PDF to Pinata
+async function uploadPDFHandler(req, res) {
+  try {
+    console.log("PDF upload request received");
+    console.log(
+      "File info:",
+      req.file
+        ? {
+            originalname: req.file.originalname,
+            mimetype: req.file.mimetype,
+            size: req.file.size,
+          }
+        : "No file"
+    );
+    console.log("Body:", req.body);
+
+    if (!req.file) {
+      return res.status(400).json({ error: "No PDF file provided" });
+    }
+
+    console.log(
+      `Uploading PDF: ${req.file.originalname}, Size: ${req.file.size} bytes`
+    );
+
+    const formData = new FormData();
+    formData.append("file", req.file.buffer, {
+      filename: req.file.originalname,
+      contentType: req.file.mimetype,
+    });
+
+    const metadata = {
+      name: req.body.name || req.file.originalname,
+      keyvalues: {
+        description: req.body.description || "PDF uploaded via API",
+        fileType: "pdf",
+        tags: Array.isArray(req.body.tags)
+          ? req.body.tags.join(",")
+          : req.body.tags || "",
+        category: req.body.category || "",
+        location: req.body.location || "",
+        artist: req.body.artist || "",
+        visibility: req.body.visibility || "visible",
+      },
+    };
+
+    console.log("Metadata:", metadata);
+    formData.append("pinataMetadata", JSON.stringify(metadata));
+    const pinataOptions = { cidVersion: 1 };
+    formData.append("pinataOptions", JSON.stringify(pinataOptions));
+
+    console.log("Making request to Pinata...");
+    const response = await axios.post(PINATA_PIN_FILE_URL, formData, {
+      headers: {
+        ...getPinataHeaders(),
+        ...formData.getHeaders(),
+      },
+    });
+
+    console.log("Pinata response:", response.data);
+
+    const result = {
+      success: true,
+      ipfsHash: response.data.IpfsHash,
+      pinSize: response.data.PinSize,
+      timestamp: response.data.Timestamp,
+      gatewayUrl: `https://copper-delicate-louse-351.mypinata.cloud/ipfs/${response.data.IpfsHash}`,
+      metadata: metadata,
+    };
+
+    res.json(result);
+  } catch (error) {
+    console.error("PDF Upload error details:");
+    console.error("Error message:", error.message);
+    console.error("Error response:", error.response?.data);
+    console.error("Error status:", error.response?.status);
+    console.error("Full error:", error);
+
+    res.status(500).json({
+      error: "Failed to upload PDF",
+      details: error.response?.data?.error || error.message,
+      statusCode: error.response?.status,
     });
   }
 }
@@ -407,6 +508,7 @@ app.get("/api/images/:imageId/downloads", async (req, res) => {
 // --- Route Registration ---
 
 app.post("/api/upload", upload.single("image"), uploadImageHandler);
+app.post("/api/upload-pdf", uploadPDF.single("image"), uploadPDFHandler);
 app.get("/api/images", getAllImagesHandler);
 app.get("/api/images/by-tag", getImagesByTagHandler); // Place before /api/images/:hash
 app.get("/api/images/:hash", getImageByHashHandler);
@@ -423,15 +525,38 @@ app.get("/api/health", (req, res) => {
 
 // Error handling middleware
 app.use((error, req, res, next) => {
+  console.error("Error middleware triggered:");
+  console.error("Error message:", error.message);
+  console.error("Error stack:", error.stack);
+  console.error("Request path:", req.path);
+  console.error("Request method:", req.method);
+
   if (error instanceof multer.MulterError) {
+    console.error("Multer error code:", error.code);
     if (error.code === "LIMIT_FILE_SIZE") {
-      return res.status(400).json({ error: "File size too large" });
+      return res.status(400).json({
+        error: "File size too large",
+        details: error.message,
+      });
     }
+    return res.status(400).json({
+      error: "File upload error",
+      details: error.message,
+    });
   }
+
   if (error.message === "Only image files are allowed!") {
     return res.status(400).json({ error: "Only image files are allowed" });
   }
-  res.status(500).json({ error: "Internal server error" });
+
+  if (error.message === "Only PDF files are allowed!") {
+    return res.status(400).json({ error: "Only PDF files are allowed" });
+  }
+
+  res.status(500).json({
+    error: "Internal server error",
+    details: process.env.NODE_ENV === "development" ? error.message : undefined,
+  });
 });
 
 // Start server

@@ -116,6 +116,13 @@ export default function CategoryPage() {
     if (fileTypeFilter !== "all") {
       filtered = filtered.filter((img) => {
         const extension = img.name.split(".").pop()?.toLowerCase();
+        if (fileTypeFilter === "pdf") {
+          return extension === "pdf";
+        } else if (fileTypeFilter === "image") {
+          return ["jpg", "jpeg", "png", "gif", "webp"].includes(
+            extension || ""
+          );
+        }
         return extension === fileTypeFilter;
       });
     }
@@ -301,11 +308,11 @@ export default function CategoryPage() {
                 color: "#888",
               }}
             >
-              <div style={{ fontSize: "48px", marginBottom: "16px" }}>📷</div>
+              <div style={{ fontSize: "48px", marginBottom: "16px" }}>📁</div>
               <h3 style={{ color: "#EBE8E2", marginBottom: "8px" }}>
-                No images found
+                No files found
               </h3>
-              <p>No images found for this category yet.</p>
+              <p>No files found for this category yet.</p>
             </div>
           )}
 

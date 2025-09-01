@@ -33,6 +33,7 @@ export interface UploadFormData {
   visibility: "visible" | "hidden";
   tags: string[];
   agreedToTerms: boolean;
+  fileType?: "image" | "pdf";
 }
 
 // Component Props Interfaces
@@ -41,6 +42,7 @@ export interface FileUploadAreaProps {
   onFileSelect: (file: File | null) => void;
   isDragOver: boolean;
   onDragStateChange: (isDragOver: boolean) => void;
+  acceptedFileTypes?: "image" | "pdf" | "both";
 }
 
 export interface TagsInputProps {
@@ -91,6 +93,7 @@ export interface UseUploadAPIReturn {
   uploading: boolean;
   uploadError: string | null;
   uploadImage: (file: File, formData: UploadFormData) => Promise<void>;
+  uploadPDF: (file: File, formData: UploadFormData) => Promise<void>;
   resetError: () => void;
 }
 
@@ -128,8 +131,14 @@ export const DEFAULT_FORM_DATA: UploadFormData = {
 };
 
 // API endpoints
+const API_BASE_URL =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:3001"
+    : "https://pinata-image-api.onrender.com";
+
 export const API_ENDPOINTS = {
-  UPLOAD: "https://pinata-image-api.onrender.com/api/upload",
-  IMAGES: "https://pinata-image-api.onrender.com/api/images",
-  DOWNLOAD: "https://pinata-image-api.onrender.com/api/download",
+  UPLOAD: `${API_BASE_URL}/api/upload`,
+  UPLOAD_PDF: `${API_BASE_URL}/api/upload-pdf`,
+  IMAGES: `${API_BASE_URL}/api/images`,
+  DOWNLOAD: `${API_BASE_URL}/api/download`,
 } as const;

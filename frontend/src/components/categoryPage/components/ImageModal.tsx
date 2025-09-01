@@ -1,6 +1,6 @@
 import React from "react";
 import { Image } from "../types";
-import ImageWithFallback from "@/components/atoms/ImageWithFallback";
+import FileWithFallback from "@/components/atoms/FileWithFallback";
 
 interface ImageModalProps {
   image: Image | null;
@@ -96,7 +96,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
             ` - Tags: ${image.tags.join(", ")}`}
         </div>
 
-        {/* Image */}
+        {/* File Content */}
         <div
           style={{
             display: "flex",
@@ -107,16 +107,31 @@ const ImageModal: React.FC<ImageModalProps> = ({
             alignItems: "center",
           }}
         >
-          <ImageWithFallback
-            hash={image.ipfsHash}
-            alt={image.metadata?.keyvalues?.altText || image.name}
-            style={{
-              width: "100%", // Take full width of container
-              maxWidth: "400px", // Maximum width constraint
-              height: "400px", // Take full height of container
-              objectFit: "contain", // Cover the container
-            }}
-          />
+          {image.name.toLowerCase().endsWith(".pdf") ? (
+            <div style={{ width: "100%", maxWidth: "400px", height: "400px" }}>
+              <FileWithFallback
+                hash={image.ipfsHash}
+                fileName={image.name}
+                alt={image.metadata?.keyvalues?.altText || image.name}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                }}
+              />
+            </div>
+          ) : (
+            <FileWithFallback
+              hash={image.ipfsHash}
+              fileName={image.name}
+              alt={image.metadata?.keyvalues?.altText || image.name}
+              style={{
+                width: "100%", // Take full width of container
+                maxWidth: "400px", // Maximum width constraint
+                height: "400px", // Take full height of container
+                objectFit: "contain", // Cover the container
+              }}
+            />
+          )}
         </div>
 
         {/* Tags + Download Row */}

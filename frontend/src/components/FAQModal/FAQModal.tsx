@@ -154,8 +154,7 @@ const FAQModal: React.FC<FAQModalProps> = ({ isOpen, onClose }) => {
                   Pinning IPFS gateways and Render-hosted tools can see requests
                   coming from your IP. If you want maximum anonymity now, you
                   can use a VPN or browsers like Tor, and check out our Tactics
-                  Guide <strong>Pre-Holochain Anonymity: A Guide to VPN</strong>
-                  .
+                  Guide.
                 </p>
               </div>
 

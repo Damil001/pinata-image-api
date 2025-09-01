@@ -7,10 +7,13 @@ export const useFileUpload = (): UseFileUploadReturn => {
   const [isDragOver, setIsDragOver] = useState(false);
 
   const handleFileSelect = (file: File | null) => {
-    if (file && file.type.startsWith("image/")) {
+    if (
+      file &&
+      (file.type.startsWith("image/") || file.type === "application/pdf")
+    ) {
       setSelectedFile(file);
     } else if (file) {
-      alert("Please select an image file");
+      alert("Please select an image or PDF file");
     } else {
       setSelectedFile(null);
     }

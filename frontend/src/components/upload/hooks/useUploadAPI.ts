@@ -1,12 +1,20 @@
 "use client";
 import { useState } from "react";
-import { UseUploadAPIReturn, UploadFormData, API_ENDPOINTS } from "../types/upload.types";
+import {
+  UseUploadAPIReturn,
+  UploadFormData,
+  API_ENDPOINTS,
+} from "../types/upload.types";
 
 export const useUploadAPI = (): UseUploadAPIReturn => {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
-  const uploadImage = async (file: File, formData: UploadFormData): Promise<void> => {
+  const uploadFile = async (
+    file: File,
+    formData: UploadFormData,
+    endpoint: string
+  ): Promise<void> => {
     if (!file) return;
 
     setUploading(true);
@@ -14,16 +22,19 @@ export const useUploadAPI = (): UseUploadAPIReturn => {
 
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append("image", file);
+      formDataToSend.append("image", file); // Both endpoints expect "image" field name
       formDataToSend.append("name", formData.imageName || file.name);
       formDataToSend.append("description", formData.description);
       formDataToSend.append("tags", formData.tags.join(","));
       formDataToSend.append("category", formData.selectedCategory);
       formDataToSend.append("location", formData.cityCountry);
       formDataToSend.append("artist", formData.artistName);
-      formDataToSend.append("visibility", formData.visibility === "hidden" ? "false" : "true");
+      formDataToSend.append(
+        "visibility",
+        formData.visibility === "hidden" ? "false" : "true"
+      );
 
-      const response = await fetch(API_ENDPOINTS.UPLOAD, {
+      const response = await fetch(endpoint, {
         method: "POST",
         body: formDataToSend,
       });
@@ -50,6 +61,20 @@ export const useUploadAPI = (): UseUploadAPIReturn => {
     }
   };
 
+  const uploadImage = async (
+    file: File,
+    formData: UploadFormData
+  ): Promise<void> => {
+    return uploadFile(file, formData, API_ENDPOINTS.UPLOAD);
+  };
+
+  const uploadPDF = async (
+    file: File,
+    formData: UploadFormData
+  ): Promise<void> => {
+    return uploadFile(file, formData, API_ENDPOINTS.UPLOAD_PDF);
+  };
+
   const resetError = () => {
     setUploadError(null);
   };
@@ -58,6 +83,7 @@ export const useUploadAPI = (): UseUploadAPIReturn => {
     uploading,
     uploadError,
     uploadImage,
+    uploadPDF,
     resetError,
   };
 };

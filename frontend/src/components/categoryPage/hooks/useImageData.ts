@@ -39,8 +39,13 @@ export const useImageData = (category: string) => {
     setError(null);
 
     try {
+      const API_BASE_URL =
+        process.env.NODE_ENV === "development"
+          ? "http://localhost:3001"
+          : "https://pinata-image-api.onrender.com";
+
       const res = await fetch(
-        `https://pinata-image-api.onrender.com/api/images?page=${page}&limit=10`,
+        `${API_BASE_URL}/api/images?page=${page}&limit=10`,
         {
           // Add timeout for Render free tier
           signal: AbortSignal.timeout(30000), // 30 second timeout
@@ -65,7 +70,7 @@ export const useImageData = (category: string) => {
           data.images.map(async (img) => {
             try {
               const downloadRes = await fetch(
-                `https://pinata-image-api.onrender.com/api/images/${img.ipfsHash}/downloads`,
+                `${API_BASE_URL}/api/images/${img.ipfsHash}/downloads`,
                 { signal: AbortSignal.timeout(10000) } // 10 second timeout for individual downloads
               );
               if (downloadRes.ok) {

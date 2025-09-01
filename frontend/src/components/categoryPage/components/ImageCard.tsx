@@ -1,6 +1,6 @@
 import React from "react";
 import { Image } from "../types";
-import ImageWithFallback from "@/components/atoms/ImageWithFallback";
+import FileWithFallback from "@/components/atoms/FileWithFallback";
 
 interface ImageCardProps {
   image: Image;
@@ -47,8 +47,9 @@ const ImageCard: React.FC<ImageCardProps> = ({
         }
       }}
     >
-      <ImageWithFallback
+      <FileWithFallback
         hash={image.ipfsHash}
+        fileName={image.name}
         alt={image.metadata?.keyvalues?.altText || image.name}
         className="w-full h-auto"
         style={{

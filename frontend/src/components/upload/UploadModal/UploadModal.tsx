@@ -42,8 +42,22 @@ const UploadModal: React.FC<UploadModalProps> = ({
     if (!fileUpload.selectedFile || !formState.isFormValid) return;
 
     try {
-      await uploadAPI.uploadImage(fileUpload.selectedFile, formState.formData);
-      setToast({ message: "Image uploaded successfully!", type: "success" });
+      const isImage = fileUpload.selectedFile.type.startsWith("image/");
+      const isPDF = fileUpload.selectedFile.type === "application/pdf";
+
+      if (isImage) {
+        await uploadAPI.uploadImage(
+          fileUpload.selectedFile,
+          formState.formData
+        );
+        setToast({ message: "Image uploaded successfully!", type: "success" });
+      } else if (isPDF) {
+        await uploadAPI.uploadPDF(fileUpload.selectedFile, formState.formData);
+        setToast({ message: "PDF uploaded successfully!", type: "success" });
+      } else {
+        throw new Error("Unsupported file type");
+      }
+
       handleClose();
       onUploadSuccess();
     } catch (error) {
@@ -159,6 +173,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
               fileUpload.handleDragLeave({} as React.DragEvent);
             }
           }}
+          acceptedFileTypes="both"
         />
 
         {/* Form Fields */}
