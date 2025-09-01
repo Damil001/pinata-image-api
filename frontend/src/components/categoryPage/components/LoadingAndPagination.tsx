@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Pagination } from "../types";
 
 interface LoadingAndPaginationProps {
@@ -8,6 +8,8 @@ interface LoadingAndPaginationProps {
   imagesCount: number;
   category: string;
   onLoadMore: () => void;
+  minImagesToLoad?: number;
+  autoLoadInitial?: boolean;
 }
 
 const LoadingAndPagination: React.FC<LoadingAndPaginationProps> = ({
@@ -17,9 +19,110 @@ const LoadingAndPagination: React.FC<LoadingAndPaginationProps> = ({
   imagesCount,
   category,
   onLoadMore,
+  minImagesToLoad = 3,
+  autoLoadInitial = true,
 }) => {
+  const hasAutoLoaded = useRef<boolean>(false);
+  const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastLoadAttempt = useRef<number>(0);
+
+  // Auto-load images if we have fewer than the minimum required
+  useEffect(() => {
+    // Clear any existing timeout
+    if (loadingTimeoutRef.current) {
+      clearTimeout(loadingTimeoutRef.current);
+      loadingTimeoutRef.current = null;
+    }
+
+    // Only auto-load if enabled and we haven't already auto-loaded
+    if (!autoLoadInitial || hasAutoLoaded.current) {
+      return;
+    }
+
+    // Prevent too frequent load attempts (debounce)
+    const now = Date.now();
+    if (now - lastLoadAttempt.current < 500) {
+      return;
+    }
+
+    // Auto-load if we have fewer images than required and more pages are available
+    if (
+      !loading &&
+      !loadingMore &&
+      imagesCount < minImagesToLoad &&
+      pagination.hasMore
+    ) {
+      // Use a small delay to prevent rapid successive calls
+      loadingTimeoutRef.current = setTimeout(() => {
+        console.log(
+          `Auto-loading more images (${imagesCount}/${minImagesToLoad})`
+        );
+        lastLoadAttempt.current = Date.now();
+        onLoadMore();
+      }, 200);
+    } else if (imagesCount >= minImagesToLoad || !pagination.hasMore) {
+      // Mark as auto-loaded once we reach the minimum or no more pages
+      hasAutoLoaded.current = true;
+    }
+
+    // Cleanup timeout on unmount
+    return () => {
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+        loadingTimeoutRef.current = null;
+      }
+    };
+  }, [
+    loading,
+    loadingMore,
+    imagesCount,
+    pagination.hasMore,
+    onLoadMore,
+    minImagesToLoad,
+    autoLoadInitial,
+  ]);
+
+  // Reset auto-load flag when category changes
+  useEffect(() => {
+    hasAutoLoaded.current = false;
+    lastLoadAttempt.current = 0;
+  }, [category]);
+
+  // Debounced load more handler to prevent multiple rapid clicks
+  const handleLoadMore = () => {
+    const now = Date.now();
+
+    // Prevent rapid clicks
+    if (now - lastLoadAttempt.current < 500) {
+      console.log("Load more clicked too quickly, ignoring");
+      return;
+    }
+
+    if (loadingMore || !pagination.hasMore) {
+      return;
+    }
+
+    // Clear any existing timeout
+    if (loadingTimeoutRef.current) {
+      clearTimeout(loadingTimeoutRef.current);
+      loadingTimeoutRef.current = null;
+    }
+
+    lastLoadAttempt.current = now;
+    onLoadMore();
+  };
+
   return (
     <>
+      <style>
+        {`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}
+      </style>
+
       {/* Load More Button */}
       {!loading && pagination.hasMore && (
         <div
@@ -30,7 +133,7 @@ const LoadingAndPagination: React.FC<LoadingAndPaginationProps> = ({
           }}
         >
           <button
-            onClick={onLoadMore}
+            onClick={handleLoadMore}
             disabled={loadingMore}
             style={{
               padding: "12px 24px",
@@ -42,6 +145,17 @@ const LoadingAndPagination: React.FC<LoadingAndPaginationProps> = ({
               fontSize: "1rem",
               fontWeight: "500",
               transition: "all 0.2s ease",
+              opacity: loadingMore ? 0.7 : 1,
+            }}
+            onMouseOver={(e) => {
+              if (!loadingMore) {
+                (e.target as HTMLButtonElement).style.background = "#ddd9d3";
+              }
+            }}
+            onMouseOut={(e) => {
+              if (!loadingMore) {
+                (e.target as HTMLButtonElement).style.background = "#EBE8E2";
+              }
             }}
           >
             {loadingMore ? "Loading..." : "Load More"}
@@ -49,7 +163,7 @@ const LoadingAndPagination: React.FC<LoadingAndPaginationProps> = ({
         </div>
       )}
 
-      {/* Loading indicator for infinite scroll */}
+      {/* Loading indicator */}
       {loadingMore && (
         <div
           style={{
@@ -93,6 +207,9 @@ const LoadingAndPagination: React.FC<LoadingAndPaginationProps> = ({
         >
           Showing {imagesCount} images for {category.toLowerCase()} category
           {!pagination.hasMore && " • All pages loaded"}
+          {imagesCount < minImagesToLoad &&
+            pagination.hasMore &&
+            ` • Auto-loading to reach ${minImagesToLoad} images...`}
         </div>
       )}
     </>
