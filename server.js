@@ -11,6 +11,8 @@ const {
   addDownload,
   getDownloadsForImage,
 } = require("./db");
+const sharp = require("sharp");
+const pdf2pic = require("pdf2pic");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -447,6 +449,98 @@ async function deleteImageHandler(req, res) {
   }
 }
 
+// Generate PDF thumbnail
+async function generatePDFThumbnailHandler(req, res) {
+  try {
+    const { hash } = req.params;
+
+    if (!hash) {
+      return res.status(400).json({ error: "PDF hash is required" });
+    }
+
+    // Try to fetch PDF from IPFS gateways
+    const gateways = [
+      "https://copper-delicate-louse-351.mypinata.cloud/ipfs",
+      "https://cloudflare-ipfs.com/ipfs",
+      "https://gateway.pinata.cloud/ipfs",
+      "https://ipfs.io/ipfs",
+    ];
+
+    let pdfBuffer = null;
+    let lastError = null;
+
+    for (const gateway of gateways) {
+      try {
+        const pdfUrl = `${gateway}/${hash}`;
+        console.log(`Trying to fetch PDF from: ${pdfUrl}`);
+
+        const response = await fetch(pdfUrl, {
+          timeout: 10000, // 10 second timeout
+        });
+
+        if (response.ok) {
+          pdfBuffer = Buffer.from(await response.arrayBuffer());
+          console.log(
+            `Successfully fetched PDF, size: ${pdfBuffer.length} bytes`
+          );
+          break;
+        }
+      } catch (error) {
+        console.warn(`Failed to fetch from ${gateway}:`, error.message);
+        lastError = error;
+        continue;
+      }
+    }
+
+    if (!pdfBuffer) {
+      console.error("Failed to fetch PDF from all gateways:", lastError);
+      return res.status(404).json({
+        error: "PDF not found or not accessible",
+        details: lastError?.message,
+      });
+    }
+
+    // Convert PDF first page to image
+    try {
+      const convert = pdf2pic.fromBuffer(pdfBuffer, {
+        density: 100, // Output resolution
+        saveFilename: "page",
+        savePath: "/tmp",
+        format: "png",
+        width: 300,
+        height: 400,
+      });
+
+      const result = await convert(1, { responseType: "buffer" });
+
+      if (result && result.buffer) {
+        // Set appropriate headers
+        res.set({
+          "Content-Type": "image/png",
+          "Cache-Control": "public, max-age=86400", // Cache for 24 hours
+          "Content-Length": result.buffer.length,
+        });
+
+        return res.send(result.buffer);
+      } else {
+        throw new Error("Failed to convert PDF to image");
+      }
+    } catch (conversionError) {
+      console.error("PDF conversion error:", conversionError);
+      return res.status(500).json({
+        error: "Failed to convert PDF to image",
+        details: conversionError.message,
+      });
+    }
+  } catch (error) {
+    console.error("PDF thumbnail generation error:", error);
+    res.status(500).json({
+      error: "Failed to generate PDF thumbnail",
+      details: error.message,
+    });
+  }
+}
+
 // Like or dislike an image
 app.post("/api/like", async (req, res) => {
   const { imageId, deviceId, action } = req.body;
@@ -512,6 +606,7 @@ app.post("/api/upload-pdf", uploadPDF.single("image"), uploadPDFHandler);
 app.get("/api/images", getAllImagesHandler);
 app.get("/api/images/by-tag", getImagesByTagHandler); // Place before /api/images/:hash
 app.get("/api/images/:hash", getImageByHashHandler);
+app.get("/api/pdf-thumbnail/:hash", generatePDFThumbnailHandler);
 app.delete("/api/images/:hash", deleteImageHandler);
 
 // Health check endpoint

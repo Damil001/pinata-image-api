@@ -13,10 +13,12 @@
   "dependencies": {
     "@react-google-maps/api": "^2.20.7",
     "next": "15.4.1",
+    "pdfjs-dist": "^5.4.149",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-google-autocomplete": "^2.7.5",
-    "react-hot-toast": "^2.5.2"
+    "react-hot-toast": "^2.5.2",
+    "react-pdf": "^10.1.0"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^4.0.1",
