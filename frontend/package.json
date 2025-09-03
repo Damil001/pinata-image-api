@@ -8,15 +8,20 @@
     "start": "next start",
     "lint": "next lint",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "build:analyze": "ANALYZE=true next build"
   },
   "dependencies": {
     "@react-google-maps/api": "^2.20.7",
+    "@react-pdf-viewer/core": "^3.12.0",
+    "@react-pdf-viewer/default-layout": "^3.12.0",
     "next": "15.4.1",
+    "pdfjs-dist": "^3.11.174",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-google-autocomplete": "^2.7.5",
-    "react-hot-toast": "^2.5.2"
+    "react-hot-toast": "^2.5.2",
+    "react-pdf": "^10.1.0"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^4.0.1",
