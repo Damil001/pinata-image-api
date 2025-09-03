@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { Image } from "@/components/upload";
+import FileWithFallback from "@/components/atoms/FileWithFallback";
 
 interface ImageGridProps {
   images: Image[];
@@ -74,9 +75,12 @@ const ImageGrid: React.FC<ImageGridProps> = ({
             }}
             onClick={() => onImageClick(img)}
           >
-            <img
-              src={img.gatewayUrl}
+            <FileWithFallback
+              hash={img.ipfsHash}
+              fileName={img.name}
               alt={img.metadata?.keyvalues?.altText || img.name}
+              thumbnailHash={img.metadata?.keyvalues?.thumbnailIpfsHash}
+              thumbnailGatewayUrl={img.thumbnail?.gatewayUrl}
               style={{
                 width: "100%",
                 height: "clamp(100px, 20vw, 130px)",
@@ -85,7 +89,6 @@ const ImageGrid: React.FC<ImageGridProps> = ({
                 display: "block",
                 transition: "filter 0.2s, transform 0.3s ease",
               }}
-              loading="lazy"
             />
 
             {/* Image Info Overlay */}

@@ -1,5 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import PDFThumbnail from "../PDFThumbnail";
+import { isPDFFile, isValidIPFSHash } from "@/utils/fileUtils";
 
 interface FileWithFallbackProps {
   hash: string;
@@ -12,6 +14,9 @@ interface FileWithFallbackProps {
   onLoad?: () => void;
   onError?: () => void;
   fallbackDelay?: number;
+  // For PDFs, this will contain the thumbnail information from backend
+  thumbnailHash?: string;
+  thumbnailGatewayUrl?: string;
 }
 
 const FileWithFallback: React.FC<FileWithFallbackProps> = ({
@@ -25,6 +30,8 @@ const FileWithFallback: React.FC<FileWithFallbackProps> = ({
   onLoad,
   onError,
   fallbackDelay = 5000,
+  thumbnailHash,
+  thumbnailGatewayUrl,
 }) => {
   const [currentSrc, setCurrentSrc] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
@@ -37,13 +44,37 @@ const FileWithFallback: React.FC<FileWithFallbackProps> = ({
     "https://gateway.pinata.cloud/ipfs",
     "https://ipfs.io/ipfs",
     "https://dweb.link/ipfs",
+    "https://cf-ipfs.com/ipfs",
+    "https://ipfs.fleek.co/ipfs",
+    "https://nftstorage.link/ipfs",
   ];
-
-  // Determine if file is PDF based on filename or metadata
-  const isPDF = fileName.toLowerCase().endsWith(".pdf");
 
   useEffect(() => {
     if (!hash) return;
+
+    // Determine if file is PDF based on filename
+    const isPDF = isPDFFile(fileName);
+    console.log(
+      `FileWithFallback useEffect: hash="${hash}", fileName="${fileName}", isPDF=${isPDF}, thumbnailHash="${thumbnailHash}"`
+    );
+
+    // For PDFs with backend-generated thumbnails, use the thumbnail directly
+    if (isPDF && thumbnailHash && thumbnailGatewayUrl) {
+      console.log(`Using backend-generated thumbnail: ${thumbnailGatewayUrl}`);
+      setCurrentSrc(thumbnailGatewayUrl);
+      setIsLoading(false);
+      onLoad?.();
+      return;
+    }
+
+    // Validate IPFS hash
+    if (!isValidIPFSHash(hash)) {
+      console.error(`Invalid IPFS hash: ${hash}`);
+      setHasError(true);
+      setIsLoading(false);
+      onError?.();
+      return;
+    }
 
     const loadFile = async (gatewayUrl: string) => {
       setIsLoading(true);
@@ -52,25 +83,34 @@ const FileWithFallback: React.FC<FileWithFallbackProps> = ({
       try {
         if (isPDF) {
           // For PDFs, just check if the URL is accessible
+          console.log(`Checking PDF accessibility: ${gatewayUrl}`);
           const response = await fetch(gatewayUrl, { method: "HEAD" });
           if (response.ok) {
+            console.log(`PDF is accessible: ${gatewayUrl}`);
             setCurrentSrc(gatewayUrl);
             setIsLoading(false);
             onLoad?.();
           } else {
-            throw new Error("PDF not accessible");
+            throw new Error(`PDF not accessible: ${response.status}`);
           }
         } else {
           // For images, use the existing image loading logic
+          console.log(`Loading image: ${gatewayUrl}`);
           const img = new Image();
 
           const timeoutPromise = new Promise((_, reject) => {
-            setTimeout(() => reject(new Error("Image load timeout")), 10000);
+            setTimeout(() => reject(new Error("Image load timeout")), 15000);
           });
 
           const loadPromise = new Promise((resolve, reject) => {
-            img.onload = resolve;
-            img.onerror = reject;
+            img.onload = () => {
+              console.log(`Successfully loaded image from ${gatewayUrl}`);
+              resolve(true);
+            };
+            img.onerror = (error) => {
+              console.warn(`Image load error from ${gatewayUrl}:`, error);
+              reject(new Error("Image load failed"));
+            };
             img.src = gatewayUrl;
           });
 
@@ -82,23 +122,34 @@ const FileWithFallback: React.FC<FileWithFallbackProps> = ({
         }
       } catch (error) {
         console.warn(`Failed to load file from ${gatewayUrl}:`, error);
+        console.log(
+          `Trying next gateway... (${gatewayIndex + 1}/${gateways.length})`
+        );
 
-        setTimeout(() => {
-          if (gatewayIndex < gateways.length - 1) {
-            setGatewayIndex((prev) => prev + 1);
-          } else {
-            setHasError(true);
-            setIsLoading(false);
-            onError?.();
-          }
-        }, fallbackDelay);
+        // Try next gateway immediately instead of waiting
+        if (gatewayIndex < gateways.length - 1) {
+          setGatewayIndex((prev) => prev + 1);
+        } else {
+          console.error(`All gateways failed for hash: ${hash}`);
+          setHasError(true);
+          setIsLoading(false);
+          onError?.();
+        }
       }
     };
 
     const currentGateway = gateways[gatewayIndex];
     const fileUrl = `${currentGateway}/${hash}`;
     loadFile(fileUrl);
-  }, [hash, gatewayIndex, fallbackDelay, onLoad, onError, isPDF]);
+  }, [
+    hash,
+    gatewayIndex,
+    fileName,
+    thumbnailHash,
+    thumbnailGatewayUrl,
+    onLoad,
+    onError,
+  ]);
 
   // Reset when hash changes
   useEffect(() => {
@@ -107,6 +158,9 @@ const FileWithFallback: React.FC<FileWithFallbackProps> = ({
     setIsLoading(true);
     setHasError(false);
   }, [hash]);
+
+  // Calculate isPDF for rendering
+  const isPDF = isPDFFile(fileName);
 
   if (isLoading) {
     return (
@@ -134,6 +188,9 @@ const FileWithFallback: React.FC<FileWithFallbackProps> = ({
           <div className="text-gray-500 text-sm text-center">
             Failed to load {isPDF ? "PDF" : "image"}
           </div>
+          <div className="text-gray-400 text-xs text-center mt-1 break-all">
+            Hash: {hash.substring(0, 20)}...
+          </div>
           <button
             onClick={() => {
               setGatewayIndex(0);
@@ -150,44 +207,53 @@ const FileWithFallback: React.FC<FileWithFallbackProps> = ({
   }
 
   if (isPDF) {
-    return (
-      <div className={className} style={{ width, height, ...style }}>
-        <div
-          style={{
-            width: "100%",
-            height: "100%",
-            backgroundColor: "#f5f5f5",
-            border: "2px solid #ddd",
-            borderRadius: "8px",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "8px",
-            cursor: "pointer",
-          }}
-          onClick={() => window.open(currentSrc, "_blank")}
-        >
-          <div style={{ fontSize: "48px", color: "#666" }}>📄</div>
+    // If we have a backend-generated thumbnail, display it as an image
+    if (
+      thumbnailHash &&
+      thumbnailGatewayUrl &&
+      currentSrc === thumbnailGatewayUrl
+    ) {
+      return (
+        <div className={className} style={{ width, height, ...style }}>
+          <img
+            src={currentSrc}
+            alt={alt}
+            style={{ objectFit: "contain", width: "100%", height: "100%" }}
+            onLoad={onLoad}
+            onError={onError}
+          />
+          {/* PDF overlay indicator */}
           <div
             style={{
-              fontSize: "14px",
-              color: "#666",
-              textAlign: "center",
-              padding: "0 8px",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              maxWidth: "100%",
+              position: "absolute",
+              top: "8px",
+              right: "8px",
+              background: "rgba(0,0,0,0.7)",
+              color: "white",
+              padding: "4px 8px",
+              borderRadius: "4px",
+              fontSize: "12px",
+              fontWeight: "bold",
             }}
           >
-            {fileName}
-          </div>
-          <div style={{ fontSize: "12px", color: "#999" }}>
-            Click to view PDF
+            PDF
           </div>
         </div>
-      </div>
+      );
+    }
+
+    // Otherwise, use the PDFThumbnail component for client-side generation
+    return (
+      <PDFThumbnail
+        pdfUrl={currentSrc}
+        fileName={fileName}
+        className={className}
+        width={width}
+        height={height}
+        style={style}
+        onLoad={onLoad}
+        onError={onError}
+      />
     );
   }
 

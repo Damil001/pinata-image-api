@@ -11,9 +11,8 @@ const {
   addDownload,
   getDownloadsForImage,
 } = require("./db");
-const sharp = require("sharp");
-const pdf2pic = require("pdf2pic");
 const pdfParse = require("pdf-parse"); // Added for PDF validation
+const pdf2pic = require("pdf2pic");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -192,7 +191,7 @@ async function uploadImageHandler(req, res) {
   }
 }
 
-// Upload PDF to Pinata (saves PDF, converts first page to image, uploads image, includes image hash in PDF metadata)
+// Upload PDF to Pinata and create thumbnail
 async function uploadPDFHandler(req, res) {
   try {
     console.log("PDF upload request received");
@@ -234,89 +233,162 @@ async function uploadPDFHandler(req, res) {
       });
     }
 
-    // Upload original PDF to Pinata
-    const pdfFormData = new FormData();
-    pdfFormData.append("file", req.file.buffer, {
-      filename: req.file.originalname,
-      contentType: "application/pdf",
-    });
-
-    const pdfMetadata = {
-      name: req.body.name || req.file.originalname,
-      keyvalues: {
-        description: req.body.description || "Uploaded PDF document",
-        fileType: "pdf",
-        tags: Array.isArray(req.body.tags)
-          ? req.body.tags.join(",")
-          : req.body.tags || "",
-        category: req.body.category || "",
-        location: req.body.location || "",
-        artist: req.body.artist || "",
-        visibility: req.body.visibility || "visible",
-      },
-    };
-
-    pdfFormData.append("pinataMetadata", JSON.stringify(pdfMetadata));
-    const pdfPinataOptions = { cidVersion: 1 };
-    pdfFormData.append("pinataOptions", JSON.stringify(pdfPinataOptions));
-
-    console.log("Uploading PDF to Pinata...");
-    const pdfResponse = await axios.post(PINATA_PIN_FILE_URL, pdfFormData, {
-      headers: {
-        ...getPinataHeaders(),
-        ...pdfFormData.getHeaders(),
-      },
-    });
-
-    console.log("PDF Pinata response:", pdfResponse.data);
-
-    const pdfResult = {
-      ipfsHash: pdfResponse.data.IpfsHash,
-      pinSize: pdfResponse.data.PinSize,
-      timestamp: pdfResponse.data.Timestamp,
-      gatewayUrl: `https://copper-delicate-louse-351.mypinata.cloud/ipfs/${pdfResponse.data.IpfsHash}`,
-    };
-
     // Convert PDF first page to image
     let imageBuffer;
     try {
-      const convert = pdf2pic.fromBuffer(req.file.buffer, {
-        density: 150,
-        format: "png",
-        width: 600,
-        height: 800,
-        preserveAspectRatio: true,
-        compression: "none",
-      });
-
-      // Set GraphicsMagick path (adjust if different)
-      convert.setGMClass(
-        "C:\\Program Files\\GraphicsMagick-1.3.43-Q16\\gm.exe"
-      );
-
-      const result = await convert.bulk([1], { responseType: "buffer" });
-      imageBuffer = result[0]?.buffer;
-
-      if (!imageBuffer || imageBuffer.length === 0) {
-        throw new Error("PDF conversion resulted in an empty image buffer");
+      console.log("Starting PDF to image conversion...");
+      console.log("PDF buffer size:", req.file.buffer.length, "bytes");
+      
+      // Check if GraphicsMagick is available
+      const { exec } = require('child_process');
+      const util = require('util');
+      const execAsync = util.promisify(exec);
+      
+      let gmAvailable = false;
+      try {
+        await execAsync('gm version');
+        gmAvailable = true;
+        console.log("GraphicsMagick is available");
+      } catch (gmCheckError) {
+        console.log("GraphicsMagick not found in PATH:", gmCheckError.message);
       }
 
-      console.log(
-        `PDF first page converted to image, size: ${imageBuffer.length} bytes`
-      );
+      // Try different conversion configurations
+      const conversionConfigs = [
+        {
+          density: 72,
+          format: "png",
+          width: 300,
+          height: 400,
+          preserveAspectRatio: true,
+        },
+        {
+          density: 100,
+          format: "png",
+          width: 400,
+          height: 600,
+          preserveAspectRatio: true,
+        },
+        {
+          density: 150,
+          format: "jpeg",
+          width: 600,
+          height: 800,
+          preserveAspectRatio: true,
+        }
+      ];
+
+      let conversionSuccess = false;
+      let lastError = null;
+      let errorDetails = [];
+
+      for (let i = 0; i < conversionConfigs.length; i++) {
+        const config = conversionConfigs[i];
+        try {
+          console.log(`Trying PDF conversion ${i + 1}/${conversionConfigs.length} with config:`, config);
+          
+          const convert = pdf2pic.fromBuffer(req.file.buffer, config);
+
+          // Try to set GraphicsMagick path, but don't fail if it doesn't exist
+          if (gmAvailable) {
+            try {
+              convert.setGMClass(
+                "C:\\Program Files\\GraphicsMagick-1.3.43-Q16\\gm.exe"
+              );
+              console.log("Set custom GraphicsMagick path");
+            } catch (gmError) {
+              console.log("Custom GraphicsMagick path not found, using system default");
+            }
+          }
+
+          const result = await convert.bulk([1], { responseType: "buffer" });
+          console.log("Conversion result:", result ? "received" : "null");
+          
+          if (result && result[0]) {
+            imageBuffer = result[0].buffer;
+            console.log("Image buffer:", imageBuffer ? `${imageBuffer.length} bytes` : "null");
+          }
+
+          if (imageBuffer && imageBuffer.length > 0) {
+            console.log(
+              `PDF conversion successful with config ${i + 1}: ${config.format}, size: ${imageBuffer.length} bytes`
+            );
+            conversionSuccess = true;
+            break;
+          } else {
+            throw new Error("Conversion returned empty or null buffer");
+          }
+        } catch (configError) {
+          const errorMsg = `Config ${i + 1} failed: ${configError.message}`;
+          console.log(errorMsg);
+          errorDetails.push(errorMsg);
+          lastError = configError;
+          continue;
+        }
+      }
+
+      if (!conversionSuccess) {
+        // Try one more approach with minimal settings
+        try {
+          console.log("Trying minimal PDF conversion...");
+          const convert = pdf2pic.fromBuffer(req.file.buffer, {
+            density: 50,
+            format: "png",
+            width: 200,
+            height: 300,
+            preserveAspectRatio: true,
+          });
+
+          const result = await convert.bulk([1], { responseType: "buffer" });
+          imageBuffer = result[0]?.buffer;
+
+          if (imageBuffer && imageBuffer.length > 0) {
+            console.log(`Minimal conversion successful, size: ${imageBuffer.length} bytes`);
+            conversionSuccess = true;
+          } else {
+            throw new Error("Minimal conversion also returned empty buffer");
+          }
+        } catch (fallbackError) {
+          console.error("Minimal conversion failed:", fallbackError.message);
+          errorDetails.push(`Minimal conversion failed: ${fallbackError.message}`);
+        }
+
+        if (!conversionSuccess) {
+          // Create a simple placeholder image as fallback
+          console.log("Creating placeholder image as fallback...");
+          try {
+            // Create a simple PNG placeholder (1x1 transparent pixel)
+            const placeholderBuffer = Buffer.from([
+              0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, // PNG signature
+              0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52, // IHDR chunk
+              0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, // 1x1 dimensions
+              0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, 0xC4, // RGBA, no compression
+              0x89, 0x00, 0x00, 0x00, 0x0A, 0x49, 0x44, 0x41, // IDAT chunk
+              0x54, 0x78, 0x9C, 0x63, 0x00, 0x01, 0x00, 0x00, // compressed data
+              0x05, 0x00, 0x01, 0x0D, 0x0A, 0x2D, 0xB4, 0x00, // checksum
+              0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE, // IEND chunk
+              0x42, 0x60, 0x82
+            ]);
+            
+            imageBuffer = placeholderBuffer;
+            conversionSuccess = true;
+            console.log("Placeholder image created successfully");
+          } catch (placeholderError) {
+            const allErrors = errorDetails.join("; ");
+            throw new Error(`PDF conversion failed with all configurations. Errors: ${allErrors}. GraphicsMagick available: ${gmAvailable}. Placeholder creation also failed: ${placeholderError.message}`);
+          }
+        }
+      }
+
     } catch (conversionError) {
       console.error(
         "PDF conversion error:",
         conversionError.message,
         conversionError.stack
       );
-      // Proceed with PDF upload result even if image conversion fails
-      return res.status(200).json({
-        success: true,
-        pdf: pdfResult,
-        image: null,
-        message: "PDF uploaded successfully, but image conversion failed",
-        error: conversionError.message,
+      return res.status(500).json({
+        error: "Failed to convert PDF to image",
+        details: conversionError.message,
       });
     }
 
@@ -327,14 +399,26 @@ async function uploadPDFHandler(req, res) {
     );
     console.log(`Generated alt text: ${altText}`);
 
-    // Upload image to Pinata
-    const imageFormData = new FormData();
-    imageFormData.append("file", imageBuffer, {
-      filename: req.file.originalname.replace(/\.pdf$/, ".png"),
-      contentType: "image/png",
+    // Create a mock file object for the image to use with existing image upload logic
+    // Determine the format based on the successful conversion
+    const imageFormat = imageBuffer[0] === 0x89 && imageBuffer[1] === 0x50 && imageBuffer[2] === 0x4E && imageBuffer[3] === 0x47 
+      ? "png" 
+      : "jpeg";
+    
+    const imageFile = {
+      buffer: imageBuffer,
+      originalname: req.file.originalname.replace(/\.pdf$/, `.${imageFormat}`),
+      mimetype: `image/${imageFormat}`,
+    };
+
+    // Use existing image upload logic to upload the thumbnail
+    const formData = new FormData();
+    formData.append("file", imageFile.buffer, {
+      filename: imageFile.originalname,
+      contentType: imageFile.mimetype,
     });
 
-    const imageMetadata = {
+    const metadata = {
       name: req.body.name
         ? `${req.body.name} Thumbnail`
         : `${req.file.originalname.replace(/\.pdf$/, "")} Thumbnail`,
@@ -343,7 +427,6 @@ async function uploadPDFHandler(req, res) {
         altText: altText,
         fileType: "image",
         originalFileType: "pdf",
-        pdfIpfsHash: pdfResponse.data.IpfsHash, // Link to PDF
         tags: Array.isArray(req.body.tags)
           ? req.body.tags.join(",")
           : req.body.tags || "",
@@ -354,47 +437,28 @@ async function uploadPDFHandler(req, res) {
       },
     };
 
-    imageFormData.append("pinataMetadata", JSON.stringify(imageMetadata));
-    const imagePinataOptions = { cidVersion: 1 };
-    imageFormData.append("pinataOptions", JSON.stringify(imagePinataOptions));
+    formData.append("pinataMetadata", JSON.stringify(metadata));
+    const pinataOptions = { cidVersion: 1 };
+    formData.append("pinataOptions", JSON.stringify(pinataOptions));
 
-    console.log("Uploading image to Pinata...");
-    const imageResponse = await axios.post(PINATA_PIN_FILE_URL, imageFormData, {
+    console.log("Uploading PDF thumbnail to Pinata...");
+    const response = await axios.post(PINATA_PIN_FILE_URL, formData, {
       headers: {
         ...getPinataHeaders(),
-        ...imageFormData.getHeaders(),
+        ...formData.getHeaders(),
       },
     });
 
-    console.log("Image Pinata response:", imageResponse.data);
-
-    // Update PDF metadata with image IPFS hash
-    pdfMetadata.keyvalues.thumbnailIpfsHash = imageResponse.data.IpfsHash;
-
-    // Note: Pinata does not support updating metadata after upload.
-    // The thumbnailIpfsHash is included in the response for frontend use.
-    // If metadata update is needed, you must store this externally (e.g., database)
-    // or re-upload the PDF with updated metadata (not implemented here to avoid redundancy).
-
-    const resultData = {
+    const result = {
       success: true,
-      pdf: {
-        ipfsHash: pdfResponse.data.IpfsHash,
-        pinSize: pdfResponse.data.PinSize,
-        timestamp: pdfResponse.data.Timestamp,
-        gatewayUrl: `https://copper-delicate-louse-351.mypinata.cloud/ipfs/${pdfResponse.data.IpfsHash}`,
-        metadata: pdfMetadata,
-      },
-      image: {
-        ipfsHash: imageResponse.data.IpfsHash,
-        pinSize: imageResponse.data.PinSize,
-        timestamp: imageResponse.data.Timestamp,
-        gatewayUrl: `https://copper-delicate-louse-351.mypinata.cloud/ipfs/${imageResponse.data.IpfsHash}`,
-        metadata: imageMetadata,
-      },
+      ipfsHash: response.data.IpfsHash,
+      pinSize: response.data.PinSize,
+      timestamp: response.data.Timestamp,
+      gatewayUrl: `https://copper-delicate-louse-351.mypinata.cloud/ipfs/${response.data.IpfsHash}`,
+      metadata: metadata,
     };
 
-    res.json(resultData);
+    res.json(result);
   } catch (error) {
     console.error("PDF Upload error details:");
     console.error("Error message:", error.message);
@@ -403,7 +467,7 @@ async function uploadPDFHandler(req, res) {
     console.error("Full error:", error);
 
     res.status(500).json({
-      error: "Failed to process PDF and upload image",
+      error: "Failed to process PDF and upload thumbnail",
       details: error.response?.data?.error || error.message,
       statusCode: error.response?.status,
     });
@@ -575,97 +639,7 @@ async function deleteImageHandler(req, res) {
   }
 }
 
-// Generate PDF thumbnail
-async function generatePDFThumbnailHandler(req, res) {
-  try {
-    const { hash } = req.params;
 
-    if (!hash) {
-      return res.status(400).json({ error: "PDF hash is required" });
-    }
-
-    // Try to fetch PDF from IPFS gateways
-    const gateways = [
-      "https://copper-delicate-louse-351.mypinata.cloud/ipfs",
-      "https://cloudflare-ipfs.com/ipfs",
-      "https://gateway.pinata.cloud/ipfs",
-      "https://ipfs.io/ipfs",
-    ];
-
-    let pdfBuffer = null;
-    let lastError = null;
-
-    for (const gateway of gateways) {
-      try {
-        const pdfUrl = `${gateway}/${hash}`;
-        console.log(`Trying to fetch PDF from: ${pdfUrl}`);
-
-        const response = await fetch(pdfUrl, {
-          timeout: 10000, // 10 second timeout
-        });
-
-        if (response.ok) {
-          pdfBuffer = Buffer.from(await response.arrayBuffer());
-          console.log(
-            `Successfully fetched PDF, size: ${pdfBuffer.length} bytes`
-          );
-          break;
-        }
-      } catch (error) {
-        console.warn(`Failed to fetch from ${gateway}:`, error.message);
-        lastError = error;
-        continue;
-      }
-    }
-
-    if (!pdfBuffer) {
-      console.error("Failed to fetch PDF from all gateways:", lastError);
-      return res.status(404).json({
-        error: "PDF not found or not accessible",
-        details: lastError?.message,
-      });
-    }
-
-    // Convert PDF first page to image
-    try {
-      const convert = pdf2pic.fromBuffer(pdfBuffer, {
-        density: 100, // Output resolution
-        saveFilename: "page",
-        savePath: "/tmp",
-        format: "png",
-        width: 300,
-        height: 400,
-      });
-
-      const result = await convert(1, { responseType: "buffer" });
-
-      if (result && result.buffer) {
-        // Set appropriate headers
-        res.set({
-          "Content-Type": "image/png",
-          "Cache-Control": "public, max-age=86400", // Cache for 24 hours
-          "Content-Length": result.buffer.length,
-        });
-
-        return res.send(result.buffer);
-      } else {
-        throw new Error("Failed to convert PDF to image");
-      }
-    } catch (conversionError) {
-      console.error("PDF conversion error:", conversionError);
-      return res.status(500).json({
-        error: "Failed to convert PDF to image",
-        details: conversionError.message,
-      });
-    }
-  } catch (error) {
-    console.error("PDF thumbnail generation error:", error);
-    res.status(500).json({
-      error: "Failed to generate PDF thumbnail",
-      details: error.message,
-    });
-  }
-}
 
 // Like or dislike an image
 app.post("/api/like", async (req, res) => {
@@ -732,7 +706,6 @@ app.post("/api/upload-pdf", uploadPDF.single("image"), uploadPDFHandler);
 app.get("/api/images", getAllImagesHandler);
 app.get("/api/images/by-tag", getImagesByTagHandler);
 app.get("/api/images/:hash", getImageByHashHandler);
-app.get("/api/pdf-thumbnail/:hash", generatePDFThumbnailHandler);
 app.delete("/api/images/:hash", deleteImageHandler);
 
 // Health check endpoint

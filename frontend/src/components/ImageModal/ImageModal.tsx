@@ -1,6 +1,8 @@
 "use client";
 import React from "react";
 import { Image } from "@/components/upload";
+import FileWithFallback from "@/components/atoms/FileWithFallback";
+import { isPDFFile } from "@/utils/fileUtils";
 
 // Helper function to get artist name based on visibility and availability
 function getDisplayArtist(metadata?: Image["metadata"]): string {
@@ -119,7 +121,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
           </button>
         </div>
 
-        {/* Image */}
+        {/* Image or PDF */}
         <div
           style={{
             display: "flex",
@@ -127,15 +129,63 @@ const ImageModal: React.FC<ImageModalProps> = ({
             padding: "10px 20px",
           }}
         >
-          <img
-            src={image.gatewayUrl}
-            alt={image.metadata?.keyvalues?.altText || image.name}
-            style={{
-              maxWidth: "100%",
-              maxHeight: "400px",
-              objectFit: "contain",
-            }}
-          />
+          {isPDFFile(image.name) ? (
+            <div
+              style={{
+                width: "100%",
+                maxWidth: "400px",
+                height: "500px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "#f5f5f5",
+                borderRadius: "8px",
+                border: "2px solid #ddd",
+                cursor: "pointer",
+              }}
+              onClick={() => window.open(image.gatewayUrl, "_blank")}
+            >
+              <div
+                style={{
+                  fontSize: "64px",
+                  color: "#666",
+                  marginBottom: "16px",
+                }}
+              >
+                📄
+              </div>
+              <div
+                style={{
+                  fontSize: "18px",
+                  color: "#333",
+                  textAlign: "center",
+                  marginBottom: "8px",
+                  fontWeight: "500",
+                }}
+              >
+                {image.name}
+              </div>
+              <div
+                style={{ fontSize: "14px", color: "#666", textAlign: "center" }}
+              >
+                Click to view PDF
+              </div>
+            </div>
+          ) : (
+            <FileWithFallback
+              hash={image.ipfsHash}
+              fileName={image.name}
+              alt={image.metadata?.keyvalues?.altText || image.name}
+              thumbnailHash={image.metadata?.keyvalues?.thumbnailIpfsHash}
+              thumbnailGatewayUrl={image.thumbnail?.gatewayUrl}
+              style={{
+                maxWidth: "100%",
+                maxHeight: "400px",
+                objectFit: "contain",
+              }}
+            />
+          )}
         </div>
 
         {/* Bottom Info Section */}
@@ -184,7 +234,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
                 border: "none",
                 cursor: "pointer",
               }}
-              title="Download Image"
+              title={isPDFFile(image.name) ? "Download PDF" : "Download Image"}
             >
               <div
                 style={{

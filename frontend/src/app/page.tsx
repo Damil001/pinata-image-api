@@ -1,7 +1,7 @@
 "use client";
 import MenuItem from "@/components/atoms/menu-item/menu-item";
 import Menu from "@/components/atoms/menu/menu";
-import Link from "next/link";
+
 import { Anonymous_Pro, IBM_Plex_Mono } from "next/font/google";
 import { useEffect, useRef, useState } from "react";
 import FAQModal from "@/components/FAQModal";
