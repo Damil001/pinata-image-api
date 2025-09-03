@@ -37,6 +37,13 @@ const PDFThumbnailClient: React.FC<PDFThumbnailClientProps> = ({
         setIsLoading(true);
         setHasError(false);
 
+        // Check if we're in a browser environment
+        if (typeof window === "undefined") {
+          setUseFallback(true);
+          setIsLoading(false);
+          return;
+        }
+
         // Dynamically import PDF.js only on client side
         const pdfjsLib = await import("pdfjs-dist");
 
