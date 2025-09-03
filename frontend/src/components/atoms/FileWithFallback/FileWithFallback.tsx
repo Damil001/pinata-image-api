@@ -13,6 +13,8 @@ interface FileWithFallbackProps {
   onError?: () => void;
   fallbackDelay?: number;
   onClick?: () => void;
+  thumbnailHash?: string;
+  thumbnailGatewayUrl?: string;
 }
 
 const FileWithFallback: React.FC<FileWithFallbackProps> = ({
@@ -27,6 +29,8 @@ const FileWithFallback: React.FC<FileWithFallbackProps> = ({
   onError,
   fallbackDelay = 5000,
   onClick,
+  thumbnailHash,
+  thumbnailGatewayUrl,
 }) => {
   const [currentSrc, setCurrentSrc] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
@@ -100,7 +104,16 @@ const FileWithFallback: React.FC<FileWithFallbackProps> = ({
     const currentGateway = gateways[gatewayIndex];
     const fileUrl = `${currentGateway}/${hash}`;
     loadFile(fileUrl);
-  }, [hash, gatewayIndex, fallbackDelay, onLoad, onError, isPDF]);
+  }, [
+    hash,
+    gatewayIndex,
+    fallbackDelay,
+    onLoad,
+    onError,
+    isPDF,
+    thumbnailHash,
+    thumbnailGatewayUrl,
+  ]);
 
   // Reset when hash changes
   useEffect(() => {
