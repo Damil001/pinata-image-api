@@ -51,6 +51,8 @@ const ImageCard: React.FC<ImageCardProps> = ({
         hash={image.ipfsHash}
         fileName={image.name}
         alt={image.metadata?.keyvalues?.altText || image.name}
+        thumbnailHash={image.metadata?.keyvalues?.thumbnailIpfsHash}
+        thumbnailGatewayUrl={image.thumbnail?.gatewayUrl}
         className="w-full h-auto"
         style={{
           height: "clamp(100px, 20vw, 130px)",

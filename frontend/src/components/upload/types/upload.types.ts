@@ -21,7 +21,17 @@ export interface Image {
       description?: string;
       altText?: string;
       fileType?: string;
+      originalFileType?: string;
+      pdfIpfsHash?: string;
+      thumbnailIpfsHash?: string;
     };
+  };
+  // For PDFs, this will contain the thumbnail information
+  thumbnail?: {
+    ipfsHash: string;
+    gatewayUrl: string;
+    pinSize: number;
+    timestamp: string;
   };
 }
 

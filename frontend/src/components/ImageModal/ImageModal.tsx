@@ -1,6 +1,8 @@
 "use client";
 import React from "react";
 import { Image } from "@/components/upload";
+import FileWithFallback from "@/components/atoms/FileWithFallback";
+import { isPDFFile } from "@/utils/fileUtils";
 
 // Helper function to get artist name based on visibility and availability
 function getDisplayArtist(metadata?: Image["metadata"]): string {
