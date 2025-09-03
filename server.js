@@ -13,6 +13,7 @@ const {
 } = require("./db");
 const sharp = require("sharp");
 const pdf2pic = require("pdf2pic");
+const pdfParse = require("pdf-parse"); // Added for PDF validation
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -27,7 +28,7 @@ app.use(
       "https://pinata-image-git-main-damil001s-projects.vercel.app",
       /\.vercel\.app$/,
       "https://thearchive.weprintrevolution.com",
-      "https://www.enterthearchive.com", // Allow all Vercel deployment URLs
+      "https://www.enterthearchive.com",
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -49,7 +50,6 @@ const upload = multer({
     fileSize: 10 * 1024 * 1024, // 10MB limit
   },
   fileFilter: (req, file, cb) => {
-    // Check if file is an image
     if (file.mimetype.startsWith("image/")) {
       cb(null, true);
     } else {
@@ -65,7 +65,6 @@ const uploadPDF = multer({
     fileSize: 50 * 1024 * 1024, // 50MB limit for PDFs
   },
   fileFilter: (req, file, cb) => {
-    // Check if file is a PDF
     if (file.mimetype === "application/pdf") {
       cb(null, true);
     } else {
@@ -105,9 +104,7 @@ const getPinataHeaders = () => {
 // Generate alt text for an image using OpenAI Vision API
 async function generateAltText(imageBuffer, filename) {
   try {
-    // Convert image buffer to base64
     const base64Image = imageBuffer.toString("base64");
-
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
@@ -129,11 +126,9 @@ async function generateAltText(imageBuffer, filename) {
       ],
       max_tokens: 100,
     });
-
     return response.choices[0].message.content.trim();
   } catch (error) {
     console.error("Alt text generation error:", error);
-    // Return a default alt text if generation fails
     return `Image of ${filename || "uploaded content"}`;
   }
 }
@@ -146,14 +141,11 @@ async function uploadImageHandler(req, res) {
     if (!req.file) {
       return res.status(400).json({ error: "No image file provided" });
     }
-
-    // Generate alt text using OpenAI Vision API
     const altText = await generateAltText(
       req.file.buffer,
       req.file.originalname
     );
     console.log(`Generated alt text: ${altText}`);
-
     const formData = new FormData();
     formData.append("file", req.file.buffer, {
       filename: req.file.originalname,
@@ -163,7 +155,7 @@ async function uploadImageHandler(req, res) {
       name: req.body.name || req.file.originalname,
       keyvalues: {
         description: req.body.description || "Image uploaded via API",
-        altText: altText, // Add the generated alt text
+        altText: altText,
         tags: Array.isArray(req.body.tags)
           ? req.body.tags.join(",")
           : req.body.tags || "",
@@ -173,7 +165,6 @@ async function uploadImageHandler(req, res) {
         visibility: req.body.visibility || "visible",
       },
     };
-
     formData.append("pinataMetadata", JSON.stringify(metadata));
     const pinataOptions = { cidVersion: 1 };
     formData.append("pinataOptions", JSON.stringify(pinataOptions));
@@ -201,7 +192,7 @@ async function uploadImageHandler(req, res) {
   }
 }
 
-// Upload PDF to Pinata
+// Upload PDF to Pinata (saves PDF, converts first page to image, uploads image, includes image hash in PDF metadata)
 async function uploadPDFHandler(req, res) {
   try {
     console.log("PDF upload request received");
@@ -222,19 +213,38 @@ async function uploadPDFHandler(req, res) {
     }
 
     console.log(
-      `Uploading PDF: ${req.file.originalname}, Size: ${req.file.size} bytes`
+      `Processing PDF: ${req.file.originalname}, Size: ${req.file.size} bytes`
     );
 
-    const formData = new FormData();
-    formData.append("file", req.file.buffer, {
+    // Validate PDF
+    try {
+      const pdfData = await pdfParse(req.file.buffer);
+      console.log("PDF Validation:", {
+        numPages: pdfData.numpages,
+        info: pdfData.info,
+      });
+      if (pdfData.numpages < 1) {
+        throw new Error("PDF has no pages");
+      }
+    } catch (validationError) {
+      console.error("PDF validation error:", validationError.message);
+      return res.status(400).json({
+        error: "Invalid or corrupted PDF",
+        details: validationError.message,
+      });
+    }
+
+    // Upload original PDF to Pinata
+    const pdfFormData = new FormData();
+    pdfFormData.append("file", req.file.buffer, {
       filename: req.file.originalname,
-      contentType: req.file.mimetype,
+      contentType: "application/pdf",
     });
 
-    const metadata = {
+    const pdfMetadata = {
       name: req.body.name || req.file.originalname,
       keyvalues: {
-        description: req.body.description || "PDF uploaded via API",
+        description: req.body.description || "Uploaded PDF document",
         fileType: "pdf",
         tags: Array.isArray(req.body.tags)
           ? req.body.tags.join(",")
@@ -246,31 +256,145 @@ async function uploadPDFHandler(req, res) {
       },
     };
 
-    console.log("Metadata:", metadata);
-    formData.append("pinataMetadata", JSON.stringify(metadata));
-    const pinataOptions = { cidVersion: 1 };
-    formData.append("pinataOptions", JSON.stringify(pinataOptions));
+    pdfFormData.append("pinataMetadata", JSON.stringify(pdfMetadata));
+    const pdfPinataOptions = { cidVersion: 1 };
+    pdfFormData.append("pinataOptions", JSON.stringify(pdfPinataOptions));
 
-    console.log("Making request to Pinata...");
-    const response = await axios.post(PINATA_PIN_FILE_URL, formData, {
+    console.log("Uploading PDF to Pinata...");
+    const pdfResponse = await axios.post(PINATA_PIN_FILE_URL, pdfFormData, {
       headers: {
         ...getPinataHeaders(),
-        ...formData.getHeaders(),
+        ...pdfFormData.getHeaders(),
       },
     });
 
-    console.log("Pinata response:", response.data);
+    console.log("PDF Pinata response:", pdfResponse.data);
 
-    const result = {
-      success: true,
-      ipfsHash: response.data.IpfsHash,
-      pinSize: response.data.PinSize,
-      timestamp: response.data.Timestamp,
-      gatewayUrl: `https://copper-delicate-louse-351.mypinata.cloud/ipfs/${response.data.IpfsHash}`,
-      metadata: metadata,
+    const pdfResult = {
+      ipfsHash: pdfResponse.data.IpfsHash,
+      pinSize: pdfResponse.data.PinSize,
+      timestamp: pdfResponse.data.Timestamp,
+      gatewayUrl: `https://copper-delicate-louse-351.mypinata.cloud/ipfs/${pdfResponse.data.IpfsHash}`,
     };
 
-    res.json(result);
+    // Convert PDF first page to image
+    let imageBuffer;
+    try {
+      const convert = pdf2pic.fromBuffer(req.file.buffer, {
+        density: 150,
+        format: "png",
+        width: 600,
+        height: 800,
+        preserveAspectRatio: true,
+        compression: "none",
+      });
+
+      // Set GraphicsMagick path (adjust if different)
+      convert.setGMClass(
+        "C:\\Program Files\\GraphicsMagick-1.3.43-Q16\\gm.exe"
+      );
+
+      const result = await convert.bulk([1], { responseType: "buffer" });
+      imageBuffer = result[0]?.buffer;
+
+      if (!imageBuffer || imageBuffer.length === 0) {
+        throw new Error("PDF conversion resulted in an empty image buffer");
+      }
+
+      console.log(
+        `PDF first page converted to image, size: ${imageBuffer.length} bytes`
+      );
+    } catch (conversionError) {
+      console.error(
+        "PDF conversion error:",
+        conversionError.message,
+        conversionError.stack
+      );
+      // Proceed with PDF upload result even if image conversion fails
+      return res.status(200).json({
+        success: true,
+        pdf: pdfResult,
+        image: null,
+        message: "PDF uploaded successfully, but image conversion failed",
+        error: conversionError.message,
+      });
+    }
+
+    // Generate alt text for the converted image
+    const altText = await generateAltText(
+      imageBuffer,
+      req.file.originalname.replace(/\.pdf$/, ".png")
+    );
+    console.log(`Generated alt text: ${altText}`);
+
+    // Upload image to Pinata
+    const imageFormData = new FormData();
+    imageFormData.append("file", imageBuffer, {
+      filename: req.file.originalname.replace(/\.pdf$/, ".png"),
+      contentType: "image/png",
+    });
+
+    const imageMetadata = {
+      name: req.body.name
+        ? `${req.body.name} Thumbnail`
+        : `${req.file.originalname.replace(/\.pdf$/, "")} Thumbnail`,
+      keyvalues: {
+        description: req.body.description || "Thumbnail of uploaded PDF",
+        altText: altText,
+        fileType: "image",
+        originalFileType: "pdf",
+        pdfIpfsHash: pdfResponse.data.IpfsHash, // Link to PDF
+        tags: Array.isArray(req.body.tags)
+          ? req.body.tags.join(",")
+          : req.body.tags || "",
+        category: req.body.category || "",
+        location: req.body.location || "",
+        artist: req.body.artist || "",
+        visibility: req.body.visibility || "visible",
+      },
+    };
+
+    imageFormData.append("pinataMetadata", JSON.stringify(imageMetadata));
+    const imagePinataOptions = { cidVersion: 1 };
+    imageFormData.append("pinataOptions", JSON.stringify(imagePinataOptions));
+
+    console.log("Uploading image to Pinata...");
+    const imageResponse = await axios.post(PINATA_PIN_FILE_URL, imageFormData, {
+      headers: {
+        ...getPinataHeaders(),
+        ...imageFormData.getHeaders(),
+      },
+    });
+
+    console.log("Image Pinata response:", imageResponse.data);
+
+    // Update PDF metadata with image IPFS hash
+    pdfMetadata.keyvalues.thumbnailIpfsHash = imageResponse.data.IpfsHash;
+
+    // Note: Pinata does not support updating metadata after upload.
+    // The thumbnailIpfsHash is included in the response for frontend use.
+    // If metadata update is needed, you must store this externally (e.g., database)
+    // or re-upload the PDF with updated metadata (not implemented here to avoid redundancy).
+
+    const resultData = {
+      success: true,
+      pdf: {
+        ipfsHash: pdfResponse.data.IpfsHash,
+        pinSize: pdfResponse.data.PinSize,
+        timestamp: pdfResponse.data.Timestamp,
+        gatewayUrl: `https://copper-delicate-louse-351.mypinata.cloud/ipfs/${pdfResponse.data.IpfsHash}`,
+        metadata: pdfMetadata,
+      },
+      image: {
+        ipfsHash: imageResponse.data.IpfsHash,
+        pinSize: imageResponse.data.PinSize,
+        timestamp: imageResponse.data.Timestamp,
+        gatewayUrl: `https://copper-delicate-louse-351.mypinata.cloud/ipfs/${imageResponse.data.IpfsHash}`,
+        metadata: imageMetadata,
+      },
+    };
+
+    res.json(resultData);
   } catch (error) {
     console.error("PDF Upload error details:");
     console.error("Error message:", error.message);
@@ -279,7 +403,7 @@ async function uploadPDFHandler(req, res) {
     console.error("Full error:", error);
 
     res.status(500).json({
-      error: "Failed to upload PDF",
+      error: "Failed to process PDF and upload image",
       details: error.response?.data?.error || error.message,
       statusCode: error.response?.status,
     });
@@ -412,8 +536,10 @@ async function getImageByHashHandler(req, res) {
         size: image.size,
         timestamp: image.date_pinned,
         name: image.metadata?.name || "Untitled",
-        description: image.metadata?.description || "",
-        tags: image.metadata?.tags || [],
+        description: item.metadata?.keyvalues?.description || "",
+        tags: image.metadata?.keyvalues?.tags
+          ? image.metadata.keyvalues.tags.split(",").map((t) => t.trim())
+          : [],
         gatewayUrl: `https://copper-delicate-louse-351.mypinata.cloud/ipfs/${image.ipfs_pin_hash}`,
         pinataUrl: `https://pinata.cloud/ipfs/${image.ipfs_pin_hash}`,
       },
@@ -604,7 +730,7 @@ app.get("/api/images/:imageId/downloads", async (req, res) => {
 app.post("/api/upload", upload.single("image"), uploadImageHandler);
 app.post("/api/upload-pdf", uploadPDF.single("image"), uploadPDFHandler);
 app.get("/api/images", getAllImagesHandler);
-app.get("/api/images/by-tag", getImagesByTagHandler); // Place before /api/images/:hash
+app.get("/api/images/by-tag", getImagesByTagHandler);
 app.get("/api/images/:hash", getImageByHashHandler);
 app.get("/api/pdf-thumbnail/:hash", generatePDFThumbnailHandler);
 app.delete("/api/images/:hash", deleteImageHandler);
