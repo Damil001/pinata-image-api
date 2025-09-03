@@ -91,8 +91,8 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
           <input
             type="text"
             id="search-input"
-            aria-label="Search images by tags"
-            placeholder="Search tags..."
+            aria-label="Search images by tags, names, descriptions, and locations"
+            placeholder="Search tags, names, descriptions, locations..."
             value={searchInput}
             onChange={(e) => onSearchInputChange(e.target.value)}
             onKeyPress={onSearchKeyPress}

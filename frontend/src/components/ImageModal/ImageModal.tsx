@@ -73,6 +73,11 @@ const ImageModal: React.FC<ImageModalProps> = ({
 }) => {
   if (!isOpen || !image) return null;
 
+  // Check if the file is a PDF
+  const isPDF =
+    image.name.toLowerCase().endsWith(".pdf") ||
+    image.metadata?.keyvalues?.fileType === "pdf";
+
   return (
     <div
       style={{
@@ -119,23 +124,49 @@ const ImageModal: React.FC<ImageModalProps> = ({
           </button>
         </div>
 
-        {/* Image */}
+        {/* Image or PDF */}
         <div
           style={{
             display: "flex",
             justifyContent: "center",
             padding: "10px 20px",
+            height: isPDF ? "600px" : "auto",
           }}
         >
-          <img
-            src={image.gatewayUrl}
-            alt={image.metadata?.keyvalues?.altText || image.name}
-            style={{
-              maxWidth: "100%",
-              maxHeight: "400px",
-              objectFit: "contain",
-            }}
-          />
+          {isPDF ? (
+            <>
+              <style jsx>{`
+                iframe::-webkit-scrollbar {
+                  display: none !important;
+                }
+              `}</style>
+              <iframe
+                src={`${image.gatewayUrl}#toolbar=1&navpanes=1&scrollbar=0&view=FitH`}
+                className="hide-scrollbar"
+                style={{
+                  width: "100%",
+                  height: "400px",
+                  border: "none",
+                  borderRadius: "4px",
+                  overflow: "hidden",
+                  scrollbarWidth: "none",
+                  msOverflowStyle: "none",
+                }}
+                title={`PDF: ${image.name}`}
+                scrolling="no"
+              />
+            </>
+          ) : (
+            <img
+              src={image.gatewayUrl}
+              alt={image.metadata?.keyvalues?.altText || image.name}
+              style={{
+                maxWidth: "100%",
+                maxHeight: "400px",
+                objectFit: "contain",
+              }}
+            />
+          )}
         </div>
 
         {/* Bottom Info Section */}
@@ -184,7 +215,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
                 border: "none",
                 cursor: "pointer",
               }}
-              title="Download Image"
+              title={`Download ${isPDF ? "PDF" : "Image"}`}
             >
               <div
                 style={{

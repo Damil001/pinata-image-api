@@ -20,6 +20,7 @@ export interface Image {
       visibility?: string;
       description?: string;
       altText?: string;
+      fileType?: string;
     };
   };
 }

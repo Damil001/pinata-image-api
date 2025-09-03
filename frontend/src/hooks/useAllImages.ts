@@ -212,18 +212,26 @@ export const useAllImages = ({
   const filteredAndSortedImages = useMemo(() => {
     let filtered = [...images];
 
-    // Apply search filter
+    // Apply general search filter (includes tags, names, descriptions, and locations)
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (img) =>
-          img.name.toLowerCase().includes(query) ||
-          img.description?.toLowerCase().includes(query) ||
-          (img.tags &&
-            img.tags.some((tag) => tag.toLowerCase().includes(query))) ||
-          (img.metadata?.keyvalues?.tags &&
-            img.metadata.keyvalues.tags.toLowerCase().includes(query))
-      );
+      filtered = filtered.filter((img) => {
+        // Search in name
+        if (img.name.toLowerCase().includes(query)) return true;
+        
+        // Search in description
+        if (img.description?.toLowerCase().includes(query)) return true;
+        
+        // Search in tags
+        const imageTags = img.tags || img.metadata?.keyvalues?.tags?.split(",").map((tag) => tag.trim()) || [];
+        if (imageTags.some((tag) => tag.toLowerCase().includes(query))) return true;
+        
+        // Search in location
+        const location = img.metadata?.keyvalues?.location || "";
+        if (location.toLowerCase().includes(query)) return true;
+        
+        return false;
+      });
     }
 
     // Apply tag filter

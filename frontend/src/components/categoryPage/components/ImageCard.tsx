@@ -59,6 +59,7 @@ const ImageCard: React.FC<ImageCardProps> = ({
           display: "block",
           transition: "filter 0.2s, transform 0.3s ease",
         }}
+        onClick={onClick}
       />
 
       {/* Hidden description for screen readers */}

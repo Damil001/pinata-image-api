@@ -112,6 +112,32 @@ export default function CategoryPage() {
       });
     }
 
+    // Apply general search filter (includes tags, names, descriptions, and locations)
+    if (searchInput.trim()) {
+      const query = searchInput.toLowerCase();
+      filtered = filtered.filter((img) => {
+        // Search in name
+        if (img.name.toLowerCase().includes(query)) return true;
+
+        // Search in description
+        if (img.description?.toLowerCase().includes(query)) return true;
+
+        // Search in tags
+        const imageTags =
+          img.tags ||
+          img.metadata?.keyvalues?.tags?.split(",").map((tag) => tag.trim()) ||
+          [];
+        if (imageTags.some((tag) => tag.toLowerCase().includes(query)))
+          return true;
+
+        // Search in location
+        const location = img.metadata?.keyvalues?.location || "";
+        if (location.toLowerCase().includes(query)) return true;
+
+        return false;
+      });
+    }
+
     // Apply file type filter
     if (fileTypeFilter !== "all") {
       filtered = filtered.filter((img) => {
@@ -146,7 +172,7 @@ export default function CategoryPage() {
     });
 
     return filtered;
-  }, [images, selectedTags, fileTypeFilter, sortBy]);
+  }, [images, selectedTags, searchInput, fileTypeFilter, sortBy]);
 
   // Clear all filters
   const clearFilters = () => {
@@ -170,7 +196,18 @@ export default function CategoryPage() {
   };
 
   const handleDownload = async (image: Image) => {
-    await downloadImage(image, deviceId, refreshImages);
+    try {
+      console.log("Starting download for:", image.name);
+      await downloadImage(image, deviceId, refreshImages);
+      console.log("Download completed successfully");
+    } catch (error) {
+      console.error("Download failed:", error);
+      alert(
+        `Download failed: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    }
   };
 
   // Infinite scroll handler

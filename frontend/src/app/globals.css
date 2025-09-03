@@ -122,5 +122,39 @@ button:focus,
   widows: 2;
 }
 
+/* Hide scrollbars for PDF iframes */
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* WebKit */
+}
+
+/* Target scrollbars inside iframe content */
+.hide-scrollbar iframe,
+.hide-scrollbar embed,
+.hide-scrollbar object {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.hide-scrollbar iframe::-webkit-scrollbar,
+.hide-scrollbar embed::-webkit-scrollbar,
+.hide-scrollbar object::-webkit-scrollbar {
+  display: none; /* WebKit */
+}
+
+/* Target PDF viewer internal scrollbars */
+iframe[src*=".pdf"] {
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* Internet Explorer 10+ */
+}
+
+iframe[src*=".pdf"]::-webkit-scrollbar {
+  display: none !important; /* WebKit */
+}
+
 /* Responsive text sizing for better flow */
 

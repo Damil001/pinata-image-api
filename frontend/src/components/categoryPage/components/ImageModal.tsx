@@ -23,6 +23,12 @@ const ImageModal: React.FC<ImageModalProps> = ({
   onDownload,
 }) => {
   if (!isOpen || !image) return null;
+
+  // Check if the file is a PDF
+  const isPDF =
+    image.name.toLowerCase().endsWith(".pdf") ||
+    image.metadata?.keyvalues?.fileType === "pdf";
+
   console.log("ImageModal rendered with image:", image);
   return (
     <div
@@ -105,20 +111,32 @@ const ImageModal: React.FC<ImageModalProps> = ({
             flex: 1, // Take up remaining space
             minHeight: 0, // Allow shrinking
             alignItems: "center",
+            height: isPDF ? "80vh" : "auto",
           }}
         >
-          {image.name.toLowerCase().endsWith(".pdf") ? (
-            <div style={{ width: "100%", maxWidth: "400px", height: "400px" }}>
-              <FileWithFallback
-                hash={image.ipfsHash}
-                fileName={image.name}
-                alt={image.metadata?.keyvalues?.altText || image.name}
+          {isPDF ? (
+            <>
+              <style jsx>{`
+                iframe::-webkit-scrollbar {
+                  display: none !important;
+                }
+              `}</style>
+              <iframe
+                src={`https://copper-delicate-louse-351.mypinata.cloud/ipfs/${image.ipfsHash}#toolbar=1&navpanes=1&scrollbar=0&view=FitH`}
+                className="hide-scrollbar"
                 style={{
                   width: "100%",
                   height: "100%",
+                  border: "none",
+                  borderRadius: "4px",
+                  overflow: "hidden",
+                  scrollbarWidth: "none",
+                  msOverflowStyle: "none",
                 }}
+                title={`PDF: ${image.name}`}
+                scrolling="no"
               />
-            </div>
+            </>
           ) : (
             <FileWithFallback
               hash={image.ipfsHash}
@@ -130,6 +148,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
                 height: "400px", // Take full height of container
                 objectFit: "contain", // Cover the container
               }}
+              onClick={() => {}} // No action needed in modal
             />
           )}
         </div>
@@ -180,7 +199,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
                 border: "none",
                 cursor: "pointer",
               }}
-              title="Download Image"
+              title={`Download ${isPDF ? "PDF" : "Image"}`}
             >
               <div
                 style={{
