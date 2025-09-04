@@ -85,13 +85,12 @@ const ImageModal: React.FC<ImageModalProps> = ({
       <div
         style={{
           width: isMobile ? "100vw" : "min(500px, 90vw)",
-          height: isMobile ? "100vh" : "auto",
           background: "rgba(51, 54, 57, 1)",
           display: "flex",
           flexDirection: "column",
           borderRadius: "0px",
           maxHeight: isMobile ? "100vh" : "calc(100vh - 120px)",
-          overflow: "hidden",
+          overflow: isMobile && isPDF ? "hidden" : "hidden",
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -151,10 +150,11 @@ const ImageModal: React.FC<ImageModalProps> = ({
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            padding: isMobile ? "0px" : "10px 20px",
+            padding: isMobile ? "20px" : "10px 20px",
             minHeight: 0,
             position: "relative",
             overflow: "hidden",
+            height: isMobile ? "300px" : "100%",
           }}
         >
           {isPDF ? (
@@ -179,53 +179,67 @@ const ImageModal: React.FC<ImageModalProps> = ({
                 }
                 @media (max-width: 768px) {
                   .pdf-iframe {
-                    height: 300px;
-                    width: calc(100% - 20px);
-                    max-height: 300px;
-                    margin: 10px;
+                    width: 100%;
+                    height: calc(100vh - 200px);
+                    max-height: calc(100vh - 200px);
+                    margin: 0;
+                    border-radius: 0;
                   }
                 }
               `}</style>
-              {!iframeLoaded && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    color: "white",
-                    fontSize: "16px",
-                    zIndex: 5,
-                    height: "300px",
-                  }}
-                >
-                  Loading PDF...
-                </div>
-              )}
-              <iframe
-                src={`${pdfUrl}#toolbar=${isMobile ? "0" : "1"}&navpanes=${
-                  isMobile ? "0" : "1"
-                }&scrollbar=0&view=FitH&zoom=${isMobile ? "page-fit" : "auto"}`}
-                className="pdf-iframe hide-scrollbar"
+              <div
                 style={{
-                  width: isMobile ? "calc(100% - 20px)" : "100%",
-                  height: isMobile ? "calc(100% - 20px)" : "100%",
-                  maxHeight: isMobile ? "300px" : "100%",
-                  border: "none",
-                  borderRadius: "4px",
+                  width: "100%",
+                  height: "100%",
+                  backgroundColor: "#f5f5f5",
+                  border: "2px solid #ddd",
+                  borderRadius: isMobile ? "0" : "8px",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "8px",
+                  position: "relative",
                   overflow: "hidden",
-                  scrollbarWidth: "none",
-                  msOverflowStyle: "none",
-                  WebkitOverflowScrolling: "touch",
-                  touchAction: "manipulation",
-                  margin: isMobile ? "10px" : "0",
                 }}
-                title={`PDF: ${image.name}`}
-                scrolling="yes"
-                allowFullScreen={true}
-                onLoad={() => setIframeLoaded(true)}
-                onError={() => setIframeLoaded(true)}
-              />
+              >
+                {!iframeLoaded && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      color: "#666",
+                      fontSize: "16px",
+                      zIndex: 5,
+                    }}
+                  >
+                    Loading PDF...
+                  </div>
+                )}
+                <iframe
+                  src={`${pdfUrl}#toolbar=${isMobile ? "0" : "1"}&navpanes=${
+                    isMobile ? "0" : "1"
+                  }&scrollbar=0&view=FitH&zoom=${isMobile ? "page-fit" : "auto"}`}
+                  className="pdf-iframe hide-scrollbar"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    border: "none",
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    overflow: "hidden",
+                    scrollbarWidth: "none",
+                    msOverflowStyle: "none",
+                  }}
+                  title={`PDF Preview: ${image.name}`}
+                  scrolling="no"
+                  onLoad={() => setIframeLoaded(true)}
+                  onError={() => setIframeLoaded(true)}
+                />
+              </div>
             </>
           ) : (
             <div
@@ -257,21 +271,21 @@ const ImageModal: React.FC<ImageModalProps> = ({
         <div
           style={{
             background: "#2a2a2a",
-            padding:
-              isMobile && isPDF ? "6px 10px" : isMobile ? "12px" : "20px",
+            padding: isMobile && isPDF ? "4px 8px" : isMobile ? "12px" : "20px",
             color: "#fff",
             flexShrink: 0,
             overflow: "auto",
-            fontSize: isMobile && isPDF ? "0.75rem" : isMobile ? "0.9rem" : "1rem",
+            fontSize:
+              isMobile && isPDF ? "0.7rem" : isMobile ? "0.9rem" : "1rem",
           }}
         >
           <div
-                          style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: isMobile && isPDF ? "8px" : "16px",
-              }}
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: isMobile && isPDF ? "4px" : "16px",
+            }}
           >
             {/* Tags */}
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
@@ -283,9 +297,9 @@ const ImageModal: React.FC<ImageModalProps> = ({
                     style={{
                       background: "#555",
                       color: "#fff",
-                      padding: "6px 16px",
+                      padding: isMobile && isPDF ? "4px 12px" : "6px 16px",
                       borderRadius: "20px",
-                      fontSize: "0.9rem",
+                      fontSize: isMobile && isPDF ? "0.7rem" : "0.9rem",
                     }}
                   >
                     {typeof tag === "string" ? tag.trim() : tag}
@@ -317,15 +331,19 @@ const ImageModal: React.FC<ImageModalProps> = ({
 
           {/* Origin and Artist */}
           <div
-            style={{ fontSize: "0.9rem", marginBottom: "4px", color: "#ccc" }}
+            style={{
+              fontSize: isMobile && isPDF ? "0.65rem" : "0.9rem",
+              marginBottom: isMobile && isPDF ? "1px" : "4px",
+              color: "#ccc",
+            }}
           >
             <span style={{ color: "#fff", fontWeight: "500" }}>ORIGIN:</span>{" "}
             {image.metadata?.keyvalues?.location || "Unknown"}
           </div>
           <div
             style={{
-              fontSize: "0.9rem",
-              marginBottom: "16px",
+              fontSize: isMobile && isPDF ? "0.65rem" : "0.9rem",
+              marginBottom: isMobile && isPDF ? "4px" : "16px",
               color: "#ccc",
             }}
           >
@@ -336,7 +354,8 @@ const ImageModal: React.FC<ImageModalProps> = ({
           {/* Category */}
           <div
             style={{
-              fontSize: isMobile && isPDF ? "1.2rem" : "1.8rem",
+              fontSize:
+                isMobile && isPDF ? "0.9rem" : isMobile ? "1.4rem" : "1.8rem",
               fontWeight: "bold",
               letterSpacing: "0.1em",
               fontFamily: "monospace",

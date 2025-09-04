@@ -194,9 +194,10 @@ const ImageModal: React.FC<ImageModalProps> = ({
                 iframe::-webkit-scrollbar {
                   display: none !important;
                 }
-                .pdf-iframe {
+                .pdf-iframe1 {
                   width: 100%;
-                  height: 100%;
+                  height: 300px;
+                  max-height: 300px;
                   border: none;
                   border-radius: 4px;
                   overflow: hidden;
@@ -205,13 +206,13 @@ const ImageModal: React.FC<ImageModalProps> = ({
                   -webkit-overflow-scrolling: touch;
                   touch-action: manipulation;
                 }
-                .pdf-iframe::-webkit-scrollbar {
+                .pdf-iframe1::-webkit-scrollbar {
                   display: none;
                 }
                 @media (max-width: 768px) {
-                  .pdf-iframe {
-                    height: calc(100% - 20px);
-                    width: calc(100% - 20px);
+                  .pdf-iframe1 {
+                    height: 300px;
+                    width: 100%;
                     max-height: 300px;
                     margin: 10px;
                   }
@@ -236,7 +237,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
                 src={`${pdfUrl}#toolbar=${isMobile ? "0" : "1"}&navpanes=${
                   isMobile ? "0" : "1"
                 }&scrollbar=0&view=FitH&zoom=${isMobile ? "page-fit" : "auto"}`}
-                className="pdf-iframe hide-scrollbar"
+                className="pdf-iframe1 hide-scrollbar"
                 style={{
                   width: isMobile ? "calc(100% - 20px)" : "100%",
                   height: isMobile ? "calc(100% - 20px)" : "100%",
