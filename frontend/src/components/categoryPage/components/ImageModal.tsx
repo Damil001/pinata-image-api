@@ -179,8 +179,10 @@ const ImageModal: React.FC<ImageModalProps> = ({
                 }
                 @media (max-width: 768px) {
                   .pdf-iframe {
-                    height: 100%;
-                    width: 100%;
+                    height: 300px;
+                    width: calc(100% - 20px);
+                    max-height: 300px;
+                    margin: 10px;
                   }
                 }
               `}</style>
@@ -194,6 +196,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
                     color: "white",
                     fontSize: "16px",
                     zIndex: 5,
+                    height: "300px",
                   }}
                 >
                   Loading PDF...
@@ -205,8 +208,9 @@ const ImageModal: React.FC<ImageModalProps> = ({
                 }&scrollbar=0&view=FitH&zoom=${isMobile ? "page-fit" : "auto"}`}
                 className="pdf-iframe hide-scrollbar"
                 style={{
-                  width: "100%",
-                  height: "100%",
+                  width: isMobile ? "calc(100% - 20px)" : "100%",
+                  height: isMobile ? "calc(100% - 20px)" : "100%",
+                  maxHeight: isMobile ? "300px" : "100%",
                   border: "none",
                   borderRadius: "4px",
                   overflow: "hidden",
@@ -214,6 +218,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
                   msOverflowStyle: "none",
                   WebkitOverflowScrolling: "touch",
                   touchAction: "manipulation",
+                  margin: isMobile ? "10px" : "0",
                 }}
                 title={`PDF: ${image.name}`}
                 scrolling="yes"
@@ -248,102 +253,98 @@ const ImageModal: React.FC<ImageModalProps> = ({
           )}
         </div>
 
-        {/* Tags + Download Row - Only show on mobile if not PDF */}
-        {(!isPDF || !isMobile) && (
+        {/* Tags + Download Row - Show for all files, but compact on mobile PDF */}
+        <div
+          style={{
+            background: "#2a2a2a",
+            padding:
+              isMobile && isPDF ? "6px 10px" : isMobile ? "12px" : "20px",
+            color: "#fff",
+            flexShrink: 0,
+            overflow: "auto",
+            fontSize: isMobile && isPDF ? "0.75rem" : isMobile ? "0.9rem" : "1rem",
+          }}
+        >
           <div
-            style={{
-              background: "#2a2a2a",
-              padding: isMobile ? "16px" : "20px",
-              color: "#fff",
-              flexShrink: 0,
-              overflow: "auto",
-            }}
-          >
-            <div
-              style={{
+                          style={{
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                marginBottom: "16px",
+                marginBottom: isMobile && isPDF ? "8px" : "16px",
               }}
-            >
-              {/* Tags */}
-              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                {(
-                  image.tags ||
-                  image.metadata?.keyvalues?.tags?.split(",") ||
-                  []
-                )
-                  .slice(0, 2)
-                  .map((tag, index) => (
-                    <span
-                      key={index}
-                      style={{
-                        background: "#555",
-                        color: "#fff",
-                        padding: "6px 16px",
-                        borderRadius: "20px",
-                        fontSize: "0.9rem",
-                      }}
-                    >
-                      {typeof tag === "string" ? tag.trim() : tag}
-                    </span>
-                  ))}
-              </div>
+          >
+            {/* Tags */}
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+              {(image.tags || image.metadata?.keyvalues?.tags?.split(",") || [])
+                .slice(0, 2)
+                .map((tag, index) => (
+                  <span
+                    key={index}
+                    style={{
+                      background: "#555",
+                      color: "#fff",
+                      padding: "6px 16px",
+                      borderRadius: "20px",
+                      fontSize: "0.9rem",
+                    }}
+                  >
+                    {typeof tag === "string" ? tag.trim() : tag}
+                  </span>
+                ))}
+            </div>
 
-              {/* Download Button */}
-              <button
-                onClick={() => onDownload(image)}
+            {/* Download Button */}
+            <button
+              onClick={() => onDownload(image)}
+              style={{
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+              }}
+              title={`Download ${isPDF ? "PDF" : "Image"}`}
+            >
+              <div
                 style={{
-                  background: "transparent",
-                  border: "none",
-                  cursor: "pointer",
+                  width: 0,
+                  height: 0,
+                  borderLeft: "12px solid transparent",
+                  borderRight: "12px solid transparent",
+                  borderTop: "16px solid rgba(255, 0, 0, 1)",
                 }}
-                title={`Download ${isPDF ? "PDF" : "Image"}`}
-              >
-                <div
-                  style={{
-                    width: 0,
-                    height: 0,
-                    borderLeft: "12px solid transparent",
-                    borderRight: "12px solid transparent",
-                    borderTop: "16px solid rgba(255, 0, 0, 1)",
-                  }}
-                />
-              </button>
-            </div>
-
-            {/* Origin and Artist */}
-            <div
-              style={{ fontSize: "0.9rem", marginBottom: "4px", color: "#ccc" }}
-            >
-              <span style={{ color: "#fff", fontWeight: "500" }}>ORIGIN:</span>{" "}
-              {image.metadata?.keyvalues?.location || "Unknown"}
-            </div>
-            <div
-              style={{
-                fontSize: "0.9rem",
-                marginBottom: "16px",
-                color: "#ccc",
-              }}
-            >
-              <span style={{ color: "#fff", fontWeight: "500" }}>NODE:</span>{" "}
-              {getDisplayArtist(image.metadata)}
-            </div>
-
-            {/* Category */}
-            <div
-              style={{
-                fontSize: "1.8rem",
-                fontWeight: "bold",
-                letterSpacing: "0.1em",
-                fontFamily: "monospace",
-              }}
-            >
-              {image.metadata?.keyvalues?.category?.toUpperCase() || "POSTER"}
-            </div>
+              />
+            </button>
           </div>
-        )}
+
+          {/* Origin and Artist */}
+          <div
+            style={{ fontSize: "0.9rem", marginBottom: "4px", color: "#ccc" }}
+          >
+            <span style={{ color: "#fff", fontWeight: "500" }}>ORIGIN:</span>{" "}
+            {image.metadata?.keyvalues?.location || "Unknown"}
+          </div>
+          <div
+            style={{
+              fontSize: "0.9rem",
+              marginBottom: "16px",
+              color: "#ccc",
+            }}
+          >
+            <span style={{ color: "#fff", fontWeight: "500" }}>NODE:</span>{" "}
+            {getDisplayArtist(image.metadata)}
+          </div>
+
+          {/* Category */}
+          <div
+            style={{
+              fontSize: isMobile && isPDF ? "1.2rem" : "1.8rem",
+              fontWeight: "bold",
+              letterSpacing: "0.1em",
+              fontFamily: "monospace",
+            }}
+          >
+            {image.metadata?.keyvalues?.category?.toUpperCase() || "POSTER"}
+          </div>
+        </div>
       </div>
     </div>
   );
