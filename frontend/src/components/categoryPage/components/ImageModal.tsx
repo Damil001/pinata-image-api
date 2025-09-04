@@ -181,8 +181,8 @@ const ImageModal: React.FC<ImageModalProps> = ({
                 @media (max-width: 768px) {
                   .pdf-iframe {
                     width: 100%;
-                    height: 100%;
-                    max-height: 100%;
+                    height: 300px;
+                    max-height: 300px;
                     margin: 0;
                     border-radius: 0;
                   }
