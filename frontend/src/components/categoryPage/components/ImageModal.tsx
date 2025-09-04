@@ -56,7 +56,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
   );
   console.log("ImageModal - Gateway URL:", image.gatewayUrl);
   console.log("ImageModal - IPFS Hash:", image.ipfsHash);
-
+  console.log("damil");
   // Construct PDF URL with fallback
   const pdfUrl =
     image.gatewayUrl ||
@@ -164,7 +164,9 @@ const ImageModal: React.FC<ImageModalProps> = ({
                   display: none !important;
                 }
                 .pdf-iframe {
-                  width: 100%;
+                  width: 1px;
+                  min-width: 100%;
+                  *width: 100%;
                   height: 300px;
                   max-height: 300px;
                   border: none;
@@ -220,10 +222,8 @@ const ImageModal: React.FC<ImageModalProps> = ({
                   </div>
                 )}
                 <iframe
-                  src={`${pdfUrl}#toolbar=${isMobile ? "0" : "1"}&navpanes=${
-                    isMobile ? "0" : "1"
-                  }&scrollbar=0&view=FitH&zoom=${
-                    isMobile ? "page-fit" : "auto"
+                  src={`${pdfUrl}#toolbar=${isMobile ? "0" : "1"}&zoom=${
+                    isMobile ? "10" : "100"
                   }`}
                   className="pdf-iframe hide-scrollbar"
                   style={{
