@@ -156,5 +156,64 @@ iframe[src*=".pdf"]::-webkit-scrollbar {
   display: none !important; /* WebKit */
 }
 
+/* Enhanced mobile PDF iframe support */
+@media (max-width: 768px) {
+  /* Mobile-specific PDF iframe improvements */
+  iframe[src*=".pdf"] {
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: manipulation !important;
+    overscroll-behavior: contain !important;
+    -webkit-transform: translateZ(0) !important; /* Force hardware acceleration */
+    transform: translateZ(0) !important;
+  }
+  
+  /* Improve touch scrolling on mobile */
+  .pdf-container {
+    -webkit-overflow-scrolling: touch;
+    touch-action: manipulation;
+    overscroll-behavior: contain;
+  }
+  
+  /* Better mobile modal handling */
+  .modal-content {
+    -webkit-overflow-scrolling: touch;
+    touch-action: manipulation;
+  }
+  
+  /* Prevent zoom on input focus for mobile */
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+  
+  /* Improve touch targets */
+  button, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Additional PDF viewer optimizations */
+.pdf-iframe {
+  -webkit-overflow-scrolling: touch;
+  touch-action: manipulation;
+  overscroll-behavior: contain;
+}
+
+/* Prevent text selection on PDF controls */
+.pdf-container * {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Allow text selection inside PDF content */
+.pdf-iframe {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
 /* Responsive text sizing for better flow */
 
