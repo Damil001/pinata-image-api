@@ -1,0 +1,86 @@
+.pdfContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f8f9fa;
+  border: 2px dashed #dee2e6;
+  border-radius: 12px;
+  padding: 2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 200px;
+}
+
+.pdfContainer:hover {
+  background: #e9ecef;
+  border-color: #adb5bd;
+  transform: scale(1.02);
+}
+
+.pdfIcon {
+  font-size: 4rem;
+  color: #dc3545;
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.fileName {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #495057;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.instruction {
+  font-size: 0.9rem;
+  color: #6c757d;
+  text-align: center;
+  font-style: italic;
+}
+
+.downloadButton {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.downloadButton:hover {
+  background: #0056b3;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .pdfContainer {
+    padding: 1.5rem;
+    min-height: 150px;
+  }
+  
+  .pdfIcon {
+    font-size: 3rem;
+  }
+  
+  .fileName {
+    font-size: 1rem;
+  }
+  
+  .instruction {
+    font-size: 0.8rem;
+  }
+  
+  .downloadButton {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+}

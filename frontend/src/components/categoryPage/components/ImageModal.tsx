@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Image } from "../types";
 import FileWithFallback from "@/components/atoms/FileWithFallback";
+import SimplePDFDisplay from "@/components/atoms/PDFViewer/SimplePDFDisplay";
 
 interface ImageModalProps {
   image: Image | null;
@@ -23,7 +24,6 @@ const ImageModal: React.FC<ImageModalProps> = ({
   onDownload,
 }) => {
   const [isMobile, setIsMobile] = useState(false);
-  const [iframeLoaded, setIframeLoaded] = useState(false);
 
   // Detect mobile device
   useEffect(() => {
@@ -158,92 +158,25 @@ const ImageModal: React.FC<ImageModalProps> = ({
           }}
         >
           {isPDF ? (
-            <>
-              <style jsx>{`
-                iframe::-webkit-scrollbar {
-                  display: none !important;
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                padding: isMobile ? "10px" : "20px",
+              }}
+            >
+              <SimplePDFDisplay
+                pdfUrl={pdfUrl}
+                fileName={image.name}
+                height={
+                  isMobile ? "calc(100vh - 200px)" : "calc(100vh - 120px)"
                 }
-                .pdf-iframe {
-                  width: 1px;
-                  min-width: 100%;
-                  *width: 100%;
-                  height: 300px;
-                  max-height: 300px;
-                  border: none;
-                  border-radius: 4px;
-                  overflow: hidden;
-                  scrollbar-width: none;
-                  -ms-overflow-style: none;
-                  -webkit-overflow-scrolling: touch;
-                  touch-action: manipulation;
-                }
-                .pdf-iframe::-webkit-scrollbar {
-                  display: none;
-                }
-                @media (max-width: 768px) {
-                  .pdf-iframe {
-                    width: 100%;
-                    height: 300px;
-                    max-height: 300px;
-                    margin: 0;
-                    border-radius: 0;
-                  }
-                }
-              `}</style>
-              <div
-                style={{
-                  width: "100%",
-                  height: "300px",
-                  backgroundColor: "#f5f5f5",
-                  border: "2px solid #ddd",
-                  borderRadius: isMobile ? "0" : "8px",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "8px",
-                  position: "relative",
-                  overflow: "hidden",
-                }}
-              >
-                {!iframeLoaded && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      color: "#666",
-                      fontSize: "16px",
-                      zIndex: 5,
-                    }}
-                  >
-                    Loading PDF...
-                  </div>
-                )}
-                <iframe
-                  src={`${pdfUrl}#toolbar=${isMobile ? "0" : "1"}&zoom=${
-                    isMobile ? "10" : "100"
-                  }`}
-                  className="pdf-iframe hide-scrollbar"
-                  style={{
-                    width: "100%",
-                    height: "300px",
-                    border: "none",
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    overflow: "hidden",
-                    scrollbarWidth: "none",
-                    msOverflowStyle: "none",
-                  }}
-                  title={`PDF Preview: ${image.name}`}
-                  scrolling="no"
-                  onLoad={() => setIframeLoaded(true)}
-                  onError={() => setIframeLoaded(true)}
-                />
-              </div>
-            </>
+                width="100%"
+              />
+            </div>
           ) : (
             <div
               style={{
@@ -290,7 +223,35 @@ const ImageModal: React.FC<ImageModalProps> = ({
               marginBottom: isMobile && isPDF ? "4px" : "16px",
             }}
           >
-            {/* Tags */}
+            {/* Left side - View PDF Button (only for PDFs) */}
+            <div style={{ display: "flex", alignItems: "center" }}>
+              {isPDF && (
+                <button
+                  onClick={() => window.open(pdfUrl, "_blank")}
+                  style={{
+                    background: "rgba(0, 123, 255, 0.8)",
+                    border: "none",
+                    borderRadius: "4px",
+                    padding: "6px 12px",
+                    cursor: "pointer",
+                    color: "white",
+                    fontSize: "0.8rem",
+                    transition: "background-color 0.2s",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "rgba(0, 123, 255, 1)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "rgba(0, 123, 255, 0.8)";
+                  }}
+                  title="Open PDF in new tab"
+                >
+                  📄 View PDF
+                </button>
+              )}
+            </div>
+
+            {/* Center - Tags */}
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
               {(image.tags || image.metadata?.keyvalues?.tags?.split(",") || [])
                 .slice(0, 2)
@@ -310,26 +271,28 @@ const ImageModal: React.FC<ImageModalProps> = ({
                 ))}
             </div>
 
-            {/* Download Button */}
-            <button
-              onClick={() => onDownload(image)}
-              style={{
-                background: "transparent",
-                border: "none",
-                cursor: "pointer",
-              }}
-              title={`Download ${isPDF ? "PDF" : "Image"}`}
-            >
-              <div
+            {/* Right side - Download Button */}
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <button
+                onClick={() => onDownload(image)}
                 style={{
-                  width: 0,
-                  height: 0,
-                  borderLeft: "12px solid transparent",
-                  borderRight: "12px solid transparent",
-                  borderTop: "16px solid rgba(255, 0, 0, 1)",
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
                 }}
-              />
-            </button>
+                title={`Download ${isPDF ? "PDF" : "Image"}`}
+              >
+                <div
+                  style={{
+                    width: 0,
+                    height: 0,
+                    borderLeft: "12px solid transparent",
+                    borderRight: "12px solid transparent",
+                    borderTop: "16px solid rgba(255, 0, 0, 1)",
+                  }}
+                />
+              </button>
+            </div>
           </div>
 
           {/* Origin and Artist */}

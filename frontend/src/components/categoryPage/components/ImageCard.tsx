@@ -20,6 +20,22 @@ const ImageCard: React.FC<ImageCardProps> = ({
   "aria-colindex": ariaColIndex,
 }) => {
   console.log(image);
+
+  // Check if the file is a PDF
+  const isPDF =
+    image.name.toLowerCase().endsWith(".pdf") ||
+    image.metadata?.keyvalues?.fileType === "pdf";
+
+  // Construct PDF URL with fallback
+  const pdfUrl =
+    image.gatewayUrl ||
+    `https://copper-delicate-louse-351.mypinata.cloud/ipfs/${image.ipfsHash}`;
+
+  // Handle click - always open modal
+  const handleClick = () => {
+    onClick(); // Open modal for all files
+  };
+
   return (
     <div
       className="image-container"
@@ -39,11 +55,27 @@ const ImageCard: React.FC<ImageCardProps> = ({
         transition: "transform 0.3s ease, box-shadow 0.3s ease",
         cursor: "pointer",
       }}
-      onClick={onClick}
+      onClick={handleClick}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          onClick();
+          handleClick();
+        }
+      }}
+      onMouseEnter={(e) => {
+        const imageInfo = e.currentTarget.querySelector(
+          ".image-info"
+        ) as HTMLElement;
+        if (imageInfo) {
+          imageInfo.style.opacity = "1";
+        }
+      }}
+      onMouseLeave={(e) => {
+        const imageInfo = e.currentTarget.querySelector(
+          ".image-info"
+        ) as HTMLElement;
+        if (imageInfo) {
+          imageInfo.style.opacity = "0";
         }
       }}
     >
@@ -61,7 +93,7 @@ const ImageCard: React.FC<ImageCardProps> = ({
           display: "block",
           transition: "filter 0.2s, transform 0.3s ease",
         }}
-        onClick={onClick}
+        onClick={handleClick}
       />
 
       {/* Hidden description for screen readers */}
@@ -94,6 +126,25 @@ const ImageCard: React.FC<ImageCardProps> = ({
           pointerEvents: "none",
         }}
       >
+        {/* PDF Indicator */}
+        {isPDF && (
+          <div
+            style={{
+              position: "absolute",
+              top: "8px",
+              right: "8px",
+              background: "rgba(220, 53, 69, 0.9)",
+              color: "white",
+              padding: "2px 6px",
+              borderRadius: "4px",
+              fontSize: "0.6rem",
+              fontWeight: "bold",
+              textShadow: "0 1px 2px rgba(0,0,0,0.8)",
+            }}
+          >
+            PDF
+          </div>
+        )}
         <div
           style={{
             color: "#fff",

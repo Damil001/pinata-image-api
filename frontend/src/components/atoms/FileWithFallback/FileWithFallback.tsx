@@ -166,100 +166,81 @@ const FileWithFallback: React.FC<FileWithFallbackProps> = ({
 
   if (isPDF) {
     return (
-      <div className={className} style={{ width, height, ...style }}>
-        <style jsx>{`
-          iframe::-webkit-scrollbar {
-            display: none !important;
-          }
-        `}</style>
+      <div
+        className={className}
+        style={{
+          width,
+          height,
+          ...style,
+          backgroundColor: "#ffffff",
+          border: "2px solid #000000",
+          borderRadius: "8px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          cursor: "pointer",
+          transition: "all 0.2s ease",
+          position: "relative",
+          padding: "1rem",
+        }}
+        onClick={onClick}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.borderColor = "#333333";
+          e.currentTarget.style.transform = "scale(1.02)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderColor = "#000000";
+          e.currentTarget.style.transform = "scale(1)";
+        }}
+      >
+        {/* PDF Icon using pdf-bg.jpg - Full height */}
         <div
           style={{
-            width: "100%",
-            height: "100%",
-            backgroundColor: "#f5f5f5",
-            border: "2px solid #ddd",
-            borderRadius: "8px",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "8px",
-            position: "relative",
-            overflow: "hidden",
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundImage: "url('/pdf-bg.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            borderRadius: "6px",
+            zIndex: 0,
+          }}
+        />
+
+        {/* File Name - Positioned at bottom */}
+        <div
+          style={{
+            textAlign: "center",
+            position: "absolute",
+            bottom: "0.5rem",
+            left: "0.5rem",
+            right: "0.5rem",
+            zIndex: 2,
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            padding: "0.3rem",
+            borderRadius: "4px",
+            backdropFilter: "blur(2px)",
           }}
         >
-          {/* PDF Preview using iframe */}
-          <iframe
-            src={`${currentSrc}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
-            className="hide-scrollbar"
-            style={{
-              width: "100%",
-              height: "100%",
-              border: "none",
-              position: "absolute",
-              top: 0,
-              left: 0,
-              overflow: "hidden",
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-            }}
-            title={`PDF Preview: ${fileName}`}
-            scrolling="no"
-          />
-
-          {/* Overlay with open button */}
+          {/* File name without .pdf extension */}
           <div
             style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(0, 0, 0, 0.3)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              opacity: 0,
-              transition: "opacity 0.3s ease",
-              cursor: "pointer",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.opacity = "1";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.opacity = "0";
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              if (onClick) {
-                onClick();
-              }
+              fontSize: "0.7rem",
+              fontWeight: "600",
+              color: "#000000",
+              fontFamily: "Andale Mono, monospace",
+              lineHeight: "1.1",
+              textShadow: "0 1px 2px rgba(255,255,255,0.8)",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
             }}
           >
-            <button
-              style={{
-                background: "rgba(255, 255, 255, 0.9)",
-                border: "none",
-                borderRadius: "8px",
-                padding: "12px 24px",
-                fontSize: "14px",
-                fontWeight: "600",
-                color: "#333",
-                cursor: "pointer",
-                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
-                transition: "all 0.2s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(255, 255, 255, 1)";
-                e.currentTarget.style.transform = "scale(1.05)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(255, 255, 255, 0.9)";
-                e.currentTarget.style.transform = "scale(1)";
-              }}
-            >
-              📄 View PDF
-            </button>
+            {fileName.replace(/\.pdf$/i, "")}
           </div>
         </div>
       </div>
