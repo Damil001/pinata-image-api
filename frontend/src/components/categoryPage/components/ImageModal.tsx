@@ -223,35 +223,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
               marginBottom: isMobile && isPDF ? "4px" : "16px",
             }}
           >
-            {/* Left side - View PDF Button (only for PDFs) */}
-            <div style={{ display: "flex", alignItems: "center" }}>
-              {isPDF && (
-                <button
-                  onClick={() => window.open(pdfUrl, "_blank")}
-                  style={{
-                    background: "rgba(0, 123, 255, 0.8)",
-                    border: "none",
-                    borderRadius: "4px",
-                    padding: "6px 12px",
-                    cursor: "pointer",
-                    color: "white",
-                    fontSize: "0.8rem",
-                    transition: "background-color 0.2s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "rgba(0, 123, 255, 1)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "rgba(0, 123, 255, 0.8)";
-                  }}
-                  title="Open PDF in new tab"
-                >
-                  📄 View PDF
-                </button>
-              )}
-            </div>
-
-            {/* Center - Tags */}
+            {/* Left side - Tags */}
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
               {(image.tags || image.metadata?.keyvalues?.tags?.split(",") || [])
                 .slice(0, 2)
