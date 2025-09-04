@@ -99,6 +99,20 @@ const ImageModal: React.FC<ImageModalProps> = ({
     image.name.toLowerCase().endsWith(".pdf") ||
     image.metadata?.keyvalues?.fileType === "pdf";
 
+  console.log("ImageModal - Image:", image.name);
+  console.log("ImageModal - Is PDF:", isPDF);
+  console.log(
+    "ImageModal - File type metadata:",
+    image.metadata?.keyvalues?.fileType
+  );
+  console.log("ImageModal - Gateway URL:", image.gatewayUrl);
+  console.log("ImageModal - IPFS Hash:", image.ipfsHash);
+
+  // Construct PDF URL with fallback
+  const pdfUrl =
+    image.gatewayUrl ||
+    `https://copper-delicate-louse-351.mypinata.cloud/ipfs/${image.ipfsHash}`;
+
   return (
     <div
       style={{
@@ -213,11 +227,9 @@ const ImageModal: React.FC<ImageModalProps> = ({
                 </div>
               )}
               <iframe
-                src={`${image.gatewayUrl}#toolbar=${
+                src={`${pdfUrl}#toolbar=${isMobile ? "0" : "1"}&navpanes=${
                   isMobile ? "0" : "1"
-                }&navpanes=${isMobile ? "0" : "1"}&scrollbar=0&view=FitH&zoom=${
-                  isMobile ? "page-fit" : "auto"
-                }`}
+                }&scrollbar=0&view=FitH&zoom=${isMobile ? "page-fit" : "auto"}`}
                 className="pdf-iframe hide-scrollbar"
                 style={{
                   width: "100%",

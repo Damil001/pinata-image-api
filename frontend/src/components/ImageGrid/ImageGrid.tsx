@@ -81,6 +81,7 @@ const ImageGrid: React.FC<ImageGridProps> = ({
               alt={img.metadata?.keyvalues?.altText || img.name}
               thumbnailHash={img.metadata?.keyvalues?.thumbnailIpfsHash}
               thumbnailGatewayUrl={img.thumbnail?.gatewayUrl}
+              onClick={() => onImageClick(img)}
               style={{
                 width: "100%",
                 height: "clamp(100px, 20vw, 130px)",
