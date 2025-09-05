@@ -46,7 +46,10 @@ export default function Menu() {
               `cursor-pointer transition-all duration-300 ease-in-out w-8 h-8 sm:w-10 sm:h-10` +
               (isOpen ? " opacity-100 scale-110" : " opacity-80 scale-100")
             }
-            onClick={() => setIsOpen((prev) => !prev)}
+            onClick={() => {
+              // setIsOpen((prev) => !prev);
+              console.log("isOpen", isOpen);
+            }}
           />
         </div>
       </div>
