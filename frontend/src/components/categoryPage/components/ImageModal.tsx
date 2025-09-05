@@ -126,13 +126,14 @@ const ImageModal: React.FC<ImageModalProps> = ({
       >
         <div
           style={{
-            width: isMobile ? "100vw" : "min(500px, 90vw)",
+            width: isMobile ? "95vw" : "min(500px, 90vw)",
             background: "rgba(51, 54, 57, 1)",
             display: "flex",
             flexDirection: "column",
             borderRadius: "0px",
-            maxHeight: isMobile ? "90vh" : "90vh",
+            maxHeight: "80vh",
             overflow: "hidden",
+            margin: isMobile ? "10px" : "0",
           }}
           onClick={(e) => e.stopPropagation()}
         >
@@ -141,7 +142,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
             style={{
               display: "flex",
               justifyContent: "flex-end",
-              padding: isMobile ? "12px 16px" : "8px 12px",
+              padding: isMobile ? "8px 12px" : "6px 10px",
               flexShrink: 0,
               position: "relative",
               zIndex: 10,
@@ -196,7 +197,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
               minHeight: 0,
               position: "relative",
               overflow: "hidden",
-              height: isMobile ? "calc(90vh - 200px)" : "calc(90vh - 120px)",
+              height: isMobile ? "calc(80vh - 160px)" : "calc(80vh - 100px)",
             }}
           >
             {isPDF ? (
@@ -214,7 +215,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
                   pdfUrl={pdfUrl}
                   fileName={image.name}
                   height={
-                    isMobile ? "calc(90vh - 200px)" : "calc(90vh - 120px)"
+                    isMobile ? "calc(80vh - 160px)" : "calc(80vh - 100px)"
                   }
                   width="100%"
                 />
@@ -250,12 +251,12 @@ const ImageModal: React.FC<ImageModalProps> = ({
             style={{
               background: "#2a2a2a",
               padding:
-                isMobile && isPDF ? "4px 8px" : isMobile ? "12px" : "20px",
+                isMobile && isPDF ? "6px 10px" : isMobile ? "12px" : "16px",
               color: "#fff",
               flexShrink: 0,
               overflow: "auto",
               fontSize:
-                isMobile && isPDF ? "0.7rem" : isMobile ? "0.9rem" : "1rem",
+                isMobile && isPDF ? "0.75rem" : isMobile ? "0.85rem" : "0.9rem",
             }}
           >
             <div
