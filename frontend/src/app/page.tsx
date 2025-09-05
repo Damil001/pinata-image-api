@@ -81,7 +81,8 @@ export default function Home() {
             Welcome. This tool isn&apos;t about preservation, it&apos;s about
             preparation. Some archives collect dust. Not us, we collect
             resistance. This is your playground, now choose your path: Explore
-            the archive&apos;s categories, or follow the protest sign.
+            the archive&apos;s categories, or learn about how we&apos;ve built
+            the archive 1.0.
           </p>
         </header>
         <nav role="navigation" aria-label="Archive categories">

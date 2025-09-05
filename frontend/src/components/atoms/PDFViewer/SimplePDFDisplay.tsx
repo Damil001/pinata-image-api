@@ -36,7 +36,9 @@ const SimplePDFDisplay: React.FC<SimplePDFDisplayProps> = ({
       <div className={styles.fileName}>{fileName}</div>
 
       {/* Click instruction */}
-      <div className={styles.instruction}>Click to open PDF</div>
+      <div className={styles.instruction}>
+        Click on the 🔻 to open and download the pdf
+      </div>
     </div>
   );
 };

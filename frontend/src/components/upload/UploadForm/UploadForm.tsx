@@ -313,18 +313,13 @@ const UploadForm: React.FC<UploadFormProps> = ({
           <span className="tooltip">
             ℹ️
             <span className="tooltiptext">
-              What? Nodes are what keeps the archive alive, you and your fellow
-              contributors, explorers, wanderers, and If you’d like your chosen
-              name connected to your upload, you can choose between two options:
-              Visible: your chosen name is visible for others, meaning if
-              someone likes your art, they’d have the chance to find your work
-              elsewhere. Hidden: your alias is hidden and only visible
-              internally. What for? We’ll be curating a selection of the most
-              downloaded 🔻 contributions to the archive on a quarterly basis.
-              We’ll print them as part of WPR pillar 4 (to be revealed) and want
-              to give a share of the earnings to those who‘s contribution has
-              been selected. *if you prefer, just type in a secure email address
-              like proton mail for us to contact you.
+              If you’d like your alias connected to your upload, you can choose
+              between Visible and Hidden. Visible: if someone likes your art,
+              they’d have the chance to find your work elsewhere. Hidden: your
+              alias is only visible internally. What for? We’ll be curating a
+              selection of the most downloaded 🔻 contributions to the archive
+              on a quarterly basis—more on this soon.*If you prefer, just type
+              in a secure email address and keep it hidden.
             </span>
           </span>
         </label>

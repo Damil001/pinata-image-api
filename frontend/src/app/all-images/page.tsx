@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { UploadModal, useModalAnimation, Image } from "@/components/upload";
 import SearchInterface from "@/components/SearchInterface";
 import ImageGrid from "@/components/ImageGrid";
-import ImageModal from "@/components/ImageModal";
+import ImageModal from "@/components/categoryPage/components/ImageModal";
 import { useAllImages } from "@/hooks/useAllImages";
 
 export default function AllImagesPage() {
@@ -369,8 +369,15 @@ export default function AllImagesPage() {
           image={selectedImage}
           isOpen={showImageModal}
           onClose={() => setShowImageModal(false)}
-          deviceId={deviceId}
-          refreshImages={refreshImages}
+          onDownload={(image) => {
+            // Handle download functionality
+            const link = document.createElement("a");
+            link.href =
+              image.gatewayUrl ||
+              `https://copper-delicate-louse-351.mypinata.cloud/ipfs/${image.ipfsHash}`;
+            link.download = image.name;
+            link.click();
+          }}
         />
 
         {/* Enhanced CSS for hover effects and animations */}

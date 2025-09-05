@@ -86,7 +86,7 @@ const FAQModal: React.FC<FAQModalProps> = ({ isOpen, onClose }) => {
             FAQ
           </h1>
 
-          <MenuHeading name="What is the archive?" />
+          <MenuHeading name="What's the archive?" />
           <div className="pl-4 pr-4 sm:pl-6 sm:pr-6 mb-4 mt-2">
             <div
               className={`text-[#EBE8E2] text-xs sm:text-sm ${ibmPlexMono.className} font-normal leading-relaxed space-y-2`}
@@ -104,11 +104,38 @@ const FAQModal: React.FC<FAQModalProps> = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          <MenuHeading name="What is We Print Revolution?" />
+          <MenuHeading name="About We Print Revolution" />
           <div className="pl-4 pr-4 sm:pl-6 sm:pr-6 mb-4 mt-2">
             <div
               className={`text-[#EBE8E2] text-xs sm:text-sm ${ibmPlexMono.className} font-normal leading-relaxed space-y-2`}
             >
+              <p>
+                The initial idea for We Print Revolution (WPR) was born in late
+                December 2024.
+              </p>
+              <p>Through moments of reflection,</p>
+              <p>Deep,</p>
+              <p>Personal, political, collective.</p>
+              <p>
+                A transmission—to print, express, act, belong, mobilize,
+                organize, learn, share, distribute and resist in service of
+                collective liberation.
+              </p>
+              <p>We&apos;re building four pillars,</p>
+              <p>Each pillar serves a purpose.</p>
+              <p>
+                What you&apos;ve entered here is a functional prototype/ our
+                archive MVP that lets you and us test and improve the partly
+                decentralized archive 1.0 before we transition to
+                Holochain—that&apos;s when the archive will be fused with our
+                third pillar, which is all about hands-on collaboration and
+                organizing.
+              </p>
+              <p>
+                What are the second and the fourth pillar, the two analogue
+                ones, then? Welcome to the team ♥️ we&apos;ll reveal our toolkit
+                step by step.
+              </p>
               <p>
                 Follow us on{" "}
                 <a
@@ -127,8 +154,9 @@ const FAQModal: React.FC<FAQModalProps> = ({ isOpen, onClose }) => {
                   className=" underline"
                 >
                   Instagram
-                </a>
-                . More info will be added here soon.
+                </a>{" "}
+                to stay up to date on our journey of building by the people for
+                the people, because liberation is collective.
               </p>
             </div>
           </div>
@@ -154,15 +182,15 @@ const FAQModal: React.FC<FAQModalProps> = ({ isOpen, onClose }) => {
                   Pinning IPFS gateways and Render-hosted tools can see requests
                   coming from your IP. If you want maximum anonymity now, you
                   can use a VPN or browsers like Tor, and check out our Tactics
-                  Guide.
+                  Guide Pre-Holochain Anonymity: A Guide to VPN.
                 </p>
               </div>
 
               <div>
-                <p className="font-semibold">Open Contribution/Values:</p>
+                <p className="font-semibold">Open Contribution/ Values:</p>
                 <p>
                   This isn&apos;t a curated archive, but it is built on baseline
-                  values. If you align with core liberatory values
+                  values. If you align with core liberatory values,
                   anti-capitalist, anti-imperial, anti-Zionist, anti-fascist,
                   this space is for you.{" "}
                   <strong>Give what you can, take what you need.</strong> This
@@ -174,9 +202,9 @@ const FAQModal: React.FC<FAQModalProps> = ({ isOpen, onClose }) => {
                   free until all of us are free.
                 </p>
                 <p>
-                  <strong>Disclaimer:</strong> Resources are open to download,
-                  print and distribution, not for profit. We Print Revolution is
-                  not responsible for how the archive&apos;s resources are used.
+                  <strong>Disclaimer:</strong> Resources are for download, print
+                  and distribution, not for profit. We Print Revolution is not
+                  responsible for how the archive&apos;s resources are used.
                 </p>
               </div>
             </div>
@@ -198,14 +226,14 @@ const FAQModal: React.FC<FAQModalProps> = ({ isOpen, onClose }) => {
             </p>
           </div>
 
-          <MenuHeading name="How is the first version of the archive built?" />
+          <MenuHeading name="How's the archive 1.0 built?" />
           <div className="pl-4 pr-4 sm:pl-6 sm:pr-6 mb-4 mt-2">
             <div
               className={`text-[#EBE8E2] text-xs sm:text-sm ${ibmPlexMono.className} font-normal leading-relaxed space-y-2`}
             >
               <div>
                 <p className="font-semibold">What&apos;s decentralized:</p>
-                <p>✅ File storage & distribution via IPFS</p>
+                <p>✅ File storage & distribution via IPFS.</p>
               </div>
 
               <div>
@@ -213,7 +241,7 @@ const FAQModal: React.FC<FAQModalProps> = ({ isOpen, onClose }) => {
                   What&apos;s partly decentralized:
                 </p>
                 <p>
-                  ☑ Pinning ensures accessibility. Right now, we pin the
+                  ☑️ Pinning ensures accessibility. Right now, we pin the
                   archive&apos;s files through the service Piñata. The long-term
                   vision? Collective hosting. Mutual care. Shared resilience.
                 </p>
@@ -224,8 +252,8 @@ const FAQModal: React.FC<FAQModalProps> = ({ isOpen, onClose }) => {
                   What&apos;s not yet decentralized:
                 </p>
                 <p>
-                  ✖ Metadata (tags, search & upload interface) & Hosting on
-                  Render
+                  ❌ Metadata (tags, search & upload interface) and hosting on
+                  Render.
                 </p>
               </div>
             </div>
@@ -304,14 +332,12 @@ const FAQModal: React.FC<FAQModalProps> = ({ isOpen, onClose }) => {
             <div
               className={`text-[#EBE8E2] text-xs sm:text-sm ${ibmPlexMono.className} font-normal leading-relaxed space-y-2`}
             >
-              <p className="mt-4 italic">
-                Now let your imagination run wild… For the love of life and the
+              <p className="mt-4">
+                Now let your imagination run wild. For the love of life and the
                 love of humanity ♥️
               </p>
               <p className="mt-4 font-bold">We Print Revolution</p>
-              <p className="mt-1 italic">
-                Building infrastructure for resistance
-              </p>
+              <p className="mt-1">Building infrastructure for resistance</p>
             </div>
           </div>
         </div>
