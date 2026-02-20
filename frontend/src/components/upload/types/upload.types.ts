@@ -1,6 +1,13 @@
 // Env used at build time by Next.js; declare so we don't require @types/node in this file
 declare const process: { env: { NODE_ENV?: string; NEXT_PUBLIC_API_URL?: string } };
 
+/** Minimal drag event shape used by handlers; matches React.DragEvent so no "react" import needed. */
+export type DragEventLike = {
+  preventDefault(): void;
+  stopPropagation?(): void;
+  dataTransfer: DataTransfer | null;
+};
+
 export interface Image {
   id: string;
   ipfsHash: string;
@@ -89,10 +96,10 @@ export interface UseFileUploadReturn {
   selectedFile: File | null;
   isDragOver: boolean;
   handleFileSelect: (file: File | null) => void;
-  handleDragOver: (e: DragEvent) => void;
-  handleDragEnter: (e: DragEvent) => void;
-  handleDragLeave: (e: DragEvent) => void;
-  handleDrop: (e: DragEvent) => void;
+  handleDragOver: (e: DragEventLike) => void;
+  handleDragEnter: (e: DragEventLike) => void;
+  handleDragLeave: (e: DragEventLike) => void;
+  handleDrop: (e: DragEventLike) => void;
   resetFile: () => void;
 }
 
