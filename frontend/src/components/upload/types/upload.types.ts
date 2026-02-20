@@ -141,11 +141,11 @@ export const DEFAULT_FORM_DATA: UploadFormData = {
   agreedToTerms: false,
 };
 
-// API endpoints
+// API endpoints – use NEXT_PUBLIC_API_URL on Render/Vercel so each deploy can point to its backend
 const API_BASE_URL =
   process.env.NODE_ENV === "development"
     ? "http://localhost:3001"
-    : "https://pinata-image-api.onrender.com";
+    : (process.env.NEXT_PUBLIC_API_URL || "https://pinata-image-api.onrender.com");
 
 export const API_ENDPOINTS = {
   UPLOAD: `${API_BASE_URL}/api/upload`,
@@ -153,3 +153,6 @@ export const API_ENDPOINTS = {
   IMAGES: `${API_BASE_URL}/api/images`,
   DOWNLOAD: `${API_BASE_URL}/api/download`,
 } as const;
+
+/** Use this for any API URL so the customer can set NEXT_PUBLIC_API_URL on Render/Vercel. */
+export const getApiBaseUrl = (): string => API_BASE_URL;

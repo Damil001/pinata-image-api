@@ -23,4 +23,4 @@ export type {
   CategoryValue,
 } from './types/upload.types';
 
-export { CATEGORY_OPTIONS, DEFAULT_FORM_DATA, API_ENDPOINTS } from './types/upload.types';
+export { CATEGORY_OPTIONS, DEFAULT_FORM_DATA, API_ENDPOINTS, getApiBaseUrl } from './types/upload.types';

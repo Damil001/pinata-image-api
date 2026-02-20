@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useMemo } from "react";
-import { Image } from "@/components/upload";
+import { Image, getApiBaseUrl } from "@/components/upload";
 
 interface PaginationState {
   page: number;
@@ -67,8 +67,9 @@ export const useAllImages = ({
     setError(null);
 
     try {
+      const base = getApiBaseUrl();
       const res = await fetch(
-        `https://pinata-image-api.onrender.com/api/images?page=${page}&limit=10`
+        `${base}/api/images?page=${page}&limit=10`
       );
       console.log(`Fetching page ${page}:`, res);
       const data: {
@@ -85,7 +86,7 @@ export const useAllImages = ({
           data.images.map(async (img) => {
             try {
               const downloadRes = await fetch(
-                `https://pinata-image-api.onrender.com/api/images/${img.ipfsHash}/downloads`
+                `${base}/api/images/${img.ipfsHash}/downloads`
               );
               const downloadData = await downloadRes.json();
               if (downloadData.success) {

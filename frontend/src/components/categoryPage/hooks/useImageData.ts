@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Image, Pagination } from "../types";
+import { getApiBaseUrl } from "@/components/upload";
 
 export const useImageData = (category: string) => {
   const [images, setImages] = useState<Image[]>([]);
@@ -39,10 +40,7 @@ export const useImageData = (category: string) => {
     setError(null);
 
     try {
-      const API_BASE_URL =
-        process.env.NODE_ENV === "development"
-          ? "http://localhost:3001"
-          : "https://pinata-image-api.onrender.com";
+      const API_BASE_URL = getApiBaseUrl();
 
       const res = await fetch(
         `${API_BASE_URL}/api/images?page=${page}&limit=10`,

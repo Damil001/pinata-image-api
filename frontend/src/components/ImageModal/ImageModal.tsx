@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Image } from "@/components/upload";
+import { Image, getApiBaseUrl } from "@/components/upload";
 import FileWithFallback from "@/components/atoms/FileWithFallback";
 import { isPDFFile } from "@/utils/fileUtils";
 
@@ -22,7 +22,7 @@ async function downloadImage(
   try {
     // Call backend to record download
     const response = await fetch(
-      "https://pinata-image-api.onrender.com/api/download",
+      `${getApiBaseUrl()}/api/download`,
       {
         method: "POST",
         headers: {

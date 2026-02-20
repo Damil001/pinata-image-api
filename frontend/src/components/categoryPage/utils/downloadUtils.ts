@@ -1,16 +1,13 @@
 // utils/downloadUtils.ts
 import { Image } from "../types";
+import { getApiBaseUrl } from "@/components/upload";
 
-// Configuration constants
-const API_CONFIG = {
-  BASE_URL: "https://pinata-image-api.onrender.com",
-  ENDPOINTS: {
-    DOWNLOAD: "/api/download",
-  },
-  HEADERS: {
-    "Content-Type": "application/json",
-  },
-} as const;
+// Build API config at call time so NEXT_PUBLIC_API_URL is respected
+const getApiConfig = () => ({
+  BASE_URL: getApiBaseUrl(),
+  ENDPOINTS: { DOWNLOAD: "/api/download" },
+  HEADERS: { "Content-Type": "application/json" as const },
+});
 
 // Error types for better error handling
 export enum DownloadErrorType {
@@ -60,6 +57,7 @@ const recordDownload = async (
   deviceId: string
 ): Promise<void> => {
   try {
+    const API_CONFIG = getApiConfig();
     const response = await fetch(
       `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.DOWNLOAD}`,
       {
