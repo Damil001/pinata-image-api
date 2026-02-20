@@ -1,3 +1,6 @@
+// Env used at build time by Next.js; declare so we don't require @types/node in this file
+declare const process: { env: { NODE_ENV?: string; NEXT_PUBLIC_API_URL?: string } };
+
 export interface Image {
   id: string;
   ipfsHash: string;
@@ -86,10 +89,10 @@ export interface UseFileUploadReturn {
   selectedFile: File | null;
   isDragOver: boolean;
   handleFileSelect: (file: File | null) => void;
-  handleDragOver: (e: React.DragEvent) => void;
-  handleDragEnter: (e: React.DragEvent) => void;
-  handleDragLeave: (e: React.DragEvent) => void;
-  handleDrop: (e: React.DragEvent) => void;
+  handleDragOver: (e: DragEvent) => void;
+  handleDragEnter: (e: DragEvent) => void;
+  handleDragLeave: (e: DragEvent) => void;
+  handleDrop: (e: DragEvent) => void;
   resetFile: () => void;
 }
 
@@ -142,10 +145,12 @@ export const DEFAULT_FORM_DATA: UploadFormData = {
 };
 
 // API endpoints – use NEXT_PUBLIC_API_URL on Render/Vercel so each deploy can point to its backend
-const API_BASE_URL =
-  process.env.NODE_ENV === "development"
-    ? "http://localhost:3001"
-    : (process.env.NEXT_PUBLIC_API_URL || "https://pinata-image-api.onrender.com");
+function getApiBaseUrlValue(): string {
+  if (typeof process === "undefined") return "https://pinata-image-api.onrender.com";
+  if (process.env.NODE_ENV === "development") return "http://localhost:3001";
+  return process.env.NEXT_PUBLIC_API_URL || "https://pinata-image-api.onrender.com";
+}
+const API_BASE_URL = getApiBaseUrlValue();
 
 export const API_ENDPOINTS = {
   UPLOAD: `${API_BASE_URL}/api/upload`,
