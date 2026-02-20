@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { UseFileUploadReturn } from "../types/upload.types";
+import { UseFileUploadReturn, type DragEventLike } from "../types/upload.types";
 
 export const useFileUpload = (): UseFileUploadReturn => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -19,29 +19,29 @@ export const useFileUpload = (): UseFileUploadReturn => {
     }
   };
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = (e: DragEventLike) => {
     e.preventDefault();
-    e.stopPropagation();
+    e.stopPropagation?.();
   };
 
-  const handleDragEnter = (e: React.DragEvent) => {
+  const handleDragEnter = (e: DragEventLike) => {
     e.preventDefault();
-    e.stopPropagation();
+    e.stopPropagation?.();
     setIsDragOver(true);
   };
 
-  const handleDragLeave = (e: React.DragEvent) => {
+  const handleDragLeave = (e: DragEventLike) => {
     e.preventDefault();
-    e.stopPropagation();
+    e.stopPropagation?.();
     setIsDragOver(false);
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = (e: DragEventLike) => {
     e.preventDefault();
-    e.stopPropagation();
+    e.stopPropagation?.();
     setIsDragOver(false);
 
-    const files = e.dataTransfer.files;
+    const files = e.dataTransfer?.files;
     if (files && files[0]) {
       handleFileSelect(files[0]);
     }
